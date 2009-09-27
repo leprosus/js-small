@@ -1,0 +1,501 @@
+trigger
+xmlToJson
+clone
+
+
+
+Проверить на косяки типа this.nodes = array;
+Избавиться от typeIn
+Решить проблему с arguments
+Добавить try-catch в уязвимые места
+Сделать оптимизацию кода
+Каждый раздел отделить между собой и сделать не связанным
+Написать полную тестовую страницу
+Разработать эффекты (отбедьная библиотека)
+Разработать UI (отдельная библиотека)
+
++ Core
+    + List
+        + small.each(array, function(key, value){}) перебирает каждый элемент в массиве
+        + small.find("*").each(function(key, value){}) перебирает каждый элемент
+        + small.grep(array, function(key, value){}) перебирает каждый элемент в массиве для фильтрации массива
+        + small.find("*").grep(function(key, value){}) перебирает каждый элемент для фильтрации массива
+        + small.find("*").length() возвращает колличество элементов в массиве
+    + Array
+        + small.contain("text", array)
+        + small.contain(array1, array2)
+        + small.unique(array)
+        + small.shuffle(array)
+        + small.shuffle(array, deep)
+        + small.merge(array1, array2)
+    + Bound
+        + small.bound(object)
+        + small.find("*").bound()
+        + small.window()
+        + small.page()
+        + small.scroll()
+        + small.center()
+    + String
+        + small.trim("string")
+        + small.trim(array)
+        + small.trimLeft("string")
+        + small.trimLeft(array)
+        + small.trimRight("string")
+        + small.trimRight(array)
+        + small.decToHex("string")
+        + small.hexToDec("string")
+        + small.lower("string");
+        + small.lower(array);
+        + small.upper("string");
+        + small.upper(array);
+    + Extend
+        + small.extend(object, properties)
+        + small.extendFunctions(properties)
+        + small.extendMethods(properties)
+
+Selectors
+    + Main
+        + small("id") поиск только по id
+        + small(object) работа с объектом
+        + small.find("*").node() получить прямую ссылку на первый попавшийся объект
+        + small.context(function, object)
+    + Basic
+        + small.find("*")
+        + small.find(".class") / small.find("tag.class")
+        + small.find("#id") / small.find("tag#id")
+        + small.find("tag")
+        + small.find(".class,#id,tag")
+    + Attribute
+        + small.find("[attribute]")
+        + small.find("[attribute=value]")
+        + small.find("[attribute*=value]")
+        + small.find("[attribute^=value]")
+        + small.find("[attribute$=value]")
+        + small.find("[attribute!=value]")
+    + Context
+        + small.find("condition", context);
+        + small.find("condition1").find("condition2");
+    + Manipulation
+        + small.find("*").unique()
+        + small.find("*").merge(object)
+
++ Search Filters
+    + Basic Filters
+        + small.find("*").even() все элементы через один
+        + small.find("*").first() возвращает первый найденный элемент
+        + small.find("*").last() возвращает первый найденный элемент
+        + small.find("*").above(index) возвращает все элементы выше указанного индекса
+        + small.find("*").below(index) возвращает все элементы выше указанного индекса
+        + small.find("*").index(index) возвращает элемент под указанным индексом
+        + small.find("*").not(index) возвращает все элементы за исключением указанного индекса
+    + Visibility Filters
+        + small.find("*").hidden()
+        + small.find("*").visible()
+    + Form Filters
+        + small.find("*").checked()
+        + small.find("*").unchecked()
+        + small.find("*").selected()
+        + small.find("*").unselected()
+        + small.find("*").disabled()
+        + small.find("*").enabled()
+
++ Forms
+    + Manipulation
+        + small.find("*").enable
+        + small.find("*").disable
+        + small.find("*").select
+        + small.find("*").unselect
+        + small.find("*").check
+        + small.find("*").uncheck
+
++ CSS
+    + Loaders
+        + small.loadCss("link")
+        + small.removeCss("link")
+        + small.removeCss()
+        + small.listCss()
+        + small.containCss("link")
+    + Properties
+        + small.find("*").css("name") возвращает содержание свойства первого попавшегося элемента
+        + small.find("*").css("name", "value") устанавливает CSS свойство
+        + small.find("*").css({
+            "name1": "value1",
+            "name2": "value2",
+            "name3": "value3"
+        }) устанавливает набор CSS свойст
+
++ Script
+    + Loaders
+        + small.loadScript("link")
+        + small.loadScript("link", callback)
+        + small.removeScript("link")
+        + small.removeScript()
+        + small.listScript()
+        + small.containScript("link")
+
++ Cookies
+    + Properties
+        + small.getCookie("name")
+        + small.setCookie({
+            name: "string",
+            value: "string",
+            expire: number,
+            path: "string",
+            domain: "string",
+            secure: boolean
+        })
+        + small.removeCookie("name")
+        + small.enabledCookie()
+
++ Url
+    + Properties
+        + small.protocol()
+        + small.port()
+        + small.domain()
+        + small.url()
+        + small.anchor()
+        + small.urlParams()
+    + Loaders
+        + small.redirect("link", unstore)
+        + small.reload()
+
++ Ajax
+    + Applicative
+        + small.ajax({
+            method: "GET"|"POST",
+            url: "url-encoded-string",
+            callback: "function",
+            error: "function",
+            async: true|false,
+            user: "string",
+            password: "string",
+            params: {
+                "param1": "value1",
+                "param2": "value2",
+                "param3": "value3"
+            },
+            timeout: number,
+            contentType: "string",
+            charset: "string",
+            dataType: "string",
+            requestHeaders: {
+                "name1": "content1",
+                "name2": "content2",
+                "name3": "content3"
+            }
+        })
+    + Objective
+        + small.find("*").ajax({
+            method: "GET"|"POST",
+            url: "url-encoded-string",
+            async: true|false,
+            user: "string",
+            password: "string",
+            params: {
+                "param1": "value1",
+                "param2": "value2",
+                "param3": "value3"
+            },
+            timeout: number,
+            contentType: "string",
+            charset: "string",
+            dataType: "string",
+            requestHeaders: {
+                "name1": "content1",
+                "name2": "content2",
+                "name3": "content3"
+            }
+        })
+
++ Json
+    + Applicative
+        + small.json({
+            url: "url-encoded-string",
+            callback: "function",
+            params: {
+                "param1": "value1",
+                "param2": "value2",
+                "param3": "value3"
+            },
+            timeout: number
+        })
+
++ Timer
+    + Applicative
+        + small.start({
+            time: number,
+            callback: "function",
+            repeat: number
+        })
+        + small.stop(id)
+    + Objective
+        + small.find("*").start({
+            time: number,
+            callback: "function",
+            repeat: number
+        })
+        + small.find("*").stop()
+
++ Attributes
+    + Attr
+        + small.find("*").getAttr("name") возвращает name атрибут первого попавшегося элемента
+        + small.find("*").setAttr("name", "value") установка атрибута name со значением value
+        + small.find("*").setAttr("name", value) установка атрибута name со значением value
+        + small.find("*").setAttr({
+            "name1": "value1",
+            "name2": "value2",
+            "name3": "value3"
+        }) установка атрибутов
+        + small.find("*").removeAttr("name") удаление атрибута name
+        + small.find("*").removeAttr("name1,name2,name3") удаление списка атрибутов
+        + small.find("*").removeAttr([
+            "name1",
+            "name2",
+            "name3"
+        ]) удаление списка атрибутов
+    + Class
+        + small.find("*").setClass("name")
+        + small.find("*").setClass(array)
+        + small.find("*").getClass()
+        + small.find("*").addClass("name")
+        + small.find("*").addClass(array)
+        + small.find("*").removeClass("name")
+        + small.find("*").removeClass(array)
+        + small.find("*").removeClass()
+        + small.find("*").toggleClass("name")
+        + small.find("*").toggleClass(array)
+    + ID
+        + small.find("*").setId("name")
+        + small.find("*").getId()
+        + small.find("*").removeId()
+
+Events
+    + Main
+        + small.ready()
+    Event Handling
+        + small.find("*").bind("type", callback, attach)
+        + small.find("*").bind("type1,type2,type3", callback, attach)
+        + small.find("*").bind([
+            "type1",
+            "type2",
+            "type3"
+        ], callback, attach)
+        + small.find("*").once("type", callback, attach)
+        + small.find("*").once("type1,type2,type3", callback, attach)
+        + small.find("*").once([
+            "type1",
+            "type2",
+            "type3"
+        ], callback, attach)
+        small.find("*").trigger(type, attach)
+        + small.find("*").unbind("type", callback)
+        + small.find("*").unbind("type1,type2,type3", callback)
+        + small.find("*").unbind([
+            "type1",
+            "type2",
+            "type3"
+        ], callback)
+    + Interaction Handling
+        + small.find("*").hover(over, out)
+        + small.find("*").toggle(first, second)
+    + Short Handing
+        + small.find("*").blur(callback, attach)
+        + small.find("*").change(callback, attach)
+        + small.find("*").click(callback, attach)
+        + small.find("*").dblclick(callback, attach)
+        + small.find("*").error(callback, attach)
+        + small.find("*").focus(callback, attach)
+        + small.find("*").keydown(callback, attach)
+        + small.find("*").keypress(callback, attach)
+        + small.find("*").keyup(callback, attach)
+        + small.find("*").load(callback, attach)
+        + small.find("*").mousedown(callback, attach)
+        + small.find("*").mousemove(callback, attach)
+        + small.find("*").mouseout(callback, attach)
+        + small.find("*").mouseover(callback, attach)
+        + small.find("*").mouseup(callback, attach)
+        + small.find("*").resize(callback, attach)
+        + small.find("*").scroll(callback, attach)
+        + small.find("*").select(callback, attach)
+        + small.find("*").submit(callback, attach)
+        + small.find("*").unload(callback, attach)
+
+Utilities
+    + Browser
+        + small.browser возвращает тип браузера
+        + small.version возвращает версию браузера
+        + small.language возвращает язык пользователя
+    Convertor
+        small.xmlToJson(xml)
+
+DOM
+    + Main
+    	+ small.body()
+        + small.head()
+        + small.document()
+        + small.create("tag")
+    + Changing Content
+        + small.find("*").html()
+        + small.find("*").html("content")
+        + small.find("*").text()
+        + small.find("*").text("text")
+        + small.find("*").concat("text")
+        + small.find("*").serialize()
+    + Traversing
+        + small.find("*").child()
+        + small.find("*").children()
+        + small.find("*").parent()
+        + small.find("*").next()
+        + small.find("*").nextAll()
+        + small.find("*").prev()
+        + small.find("*").prevAll()
+        + small.find("*").firstChild()
+        + small.find("*").lastChild()
+        + small.find("*").siblings()
+    + Inserting Inside
+        + small.find("*").append("tag")
+        + small.find("*").append(dom)
+        + small.find("*").appendTo("selector")
+        + small.find("*").appendTo(dom)
+        + small.find("*").prepend("tag")
+        + small.find("*").prepend(dom)
+        + small.find("*").prependTo("selector")
+        + small.find("*").prependTo(dom)
+    + Inserting Outside
+        + small.find("*").after("tag")
+        + small.find("*").after(dom)
+        + small.find("*").before("tag")
+        + small.find("*").before(dom)
+        + small.find("*").insertAfter("selector")
+        + small.find("*").insertAfter(dom)
+        + small.find("*").insertBefore("selector")
+        + small.find("*").insertBefore(dom)
+        + small.find("*").wrap("selector")
+        + small.find("*").wrap(dom)
+        + small.find("*").wrapChild("selector")
+        + small.find("*").wrapChild(dom)
+    + Replacing
+        + small.find("*").replace("tag")
+        + small.find("*").replace(dom)
+    + Removing
+        + small.find("*").empty()
+        + small.find("*").remove()
+    Copying
+        small.find("*").clone(withHandlers)
+        small.find("*").cloneTo("selector" ,withHandlers)
+        small.find("*").cloneTo(dom ,withHandlers)
+    + Checking
+        + small.find("*").exist()
+        + small.find("*").exist(callback)
+        + small.find("*").exist(callback1, callback2)
+    + Visibility manipulation
+        + small.find("*").hide()
+        + small.find("*").show()
+        + small.find("*").show("type")
+        + small.find("*").opacity(number)
+
+*********************************************************
+
+UI
+    Dialog
+        hint
+        showInfo
+        showHelp
+        showNotice
+        showConfirm
+        showPrompt
+        showTray
+        showDialog
+
+Appendix
+    Ajax
+        /*
+         * method: "GET"|"POST",               по умолчанию GET
+         * url: "url-encoded-string",          по умолчанию location.href
+         * callback: "function",               по умолчанию function(){}
+         * error: "function",                  по умолчанию function(){}
+         * async: true|false,                  по умолчанию true
+         * user: "string",                     по умолчанию null
+         * password: "string",                 по умолчанию null
+         * params: {param: "value"},           по умолчанию null
+         * timeout: number,                    по умолчанию 0 [мс]
+         * contentType: "string",              по умолчанию application/x-www-form-urlencoded
+         * charset: "string",                  по умолчанию UTF-8
+         * dataType: "string",                 по умолчанию * / *
+         * requestHeaders: {"name": "content"} по умолчанию null
+         **/
+    Json
+        /*
+         * url: "url-encoded-string",          по умолчанию location.href
+         * callback: "function",               по умолчанию function(){}
+         * params: {param: "value"},           по умолчанию null
+         * timeout: number                     по умолчанию 0 [мс]
+         **/
+     Timer
+        /*
+         * time: number,          по умолчанию 0 [мс]
+         * callback: "function",  по умолчанию function(){}
+         * repeat: number         по умолчанию 1
+         **/
+
+
+Core
+    List
+    Array
+    Bound
+    String
+    Extend
+Selectors
+    Main
+    Basic
+    Hirarchy
+    Attribute
+    Context
+    Manipulation
+Search Filters
+    Basic Filters
+    Visibility Filters
+    Form Filters
+Forms
+    Manipulation
+CSS
+    Loaders
+    Properties
+Script
+    Loaders
+Cookies
+    Properties
+Url
+    Properties
+    Loaders
+Ajax
+    Applicative
+    Objective
+Json
+    Applicative
+Timer
+    Applicative
+    Objective
+Attributes
+    Attr
+    Class
+    ID
+Events
+    Main
+    Event Handling
+    Interaction Handling
+    Short Handing
+Utilities
+    Browser
+    Convertor
+DOM
+    Main
+    Changing Content
+    Traversing
+    Inserting Inside
+    Inserting Outside
+    Replacing
+    Removing
+    Copying
+    Checking
+    Visibility manipulation
