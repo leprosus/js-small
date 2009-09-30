@@ -1230,7 +1230,7 @@
         }
         return result;
     };
-    small.window = function(){
+    small.viewport = function(){
         var width = window.innerWidth ? window.innerWidth : (document.documentElement.clientWidth ? document.documentElement.clientWidth : document.body.offsetWidth);
         var height = window.innerHeight ? window.innerHeight : (document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.offsetHeight);
         return {
