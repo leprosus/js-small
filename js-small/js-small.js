@@ -361,7 +361,7 @@
             });
             return null;
         },
-        clone: function(withHandlers){
+        /*clone: function(withHandlers){
             var result = null;
             withHandlers = typeIn(withHandlers, "undefined") ? true : withHandlers;
             if(this.nodes.length > 0){
@@ -388,7 +388,7 @@
             //}
             }
             return result;
-        },
+        },*/
         bind: function(type, callback, attach){
             if(typeIn(callback, "function")){
                 if(typeIn(type, "string")) type = type.replace(/\s+/g, "").split(",");
@@ -442,7 +442,7 @@
                                         }else{
                                             var events = object.events[current], runFlag = true;
                                             small.each(events, function(key, value){
-                                                if(value == callback && runFlag){
+                                                if(value.callback == callback && runFlag){
                                                     if(value.detachEvent) value.detachEvent("on" + value, value.handler);
                                                     else if (value.removeEventListener) value.removeEventListener(value, value.handler, false);
                                                     delete events[key];

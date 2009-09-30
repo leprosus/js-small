@@ -39,7 +39,7 @@ clone
     + Bound
         + small.bound(object)
         + small.find("*").bound()
-        + small.window()
+        + small.viewport()
         + small.page()
         + small.scroll()
         + small.center()
