@@ -337,6 +337,7 @@ Utilities
 DOM
     + Main
     	+ small.body()
+    	+ small.window()
         + small.head()
         + small.document()
         + small.create("tag")

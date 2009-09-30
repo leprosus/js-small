@@ -787,6 +787,9 @@
     small.document = function(){
         return small(document);
     };
+    small.window = function(){
+        return small(window);
+    };
     small.browser =  function(){
         var userAgent = window.navigator.userAgent.toLowerCase();
         var type = /opera/.test(userAgent) ? "opera" :
