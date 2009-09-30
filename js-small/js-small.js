@@ -1263,7 +1263,7 @@
         };
     };
     small.center = function(){
-        var screen = small.window();
+        var screen = small.viewport();
         var page = small.page();
         var left = parseInt(screen.width / 2) + page.left;
         var top = parseInt(screen.height / 2) + page.top;
