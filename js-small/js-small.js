@@ -635,11 +635,13 @@
         },
         setAttr: function(name, value){
             this.each(function(object){
-                if(typeIn(name, "string") && typeIn(value, "string,number")) object[name] = value;
-                else if(typeIn(name, "object") && typeIn(value, "undefined"))
-                    small.each(name, function(key, value){
-                        object[key] = value;
-                    });
+                try{
+                    if(typeIn(name, "string") && typeIn(value, "string,number")) object[name] = value;
+                    else if(typeIn(name, "object") && typeIn(value, "undefined"))
+                        small.each(name, function(key, value){
+                            object[key] = value;
+                        });
+                }catch(err){}
             });
             return this;
         },
@@ -770,6 +772,18 @@
         },
         find: function(selector){
             return typeIn(selector, "string") ? small.find(selector, this) : null;
+        },
+        toString: function(){
+            var result = "";
+            this.each(function(object){
+                result += "[";
+                result += object.nodeName;
+                if(object.id) result += ", id=" + object.id;
+                if(object.className) result += ", class=" + object.className;
+                result += "]\n";
+            });
+            
+            return result.length > 0 ? result : "[Null]";
         }
     };
     small.context = function(callback, context) {
