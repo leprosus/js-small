@@ -508,7 +508,7 @@
                     var timer = value.timer[value.timer.length] = window.setInterval(function(){
                         if(parameters.callback && repeat-- > 0) parameters.callback.call(value);
                         else window.clearInterval(timer);
-                    }, parameters.time || 0);
+                    }, parameters.time || 1);
                 });
             return this;
         },
@@ -805,7 +805,7 @@
         var timer = window.setInterval(function(){
             if(parameters.callback && repeat-- > 0) parameters.callback();
             else window.clearInterval(timer);
-        }, parameters.time || 0);
+        }, parameters.time || 1);
         return timer;
     };
     small.stop = function(timer){
