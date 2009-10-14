@@ -1,13 +1,37 @@
 trigger
 xmlToJson
-clone
+/*clone: function(withHandlers){
+    var result = null;
+    withHandlers = typeIn(withHandlers, "undefined") ? true : withHandlers;
+    if(this.nodes.length > 0){
+        var array = [], binds = [], counter = 0;
+        var list = this.children().merge(this).each(function(object){
+            binds = small.merge(binds, [object.events]);
+        }).unbind();
+        this.each(function(object){
+            array[array.length] = object.cloneNode(true);
+        });
+        list.each(function(object){
+            var events = binds[counter++];
+            if(typeof events == "object" && 'click' in events) alert(events.click.length);
+                //small.each(events, function(handler){
+                    //small(object).bind(type, handler.callback, handler.attach);
+                //});
+        });
+        //TODO restore all bind data for current objects
+        //this.children().merge(this).???;
+        result = new small(array);
+    //if(withHandlers){
+    //TODO add all bind data for clone objects
+    //result.children().merge(result).???;
+    //}
+    }
+    return result;
+},*/
 
 
 
-Проверить на косяки типа this.nodes = array;
-Избавиться от typeIn
 Решить проблему с arguments
-Добавить try-catch в уязвимые места
 Сделать оптимизацию кода
 Написать полную тестовую страницу
 Написать документацию
@@ -85,6 +109,8 @@ Selectors
     + Manipulation
         + small.find("*").unique()
         + small.find("*").merge(object)
+    + Print
+        + small.find("*").toString()
 
 + Search Filters
     + Basic Filters

@@ -17,7 +17,9 @@
     small.extend = function(object, properties) {
         if(typeIn(object, "object,function") && typeIn(properties, "object"))
             small.each(properties, function(key, value){
-                object[key] = value;
+                try{
+                    object[key] = value;
+                }catch(err){}
             });
         return object;
     };
@@ -30,18 +32,13 @@
     small.prototype = {
         each: function(callback){
             if(typeIn(callback, "function") && callback.length < 3)
-                small.each(this.nodes, function(key, value){
-                    if(callback.length == 1) callback.call(value, value);
-                    else callback.call(value, key, value);
-                });
+                small.each(this.nodes, callback);
             return this;
         },
         grep: function(callback){
             var result = null;
             if(typeIn(callback, "function") && callback.length < 3){
-                this.nodes = small.grep(this.nodes, function(key, value){
-                    return callback.length == 1 ? callback.call(value, value) : callback.call(value, key, value);
-                });
+                this.nodes = small.grep(this.nodes, callback);
                 result = this;
             }
             return result;
@@ -63,8 +60,7 @@
         },
         html: function(text){
             var result = null;
-            if(typeIn(text, "undefined"))
-                result = this.nodes.length > 0 ? (this.nodes[0].innerHTML || this.nodes[0].textContent) : null;
+            if(typeIn(text, "undefined")) result = this.nodes.length > 0 ? (this.nodes[0].innerHTML || this.nodes[0].textContent) : null;
             else if(typeIn(text, "string")){
                 this.each(function(value){
                     value.innerHTML = text;
@@ -254,12 +250,12 @@
             }
             return result;
         },
-        exist: function(callback1, callback2){
+        exist: function(){
             var result = this.length() > 0 ? true : false;
             var arg = arguments.length;
-            if(arg < 3 && result) callback1();
-            else if(arg == 2 && !result) callback2();
-            return arg < 3 ? result : null;
+            if(arg < 3 && result) arguments[0]();
+            else if(arg == 2 && !result) arguments[1]();
+            return (arg > 0 && arg < 3) ? result : null;
         },
         serialize: function(){
             return this.nodes.length > 0 ? (this.nodes[0].outerHTML || new XMLSerializer().serializeToString(this.nodes[0])) : null;
@@ -361,34 +357,6 @@
             });
             return null;
         },
-        /*clone: function(withHandlers){
-            var result = null;
-            withHandlers = typeIn(withHandlers, "undefined") ? true : withHandlers;
-            if(this.nodes.length > 0){
-                var array = [], binds = [], counter = 0;
-                var list = this.children().merge(this).each(function(object){
-                    binds = small.merge(binds, [object.events]);
-                }).unbind();
-                this.each(function(object){
-                    array[array.length] = object.cloneNode(true);
-                });
-                list.each(function(object){
-                    var events = binds[counter++];
-                    if(typeof events == "object" && 'click' in events) alert(events.click.length);
-//                    small.each(events, function(handler){
-//                        small(object).bind(type, handler.callback, handler.attach);
-//                    });
-                });
-                //TODO restore all bind data for current objects
-                //this.children().merge(this).???;
-                result = new small(array);
-            //if(withHandlers){
-            //TODO add all bind data for clone objects
-            //result.children().merge(result).???;
-            //}
-            }
-            return result;
-        },*/
         bind: function(type, callback, attach){
             if(typeIn(callback, "function")){
                 if(typeIn(type, "string")) type = type.replace(/\s+/g, "").split(",");
@@ -573,14 +541,15 @@
             return this;
         },
         removeClass: function(name){
-            this.each(function(value){
-                if(typeIn(name, "undefined")) value.className = "";
+            this.each(function(object){
+                if(typeIn(name, "undefined")) object.className = "";
                 else{
-                    var classList = value.className.replace(/^\s+|\s+$/g, "").replace(/\s+/g, " ").split(" ");
+                    name = typeIn(name, "string") ? [name] : name;
+                    var classList = object.className.replace(/^\s+|\s+$/g, "").replace(/\s+/g, " ").split(" ");
                     classList = small.grep(classList, function(value){
                         return !small.contain(value, name);
                     });
-                    value.className = classList.join(" ");
+                    object.className = classList.join(" ");
                 }
             });
             return this;
@@ -635,13 +604,16 @@
         },
         setAttr: function(name, value){
             this.each(function(object){
-                try{
-                    if(typeIn(name, "string") && typeIn(value, "string,number")) object[name] = value;
-                    else if(typeIn(name, "object") && typeIn(value, "undefined"))
-                        small.each(name, function(key, value){
+                if(typeIn(name, "string") && typeIn(value, "string,number"))
+                    try{
+                        object[name] = value;
+                    }catch(err){}
+                else if(typeIn(name, "object") && typeIn(value, "undefined"))
+                    small.each(name, function(key, value){
+                        try{
                             object[key] = value;
-                        });
-                }catch(err){}
+                        }catch(err){}
+                    });
             });
             return this;
         },
@@ -1109,7 +1081,7 @@
                         length = tagList.length;
                         for(index = 0; index < length; index++){
                             value = tagList[index];
-                            if(small.trim(value.id) == matches[2]){
+                            if(typeIn(value.id, "string") && small.trim(value.id) == matches[2]){
                                 array[array.length] = value;
                             }
                         }
