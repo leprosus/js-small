@@ -745,6 +745,14 @@
         find: function(selector){
             return typeIn(selector, "string") ? small.find(selector, this) : null;
         },
+        condition: function(condition, callback){
+            if(typeIn(condition, "boolean") && condition && typeIn(callback, "function")){
+                this.each(function(object){
+                    callback.call(object);
+                });
+            }
+            return this;
+        },
         toString: function(){
             var result = "";
             this.each(function(object){

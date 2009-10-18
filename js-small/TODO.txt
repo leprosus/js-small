@@ -1,5 +1,10 @@
 trigger
 xmlToJson
+bound(object) - копирует bound из другого объекта
+append("div.class")
+append("div#id")
+append("div[attr-value]")
+
 /*clone: function(withHandlers){
     var result = null;
     withHandlers = typeIn(withHandlers, "undefined") ? true : withHandlers;
@@ -422,6 +427,7 @@ DOM
         + small.find("*").exist()
         + small.find("*").exist(callback)
         + small.find("*").exist(callback1, callback2)
+        + small.find("*").condition(condition, callback) - если выполняется условие, по выполняется функция в контексте связанного объекта
     + Visibility manipulation
         + small.find("*").hide()
         + small.find("*").show()
