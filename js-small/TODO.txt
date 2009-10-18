@@ -137,15 +137,6 @@ Selectors
         + small.find("*").disabled()
         + small.find("*").enabled()
 
-+ Forms
-    + Manipulation
-        + small.find("*").enable
-        + small.find("*").disable
-        + small.find("*").select
-        + small.find("*").unselect
-        + small.find("*").check
-        + small.find("*").uncheck
-
 + CSS
     + Loaders
         + small.loadCss("link")
@@ -496,8 +487,6 @@ Search Filters
     Basic Filters
     Visibility Filters
     Form Filters
-Forms
-    Manipulation
 CSS
     Loaders
     Properties

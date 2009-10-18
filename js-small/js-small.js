@@ -1,5 +1,5 @@
 /*
- * JS-Small JavaScript Framework version 0.8.7
+ * JS-Small JavaScript Framework version 0.8.8
  * Copyright (c) 2008 - 2009 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.evalab.ru/
@@ -704,42 +704,6 @@
             this.nodes = this.nodes.length > 0 ? this.grep(function(value){
                 return (value.selected == false);
             }).nodes : [];
-            return this;
-        },
-        check: function(){
-            this.each(function(object){
-                object.checked = true;
-            });
-            return this;
-        },
-        uncheck: function(){
-            this.each(function(object){
-                object.checked = false;
-            });
-            return this;
-        },
-        select: function(){
-            this.each(function(object){
-                object.selected = true;
-            });
-            return this;
-        },
-        unselect: function(){
-            this.each(function(object){
-                object.selected = false;
-            });
-            return this;
-        },
-        disable: function(){
-            this.each(function(object){
-                object.disabled = true;
-            });
-            return this;
-        },
-        enable: function(){
-            this.each(function(object){
-                object.disabled = false;
-            });
             return this;
         },
         find: function(selector){
