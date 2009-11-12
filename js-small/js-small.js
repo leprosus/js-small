@@ -726,7 +726,7 @@
                 if(object.className) result += ", class=" + object.className;
                 result += "]\n";
             });
-            
+
             return result.length > 0 ? result : "[Null]";
         }
     };
@@ -931,23 +931,28 @@
         return small.contain(url, small.listCss());
     };
     small.loadScript = function(url, callback){
-        if(typeIn(url, "string") && !small.containScript(url) && typeIn(callback, "undefined,function")){
-            var head = document.getElementsByTagName('head')[0];
-            var script = document.createElement('script');
-            script.src = url;
-            script.type = 'text/javascript';
-            if(typeIn(callback, "function")){
-                var handler = function(event){
-                    if(script.readyState != "loading"){
-                        if(script.detachEvent) script.detachEvent("onreadystatechange", handler);
-                        else if (script.removeEventListener) script.removeEventListener("load", handler, false);
-                        callback.call(script, event);
-                    }
-                };
-                if(script.attachEvent) script.attachEvent("onreadystatechange", handler);
-                else if(script.addEventListener) script.addEventListener("load", handler, false);
-            }
-            head.appendChild(script);
+        if(typeIn(url, "string") && typeIn(callback, "undefined,function")){
+            if(!small.containScript(url)){
+                var head = document.getElementsByTagName('head')[0];
+                var script = document.createElement('script');
+                script.src = url;
+                script.type = 'text/javascript';
+                if(typeIn(callback, "function")){
+                    var handler = function(){
+                        if(script.readyState != "loading"){
+                            if(script.detachEvent) script.detachEvent("onreadystatechange", handler);
+                            else if (script.removeEventListener) script.removeEventListener("load", handler, false);
+                            callback.call(script);
+                        }
+                    };
+                    if(script.attachEvent) script.attachEvent("onreadystatechange", handler);
+                    else if(script.addEventListener) script.addEventListener("load", handler, false);
+                }
+                head.appendChild(script);
+            }else
+                small.each(small.listScript(), function(object){
+                    if(object == url) callback.call(object);
+                });
         }
     };
     small.removeScript = function(url){
