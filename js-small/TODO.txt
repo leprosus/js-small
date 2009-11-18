@@ -4,6 +4,7 @@ bound(object) - копирует bound из другого объекта
 append("div.class")
 append("div#id")
 append("div[attr-value]")
+setName, getName, removeName
 
 /*clone: function(withHandlers){
     var result = null;
