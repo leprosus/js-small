@@ -2,7 +2,8 @@
  * JS-Small JavaScript Framework version 0.8.8
  * Copyright (c) 2008 - 2009 Denis Korolev
  * Released under the MIT License.
- * More information: http://www.evalab.ru/
+ * More information: http://www.js-small.ru/
+ *                   http://www.js-small.com/
  */
 (function(){
     var small = window.small = function(node){
@@ -631,17 +632,37 @@
             var result = null;
             if(typeIn(id, "string")){
                 this.each(function(object){
-                    object.id = id;
+                    object.setAttribute("id", id);
                 });
                 result = this;
             }
             return result;
         },
         getId: function(){
-            return (this.nodes.length > 0) ? this.nodes[0].id : null;
+            return (this.nodes.length > 0) ? this.getAttribute("id") : null;
         },
         removeId: function(){
-            return this.setId("");
+            return this.nodes.length > 0 ? this.each(function(object){
+                object.removeAttribute("id");
+            }) : null;
+        },
+        setName: function(name){
+            var result = null;
+            if(typeIn(name, "string")){
+                this.each(function(object){
+                    object.setAttribute("name", name);
+                });
+                result = this;
+            }
+            return result;
+        },
+        getName: function(){
+            return (this.nodes.length > 0) ? this.nodes[0].getAttribute("name") : null;
+        },
+        removeName: function(){
+            return this.nodes.length > 0 ? this.each(function(object){
+                object.removeAttribute("name");
+            }) : null;
         },
         opacity: function(number){
             var result = null;
