@@ -1046,7 +1046,7 @@
         else if(window.addEventListener) window.addEventListener("load", callback, false);
     };
     small.find = function(selector, context){
-        //TODO the belowing need to optimization
+        //TODO the belowing need to be optimizated
         var result = null;
         if(typeIn(context, "undefined")) context = [document];
         if(typeIn(selector, "string") && typeIn(context, "object")){
@@ -1057,14 +1057,8 @@
             small.each(context, function(object){
                 small.each(list, function(value){
                     value = small.trim(value);
-                    if(value == "*"){
-                        tagList = object.getElementsByTagName("*");
-                        length = tagList.length;
-                        for(index = 0; index < length; index++){
-                            array[array.length] = tagList[index];
-                        }
-                    }else if(/\.{1}/.test(value)){
-                        matches = /^([a-z]*)\.([a-z0-9\-_]+)$/i.exec(value);
+                    if(/\.{1}/.test(value)){
+                        matches = /^([a-z0-9\-_]*|\*)\.([a-z0-9\-_]+)$/i.exec(value);
                         tagList = object.getElementsByTagName(matches[1] == "" ? "*" : matches[1].toUpperCase());
                         length = tagList.length;
                         for(index = 0; index < length; index++){
@@ -1074,7 +1068,7 @@
                             }
                         }
                     }else if(/#{1}/.test(value)){
-                        matches = /^([a-z]*)#([a-z0-9\-_]+)$/i.exec(value);
+                        matches = /^([a-z0-9\-_]*|\*)#([a-z0-9\-_]+)$/i.exec(value);
                         tagList = object.getElementsByTagName(matches[1] == "" ? "*" : matches[1].toUpperCase());
                         length = tagList.length;
                         for(index = 0; index < length; index++){
@@ -1083,14 +1077,14 @@
                                 array[array.length] = value;
                             }
                         }
-                    }else if(/^[a-z0-9\-_]+$/i.test(value)){
+                    }else if(/^([a-z0-9\-_]+|\*)$/i.test(value)){
                         tagList = object.getElementsByTagName(value.toUpperCase());
                         length = tagList.length;
                         for(index = 0; index < length; index++){
                             array[array.length] = tagList[index];
                         }
                     }else if(/\[+/.test(value)){
-                        matches = /^([a-z0-9\-_]+)\[([a-z]+)((|=|\*=|\^=|\$=|\!=)([a-z0-9\-_]*))?\]$/i.exec(value);
+                        matches = /^([a-z0-9\-_]*|\*)\[([a-z]+)((|=|\*=|\^=|\$=|\!=)([a-z0-9\-_]*))?\]$/i.exec(value);
                         if(matches != null){
                             tagList = object.getElementsByTagName(matches[1] == "" ? "*" : matches[1].toUpperCase());
                             var attrName = matches[2];
