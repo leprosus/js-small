@@ -1,9 +1,19 @@
-trigger
-xmlToJson
+Решить проблему с ajax у Ишака 8.0
+
+append("div.class") не будет работать для <div class="class sub"></div>
 bound(object) - копирует bound из другого объекта
 append("div.class")
 append("div#id")
-append("div[attr-value]")
+append("div[attr=value]")
+append("div:content")
+append("div.class#id[attr=value]:content")
+find("tag:content") - ищит <tag>content</tag>
+find("tag.class#id[attr=value]:content") - или в любой др последовательности кроме тега
+unwrap()
+trigger
+xmlToJson
+reloader - с и без GET + POST (document.location.href = document.location.href)
+
 
 /*clone: function(withHandlers){
     var result = null;
@@ -36,6 +46,7 @@ append("div[attr-value]")
 
 
 
+Сделать библиотеку ImagePreloader (следует проанализировать имеющиеся решения, из адекватных - http://www.webreference.com/programming/javascript/gr/column3/)
 Решить проблему с arguments
 Сделать оптимизацию кода
 Написать полную тестовую страницу
@@ -49,8 +60,15 @@ append("div[attr-value]")
 Доработать дизайн для UI-elemets (переработать вид кнопок)
 Разработать UI-elements (отдельная библиотека)
     У каждого текстовго поля должно быть значение по-умолчанию
+    http://www.extjs.com/products/extjs/
+
+lazy-load
+
 Разработать UI-windows (отдельная библиотека)
 Разработать Validate (отдельная библиотека)
+Разработать Canvas (отдельная библиотека) - с прикладными функциями, которые работыли бы во всех браузерах (http://raphaeljs.com/reference.html)
+Разработать Fonts (отдельная библиотека) - для корректной отрисовки нестандартных шрифтов (с фильтрами Smooth и PS-подобными)
+Разработать Chart/Diagrams (отдельная библиотека) - http://habrahabr.ru/blogs/webdev/79950/
 
 + Core
     + List
@@ -424,7 +442,11 @@ DOM
         + small.find("*").exist()
         + small.find("*").exist(callback)
         + small.find("*").exist(callback1, callback2)
+        + small.find("*").empty(callback)
+        + small.find("*").empty(callback1, callback2)
         + small.find("*").condition(condition, callback) - если выполняется условие, по выполняется функция в контексте связанного объекта
+        + small.find("*").condition(condition, callback1, callback2)
+        + small.find("*").condition(condition, , callback2)
     + Visibility manipulation
         + small.find("*").hide()
         + small.find("*").show()

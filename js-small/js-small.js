@@ -1,9 +1,11 @@
 /*
- * JS-Small JavaScript Framework version 0.8.8
+ * JS-Small JavaScript Framework version 0.8.9
  * Copyright (c) 2008 - 2009 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
+ * Project support:  http://www.evalab.ru/
+ *                   http://www.evalab.com/
  */
 (function(){
     var small = window.small = function(node){
@@ -20,7 +22,8 @@
             small.each(properties, function(key, value){
                 try{
                     object[key] = value;
-                }catch(err){}
+                }
+                catch(err){}
             });
         return object;
     };
@@ -55,13 +58,13 @@
         },
         text: function(text){
             var result = null;
-            if(typeIn(text, "undefined")) result = this.nodes.length > 0 ? (this.nodes[0].innerHTML || this.nodes[0].textContent) : null;
+            if(typeIn(text, "undefined")) result = this.length() > 0 ? (typeIn(this.nodes[0].textContent, "undefined") ? this.nodes[0].innerHTML : this.nodes[0].textContent) : null;
             else if(typeIn(text, "string")) result = this.empty().concat(text);
             return result;
         },
         html: function(text){
             var result = null;
-            if(typeIn(text, "undefined")) result = this.nodes.length > 0 ? (this.nodes[0].innerHTML || this.nodes[0].textContent) : null;
+            if(typeIn(text, "undefined")) result = this.length() > 0 ? (typeIn(this.nodes[0].textContent, "undefined") ? this.nodes[0].innerHTML : this.nodes[0].textContent) : null;
             else if(typeIn(text, "string")){
                 this.each(function(value){
                     value.innerHTML = text;
@@ -71,16 +74,26 @@
             return result;
         },
         empty: function(){
-            this.each(function(object){
-                while(object.firstChild){
-                    small(object.firstChild).unbind();
-                    object.removeChild(object.firstChild);
-                }
-            });
+            var length = arguments.length;
+            if(length == 0){
+                this.each(function(object){
+                    while(object.firstChild){
+                        small(object.firstChild).unbind();
+                        object.removeChild(object.firstChild);
+                    }
+                });
+            }else if(length > 0){
+                var callback = arguments;
+                this.each(function(object){
+                    var result = (typeIn(object.textContent, "undefined") ? object.innerHTML : object.textContent) == "" ? true : false;
+                    if(length > 0 && ((length < 3 && result) || (length == 2 && !result)))
+                        (result ? callback[0] : callback[1]).call(object);
+                });
+            }
             return this;
         },
         node: function(){
-            return this.nodes.length > 0 ? this.nodes[0] : null;
+            return this.length() > 0 ? this.nodes[0] : null;
         },
         parent: function(){
             var array = [];
@@ -179,6 +192,7 @@
             return this.parent().firstChild().nextAll();
         },
         unique: function(){
+            //TODO need to be optimizated
             var list = this.nodes;
             for(var first = 0; first < list.length - 1; first++)
                 for(var second = first + 1; second < list.length; second++)
@@ -191,7 +205,10 @@
         merge: function(object){
             var result = null;
             if(typeIn(object, "object") && typeIn(object.nodes, "object")){
-                var list = this.nodes;
+                var list = [];
+                this.each(function(current){
+                    list[list.length] = current;
+                })
                 object.each(function(current){
                     list[list.length] = current;
                 });
@@ -253,13 +270,19 @@
         },
         exist: function(){
             var result = this.length() > 0 ? true : false;
-            var arg = arguments.length;
-            if(arg < 3 && result) arguments[0]();
-            else if(arg == 2 && !result) arguments[1]();
-            return (arg > 0 && arg < 3) ? result : null;
+            var length = arguments.length;
+            if(length > 0 && ((length < 3 && result) || (length == 2 && !result))){
+                var callback = result ? arguments[0] : arguments[1];
+                if(result)
+                    this.each(function(object){
+                        callback.call(object);
+                    });
+                else callback();
+            }
+            return this.length() > 0 ? true : false;
         },
         serialize: function(){
-            return this.nodes.length > 0 ? (this.nodes[0].outerHTML || new XMLSerializer().serializeToString(this.nodes[0])) : null;
+            return this.length() > 0 ? (this.nodes[0].outerHTML || new XMLSerializer().serializeToString(this.nodes[0])) : null;
         },
         replace: function(tag){
             var result = null;
@@ -448,11 +471,11 @@
             return this;
         },
         first: function(){
-            this.nodes = this.nodes.length > 0 ? [this.nodes[0]] : [];
+            this.nodes = this.length() > 0 ? [this.nodes[0]] : [];
             return this;
         },
         last: function(){
-            this.nodes = this.nodes.length > 0 ? [this.nodes[this.nodes.length - 1]] : [];
+            this.nodes = this.length() > 0 ? [this.nodes[this.length() - 1]] : [];
             return this;
         },
         index: function(index){
@@ -476,20 +499,20 @@
             }) : null;
         },
         even: function(){
-            this.nodes = this.nodes.length > 0 ? this.grep(function(key, value){
+            this.nodes = this.length() > 0 ? this.grep(function(key, value){
                 return (key % 2 == 0);
             }).nodes : [];
             return this;
         },
         visible: function(){
-            this.nodes = this.nodes.length > 0 ? this.grep(function(value){
+            this.nodes = this.length() > 0 ? this.grep(function(value){
                 return (value.offsetWidth > 0 && value.offsetHeight > 0
                     && value.style.visibility != "hidden" && value.style.display != "none");
             }).nodes : [];
             return this;
         },
         hidden: function(){
-            this.nodes = this.nodes.length > 0 ? this.grep(function(value){
+            this.nodes = this.length() > 0 ? this.grep(function(value){
                 return (value.offsetWidth == 0 || value.offsetHeight == 0
                     || value.style.visibility == "hidden" || value.style.display == "none");
             }).nodes : [];
@@ -499,7 +522,7 @@
             return this.nodes.length;
         },
         bound: function(){
-            return this.nodes.length > 0 ? small.bound(this.nodes[0]) : null;
+            return this.length() > 0 ? small.bound(this.nodes[0]) : null;
         },
         start: function(parameters){
             if(typeIn(parameters, "object"))
@@ -531,7 +554,7 @@
             return this;
         },
         getClass: function(){
-            return this.nodes.length > 0 ? this.nodes[0].className : null;
+            return this.length() > 0 ? this.nodes[0].className : null;
         },
         addClass: function(name){
             if(typeIn(name, "object")) name = name.join(" ");
@@ -570,7 +593,7 @@
                     var matches = /\-([a-z]{1})/i.exec(name);
                     name = name.replace(matches[0], matches[1].toUpperCase());
                 }
-                if(typeIn(value, "undefined")) result = this.nodes.length > 0 ? this.nodes[0].style[name] : null;
+                if(typeIn(value, "undefined")) result = this.length() > 0 ? this.nodes[0].style[name] : null;
                 else
                     this.each(function(object){
                         try{
@@ -601,7 +624,7 @@
             return result;
         },
         getAttr: function(name){
-            return (typeIn(name, "string") && this.nodes.length > 0) ? this.nodes[0][name] : null;
+            return (typeIn(name, "string") && this.length() > 0) ? this.nodes[0][name] : null;
         },
         setAttr: function(name, value){
             this.each(function(object){
@@ -639,10 +662,10 @@
             return result;
         },
         getId: function(){
-            return (this.nodes.length > 0) ? this.getAttribute("id") : null;
+            return (this.length() > 0) ? this.id : null;
         },
         removeId: function(){
-            return this.nodes.length > 0 ? this.each(function(object){
+            return this.length() > 0 ? this.each(function(object){
                 object.removeAttribute("id");
             }) : null;
         },
@@ -657,10 +680,10 @@
             return result;
         },
         getName: function(){
-            return (this.nodes.length > 0) ? this.nodes[0].getAttribute("name") : null;
+            return (this.length() > 0) ? this.nodes[0].getAttribute("name") : null;
         },
         removeName: function(){
-            return this.nodes.length > 0 ? this.each(function(object){
+            return this.length() > 0 ? this.each(function(object){
                 object.removeAttribute("name");
             }) : null;
         },
@@ -692,37 +715,37 @@
             return this;
         },
         checked: function(){
-            this.nodes = this.nodes.length > 0 ? this.grep(function(value){
+            this.nodes = this.length() > 0 ? this.grep(function(value){
                 return (value.checked == true);
             }).nodes : [];
             return this;
         },
         unchecked: function(){
-            this.nodes = this.nodes.length > 0 ? this.grep(function(value){
+            this.nodes = this.length() > 0 ? this.grep(function(value){
                 return (value.checked == false);
             }).nodes : [];
             return this;
         },
         disabled: function(){
-            this.nodes = this.nodes.length > 0 ? this.grep(function(value){
+            this.nodes = this.length() > 0 ? this.grep(function(value){
                 return (value.disabled == true);
             }).nodes : [];
             return this;
         },
         enabled: function(){
-            this.nodes = this.nodes.length > 0 ? this.grep(function(value){
+            this.nodes = this.length() > 0 ? this.grep(function(value){
                 return (value.disabled == false);
             }).nodes : [];
             return this;
         },
         selected: function(){
-            this.nodes = this.nodes.length > 0 ? this.grep(function(value){
+            this.nodes = this.length() > 0 ? this.grep(function(value){
                 return (value.selected == true);
             }).nodes : [];
             return this;
         },
         unselected: function(){
-            this.nodes = this.nodes.length > 0 ? this.grep(function(value){
+            this.nodes = this.length() > 0 ? this.grep(function(value){
                 return (value.selected == false);
             }).nodes : [];
             return this;
@@ -730,11 +753,15 @@
         find: function(selector){
             return typeIn(selector, "string") ? small.find(selector, this) : null;
         },
-        condition: function(condition, callback){
-            if(typeIn(condition, "boolean") && condition && typeIn(callback, "function")){
-                this.each(function(object){
-                    callback.call(object);
-                });
+        condition: function(condition, callback1, callback2){
+            if(typeIn(condition, "boolean")
+                && ((condition && typeIn(callback1, "function")) || (!condition && typeIn(callback2, "function")))){
+                if(condition || (!condition && typeIn(callback2, "function"))){
+                    var callback = condition ? callback1 : callback2;
+                    this.each(function(object){
+                        callback.call(object);
+                    });
+                }
             }
             return this;
         },
@@ -836,7 +863,7 @@
             var user = parameters.user || null;
             var password = parameters.password || null;
             var params = null;
-            if(parameters.params && parameters.params.length > 0){
+            if(parameters.params){
                 params = [];
                 small.each(parameters.params, function(key, value){
                     params[params.length] = key + "=" + encodeURIComponent(value);
@@ -1058,7 +1085,7 @@
                 small.each(list, function(value){
                     value = small.trim(value);
                     if(/\.{1}/.test(value)){
-                        matches = /^([a-z0-9\-_]*|\*)\.([a-z0-9\-_]+)$/i.exec(value);
+                        matches = /^([a-z0-9\-_]*|\*)\.([a-z0-9\-_\s]+)$/i.exec(value);
                         tagList = object.getElementsByTagName(matches[1] == "" ? "*" : matches[1].toUpperCase());
                         length = tagList.length;
                         for(index = 0; index < length; index++){
@@ -1220,7 +1247,7 @@
         var width = (document.body.scrollWidth > document.body.offsetWidth) ? document.body.scrollWidth : document.body.offsetWidth;
         var height = (document.body.scrollHeight > document.body.offsetHeight) ? document.body.scrollHeight : document.body.offsetHeight;
         var left = self.pageXOffset ? self.pageXOffset : (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
-        var top = self.pageYOffset ? self.pageYOffset : (document.documentElement.scrollLeft ? document.documentElement.scrollTop : document.body.scrollTop);
+        var top = self.pageYOffset ? self.pageYOffset : (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
         return {
             'width': width,
             'height': height,
@@ -1232,7 +1259,7 @@
         var width = (document.body.scrollWidth > document.body.offsetWidth) ? document.body.scrollWidth : document.body.offsetWidth;
         var height = (document.body.scrollHeight > document.body.offsetHeight) ? document.body.scrollHeight : document.body.offsetHeight;
         var left = self.pageXOffset ? self.pageXOffset : (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
-        var top = self.pageYOffset ? self.pageYOffset : (document.documentElement.scrollLeft ? document.documentElement.scrollTop : document.body.scrollTop);
+        var top = self.pageYOffset ? self.pageYOffset : (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
         return {
             'width': width,
             'height': height,
@@ -1353,7 +1380,7 @@
                 }
         }
         return result;
-    };
+    }
     var handler = function(event){
         var object = this;
         event = event || window.event;
