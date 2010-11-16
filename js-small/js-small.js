@@ -560,7 +560,8 @@
             if(typeIn(name, "object")) name = name.join(" ");
             if(typeIn(name, "string"))
                 this.each(function(value){
-                    value.className = small.trim(value.className) + " " + name;
+                    if(value.className.indexOf(name) == -1)
+                        value.className = small.trim(value.className) + " " + name;
                 });
             return this;
         },
@@ -623,8 +624,11 @@
             }
             return result;
         },
+        hasAttr: function(name){
+            return (typeIn(name, "string") && this.length() > 0) ? (name in this.nodes[0]) : null;
+        },
         getAttr: function(name){
-            return (typeIn(name, "string") && this.length() > 0) ? this.nodes[0][name] : null;
+            return (typeIn(name, "string") && this.hasAttr(name)) ? this.nodes[0][name] : null;
         },
         setAttr: function(name, value){
             this.each(function(object){
@@ -1069,8 +1073,7 @@
         return window.navigator.cookieEnabled;
     };
     small.ready = function(callback){
-        if(window.attachEvent) window.attachEvent("onload", callback);
-        else if(window.addEventListener) window.addEventListener("load", callback, false);
+        small.window().load(callback);
     };
     small.find = function(selector, context){
         //TODO the belowing need to be optimizated
@@ -1120,7 +1123,7 @@
                             length = tagList.length;
                             for(index = 0; index < length; index++){
                                 var current = tagList[index][attrName];
-                                if(!typeIn(current, "undefined"))
+                                if(!typeIn(current, "undefined") && current != null)
                                     if(type == ""
                                         || (type == "=" && current == attrValue)
                                         || (type == "*=" && current.indexOf(attrValue) > 0)
@@ -1317,15 +1320,15 @@
     small.contain = function(text, array){
         var result = null;
         if(typeIn(array, "object")){
-            if(typeIn(text, "string")){
+            if(typeIn(text, "string,number")){
                 result = false;
                 small.each(array, function(value){
                     if(value == text) result = true;
                 });
             }else if(typeIn(text, "object")){
-                result = true;
+                result = false;
                 small.each(text, function(current){
-                    if(!small.contain(current, array)) result = false;
+                    if(small.contain(current, array)) result = true;
                 });
             }
         }
@@ -1387,10 +1390,10 @@
         if(event.isFixed) return event;
         event.isFixed = true;
         event.preventDefault = event.preventDefault || function(){
-            object.returnValue = false;
+            event.returnValue = false;
         };
         event.stopPropagation = event.stopPropagation || function(){
-            object.cancelBubble = true;
+            event.cancelBubble = true;
         };
         if(!event.target) event.target = event.srcElement;
         if(!event.relatedTarget && event.fromElement) event.relatedTarget = event.fromElement == event.target ? event.toElement : event.fromElement;
