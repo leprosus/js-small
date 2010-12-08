@@ -1,6 +1,6 @@
 /*
- * JS-Small JavaScript Framework version 0.8.9
- * Copyright (c) 2008 - 2009 Denis Korolev
+ * JS-Small JavaScript Framework version 0.9.0
+ * Copyright (c) 2008 - 2011 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
@@ -11,7 +11,7 @@
     var small = window.small = function(node){
         if(this.small){
             var result = null;
-            if(typeIn(node, "string")) result = small.find("#" + node);
+            if(typeIn(node, "string")) result = small.find(node);
             else if(typeIn(node, "object")) result = typeIn(node.nodes, "object") ? node : new small([node]);
             return result;
         }
@@ -1370,7 +1370,7 @@
         }
         return array;
     };
-    function typeIn(object, list){
+    var typeIn = small.typeIn = function(object, list){
         var result = false;
         if(typeof list == "string"){
             var type = typeof object;
@@ -1383,7 +1383,7 @@
                 }
         }
         return result;
-    }
+    };
     var handler = function(event){
         var object = this;
         event = event || window.event;
