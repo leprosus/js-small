@@ -1054,7 +1054,7 @@
             if(cookie.length > 0)
                 if((start = cookie.indexOf(search)) > 0){
                     start += search.length;
-                    end = cookie.indexOf(";", start)
+                    end = cookie.indexOf(";", start);
                     if(end == -1) end = cookie.length;
                     result = unescape(cookie.substring(start, end));
                 }
