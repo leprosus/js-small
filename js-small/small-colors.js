@@ -1,6 +1,6 @@
 /*
  * JS-Small JavaScript Framework Plugin 0.0.1
- * Description: Convert various type color models (RGB, HSV)
+ * Description: Convert various type of color models (RGB, HSV)
  * Copyright (c) 2008 - 2011 Denis Korolev
  * Special thank: Dmitry Gnatenko
  * Released under the MIT License.
