@@ -59,7 +59,7 @@
         text: function(text){
             var result = null;
             if(typeIn(text, "undefined")) result = this.length() > 0 ? (typeIn(this.nodes[0].textContent, "undefined") ? this.nodes[0].innerHTML : this.nodes[0].textContent) : null;
-            else if(typeIn(text, "string")) result = this.empty().concat(text);
+            else if(typeIn(text, "string,number")) result = this.empty().concat(text);
             return result;
         },
         html: function(text){
