@@ -22,9 +22,7 @@
             small.each(properties, function(key, value) {
                 try {
                     object[key] = value;
-                }
-                catch(err) {
-                }
+                }catch(err) {}
             });
         return object;
     };
@@ -53,8 +51,7 @@
                 this.each(function(value) {
                     try {
                         value.appendChild(document.createTextNode(text));
-                    } catch(err) {
-                    }
+                    } catch(err) {}
                 });
             return this;
         },
@@ -77,14 +74,14 @@
         },
         empty: function() {
             var length = arguments.length;
-            if (length == 0) {
+            if (length == 0)
                 this.each(function(object) {
                     while (object.firstChild) {
                         small(object.firstChild).unbind();
                         object.removeChild(object.firstChild);
                     }
                 });
-            } else if (length > 0) {
+            else if (length > 0) {
                 var callback = arguments;
                 this.each(function(object) {
                     var result = (typeIn(object.textContent, "undefined") ? object.innerHTML : object.textContent) == "";
@@ -127,8 +124,7 @@
             this.each(function(object) {
                 try {
                     array[array.length] = "childElementCount" in object ? object.firstElementChild : object.firstChild;
-                } catch(err) {
-                }
+                } catch(err) {}
             });
             return new small(array);
         },
@@ -137,8 +133,7 @@
             this.each(function(object) {
                 try {
                     array[array.length] = "childElementCount" in object ? object.lastElementChild : object.lastChild;
-                } catch(err) {
-                }
+                } catch(err) {}
             });
             return new small(array);
         },
@@ -147,8 +142,7 @@
             this.each(function(object) {
                 try {
                     array[array.length] = "childElementCount" in object ? object.nextElementSibling : object.nextSibling;
-                } catch(err) {
-                }
+                } catch(err) {}
             });
             return new small(array);
         },
@@ -157,8 +151,7 @@
             this.each(function(object) {
                 try {
                     array[array.length] = "childElementCount" in object ? object.previousElementSibling : object.previousSibling;
-                } catch(err) {
-                }
+                } catch(err) {}
             });
             return new small(array);
         },
@@ -169,14 +162,12 @@
                     while ((object = object.nextElementSibling) != null)
                         try {
                             array[array.length] = object;
-                        } catch(err) {
-                        }
+                        } catch(err) {}
                 else
                     while ((object = object.nextSibling) != null)
                         try {
                             array[array.length] = object;
-                        } catch(err) {
-                        }
+                        } catch(err) {}
             });
             return new small(array);
         },
@@ -187,14 +178,12 @@
                     while ((object = object.previousElementSibling) != null)
                         try {
                             array[array.length] = object;
-                        } catch(err) {
-                        }
+                        } catch(err) {}
                 else
                     while ((object = object.previousSibling) != null)
                         try {
                             array[array.length] = object;
-                        } catch(err) {
-                        }
+                        } catch(err) {}
             });
             return new small(array);
         },
@@ -473,9 +462,9 @@
         },
         toggle: function(first, second) {
             this.each(
-                    function(object) {
-                        object.toggleEvent = first;
-                    }).click(function(event) {
+                function(object) {
+                    object.toggleEvent = first;
+                }).click(function(event) {
                 this.toggleEvent.call(this, event);
                 this.toggleEvent = (this.toggleEvent == first) ? second : first;
             });
@@ -511,25 +500,25 @@
         },
         even: function() {
             this.nodes = this.length() > 0 ? this.grep(
-                    function(key, value) {
-                        return (key % 2 == 0);
-                    }).nodes : [];
+                function(key, value) {
+                    return (key % 2 == 0);
+                }).nodes : [];
             return this;
         },
         visible: function() {
             this.nodes = this.length() > 0 ? this.grep(
-                    function(value) {
-                        return (value.offsetWidth > 0 && value.offsetHeight > 0
-                                && value.style.visibility != "hidden" && value.style.display != "none");
-                    }).nodes : [];
+                function(value) {
+                    return (value.offsetWidth > 0 && value.offsetHeight > 0
+                        && value.style.visibility != "hidden" && value.style.display != "none");
+                }).nodes : [];
             return this;
         },
         hidden: function() {
             this.nodes = this.length() > 0 ? this.grep(
-                    function(value) {
-                        return (value.offsetWidth == 0 || value.offsetHeight == 0
-                                || value.style.visibility == "hidden" || value.style.display == "none");
-                    }).nodes : [];
+                function(value) {
+                    return (value.offsetWidth == 0 || value.offsetHeight == 0
+                        || value.style.visibility == "hidden" || value.style.display == "none");
+                }).nodes : [];
             return this;
         },
         length: function() {
@@ -613,8 +602,7 @@
                     this.each(function(object) {
                         try {
                             object.style[name] = value;
-                        } catch(err) {
-                        }
+                        } catch(err) {}
                     });
             } else if (typeIn(name, "object"))
                 this.each(function(object) {
@@ -737,44 +725,44 @@
         },
         checked: function() {
             this.nodes = this.length() > 0 ? this.grep(
-                    function(value) {
-                        return (value.checked);
-                    }).nodes : [];
+                function(value) {
+                    return (value.checked);
+                }).nodes : [];
             return this;
         },
         unchecked: function() {
             this.nodes = this.length() > 0 ? this.grep(
-                    function(value) {
-                        return (!value.checked);
-                    }).nodes : [];
+                function(value) {
+                    return (!value.checked);
+                }).nodes : [];
             return this;
         },
         disabled: function() {
             this.nodes = this.length() > 0 ? this.grep(
-                    function(value) {
-                        return (value.disabled);
-                    }).nodes : [];
+                function(value) {
+                    return (value.disabled);
+                }).nodes : [];
             return this;
         },
         enabled: function() {
             this.nodes = this.length() > 0 ? this.grep(
-                    function(value) {
-                        return (!value.disabled);
-                    }).nodes : [];
+                function(value) {
+                    return (!value.disabled);
+                }).nodes : [];
             return this;
         },
         selected: function() {
             this.nodes = this.length() > 0 ? this.grep(
-                    function(value) {
-                        return (value.selected);
-                    }).nodes : [];
+                function(value) {
+                    return (value.selected);
+                }).nodes : [];
             return this;
         },
         unselected: function() {
             this.nodes = this.length() > 0 ? this.grep(
-                    function(value) {
-                        return (!value.selected);
-                    }).nodes : [];
+                function(value) {
+                    return (!value.selected);
+                }).nodes : [];
             return this;
         },
         find: function(selector) {
@@ -782,7 +770,7 @@
         },
         condition: function(condition, callback1, callback2) {
             if (typeIn(condition, "boolean")
-                    && ((condition && typeIn(callback1, "function")) || (!condition && typeIn(callback2, "function")))) {
+                && ((condition && typeIn(callback1, "function")) || (!condition && typeIn(callback2, "function")))) {
                 if (condition || (!condition && typeIn(callback2, "function"))) {
                     var callback = condition ? callback1 : callback2;
                     this.each(function(object) {
@@ -826,10 +814,10 @@
     small.browser = function() {
         var userAgent = window.navigator.userAgent.toLowerCase();
         return /opera/.test(userAgent) ? "opera" :
-                (/msie/.test(userAgent) ? "msie" :
-                        (/firefox/.test(userAgent) ? "firefox" :
-                                (/chrome/.test(userAgent) ? "chrome" :
-                                        (/safari/.test(userAgent) ? "safari" : "mozilla"))));
+        (/msie/.test(userAgent) ? "msie" :
+            (/firefox/.test(userAgent) ? "firefox" :
+                (/chrome/.test(userAgent) ? "chrome" :
+                    (/safari/.test(userAgent) ? "safari" : "mozilla"))));
     };
     small.version = function() {
         var userAgent = window.navigator.userAgent.toLowerCase();
@@ -848,10 +836,11 @@
     };
     small.start = function(parameters) {
         var repeat = parameters.repeat || 1;
-        return window.setInterval(function() {
-            if (parameters.callback && repeat-- > 0) parameters.callback();
+        var timer = window.setInterval(function(){
+            if(parameters.callback && repeat-- > 0) parameters.callback();
             else window.clearInterval(timer);
         }, parameters.time || 1);
+        return timer;
     };
     small.stop = function(timer) {
         window.clearInterval(timer);
@@ -873,7 +862,7 @@
         if (typeIn(object, "object") && typeIn(callback, "function") && callback.length < 3)
             small.each(object, function(key, value) {
                 if ((callback.length == 2 && callback(key, value))
-                        || (callback.length == 1 && callback(value)))
+                    || (callback.length == 1 && callback(value)))
                     array[array.length] = value;
             });
         return array;
@@ -945,7 +934,7 @@
                 name += alpha.charAt(Math.ceil(Math.random() * alpha.length));
             var url = parameters.url || location.href;
             if (!parameters.callback) parameters.callback = function() {
-            };
+                };
             var params = "callback=" + name;
             if (parameters.params) {
                 var items = [];
@@ -1064,10 +1053,10 @@
                 parameters.expire = date.toGMTString();
             }
             document.cookie = parameters.name + "=" + escape(parameters.value)
-                    + ((parameters.expire) ? "; expires=" + parameters.expire : "")
-                    + "; path=" + ((parameters.path) ? parameters.path : "/")
-                    + ((parameters.domain) ? "; domain=" + parameters.domain : "")
-                    + ((parameters.secure) ? "; secure" : "");
+            + ((parameters.expire) ? "; expires=" + parameters.expire : "")
+            + "; path=" + ((parameters.path) ? parameters.path : "/")
+            + ((parameters.domain) ? "; domain=" + parameters.domain : "")
+            + ((parameters.secure) ? "; secure" : "");
         }
     };
     small.getCookie = function(name) {
@@ -1089,9 +1078,9 @@
         if (typeIn(parameters, "object"))
             if (small.cookie.get(parameters.name))
                 document.cookie = parameters.name + "=" +
-                        ((parameters.path) ? "; path=" + parameters.path : "") +
-                        ((parameters.domain) ? "; domain=" + parameters.domain : "") +
-                        "; expires=Thu, 01-Jan-70 00:00:01 GMT";
+                ((parameters.path) ? "; path=" + parameters.path : "") +
+                ((parameters.domain) ? "; domain=" + parameters.domain : "") +
+                "; expires=Thu, 01-Jan-70 00:00:01 GMT";
     };
     small.enabledCookie = function() {
         return window.navigator.cookieEnabled;
@@ -1149,11 +1138,11 @@
                                 var current = tagList[index][attrName];
                                 if (!typeIn(current, "undefined") && current != null)
                                     if (type == ""
-                                            || (type == "=" && current == attrValue)
-                                            || (type == "*=" && current.indexOf(attrValue) > 0)
-                                            || (type == "^=" && current.indexOf(attrValue) == 0)
-                                            || (type == "$=" && current.indexOf(attrValue) == current.length - attrValue.length)
-                                            || (type == "!=" && current != attrValue))
+                                        || (type == "=" && current == attrValue)
+                                        || (type == "*=" && current.indexOf(attrValue) > 0)
+                                        || (type == "^=" && current.indexOf(attrValue) == 0)
+                                        || (type == "$=" && current.indexOf(attrValue) == current.length - attrValue.length)
+                                        || (type == "!=" && current != attrValue))
                                         array[array.length] = tagList[index];
                             }
                         }
@@ -1271,18 +1260,6 @@
         };
     };
     small.page = function() {
-        var width = (document.body.scrollWidth > document.body.offsetWidth) ? document.body.scrollWidth : document.body.offsetWidth;
-        var height = (document.body.scrollHeight > document.body.offsetHeight) ? document.body.scrollHeight : document.body.offsetHeight;
-        var left = self.pageXOffset ? self.pageXOffset : (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
-        var top = self.pageYOffset ? self.pageYOffset : (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop);
-        return {
-            'width': width,
-            'height': height,
-            'left': left,
-            'top': top
-        };
-    };
-    small.scroll = function() {
         var width = (document.body.scrollWidth > document.body.offsetWidth) ? document.body.scrollWidth : document.body.offsetWidth;
         var height = (document.body.scrollHeight > document.body.offsetHeight) ? document.body.scrollHeight : document.body.offsetHeight;
         var left = self.pageXOffset ? self.pageXOffset : (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft);
