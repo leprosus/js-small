@@ -57,13 +57,13 @@
         },
         text: function(text){
             var result = null;
-            if(typeIn(text, "undefined")) result = this.length() > 0 ? (typeIn(this.nodes[0].textContent, "undefined") ? this.nodes[0].innerHTML : this.nodes[0].textContent) : null;
+            if(!text) result = this.length() > 0 ? (this.nodes[0].textContent ? this.nodes[0].textContent : this.nodes[0].innerHTML) : null;
             else if(typeIn(text, "string,number")) result = this.empty().concat(text);
             return result;
         },
         html: function(text){
             var result = null;
-            if(typeIn(text, "undefined")) result = this.length() > 0 ? (this.nodes[0].innerHTML || this.nodes[0].textContent) : null;
+            if(!text) result = this.length() > 0 ? (this.nodes[0].innerHTML || this.nodes[0].textContent) : null;
             else if(typeIn(text, "string")){
                 this.each(function(value){
                     value.innerHTML = text;
@@ -83,7 +83,7 @@
                 });
             else if(length > 0){
                 this.each(function(object){
-                    var result = (typeIn(object.textContent, "undefined") ? object.innerHTML : object.textContent) == "";
+                    var result = (object.textContent ? object.textContent : object.innerHTML) == "";
                     if(length > 0 && ((length < 3 && result) || (length == 2 && !result))) (result ? callback[0] : callback[1]).call(object);
                 });
             }
@@ -102,8 +102,7 @@
         child: function(){
             var array = [];
             this.each(function(object){
-                var childList = object.childNodes;
-                for (var index = 0; index < childList.length; index++)
+                for(var childList = object.childNodes, index = 0; index < childList.length; index++)
                     if(childList[index].nodeType == 1) array[array.length] = childList[index];
             });
             return new small(array);
@@ -138,26 +137,17 @@
             return this.parent().firstChild().nextAll();
         },
         unique: function(){
-            for (var first = 0; first < this.nodes.length - 1; first++)
-                for (var second = first + 1; second < this.nodes.length; second++)
+            for(var first = 0; first < this.nodes.length - 1; first++)
+                for(var second = first + 1; second < this.nodes.length; second++)
                     if(this.nodes[first] == this.nodes[second]) this.nodes.splice(second, 1), first--, second--;
             return this;
         },
         merge: function(){
-            var result = this, data = arguments, list = [];
-            if(data.length > 0){
-                this.each(function(current){
-                    list[list.length] = current;
-                });
-                small.each(data, function(object){
-                    if(isOwn(object))
-                        object.each(function(current){
-                            list[list.length] = current;
-                        });
-                });
-                result = new small(list);
-            }
-            return result;
+            var current = this;
+            small.each(arguments, function(object){
+                if(isOwn(object)) current.nodes = current.nodes.concat(object.nodes);
+            });
+            return this;
         },
         append: function(tag){
             return joinDom.call(this, tag, "append");
@@ -218,10 +208,9 @@
         wrapChild: function(tag){
             var result = null, array = [];
             if(typeIn(tag, "string,object")){
-                var result = isOwn(tag) ? tag : small.create(tag);
+                result = isOwn(tag) ? tag : small.create(tag);
                 this.each(function(object){
-                    var childList = object.childNodes;
-                    for (var index = 0; index < childList.length; index++) array[array.length] = childList[index];
+                    for(var childList = object.childNodes, index = 0; index < childList.length; index++) array[array.length] = childList[index];
                 });
                 result.append(new small(array));
                 this.append(result);
@@ -253,7 +242,7 @@
                                 object.handler = function(event){
                                     handler.call(object, event);
                                 };
-                                if(object.attachEvent) object.attachEvent("on" + value, object.handler);
+                                if(object.attachEvent) object.attachEvent("on".concat(value), object.handler);
                                 else if(object.addEventListener) object.addEventListener(value, object.handler, false);
                             });
                         });
@@ -264,39 +253,39 @@
         unbind: function(type, callback){
             this.each(function(object){
                 if(object.events){
-                    if(typeIn(type, "undefined")){
-                        var typeList = [];
-                        small.each(object.events, function(key, value){
-                            typeList[typeList.length] = key;
-                        });
-                        small(object).unbind(typeList);
-                        object.events = {};
-                    } else {
+                    if(type){
                         if(typeIn(type, "string")) type = type.replace(/\s+/g, "").split(",");
                         if(typeIn(type, "array")){
                             type = small.lower(small.trim(type));
                             if(small.contain(type, eventList))
                                 small.each(type, function(current){
                                     if(object.events[current])
-                                        if(typeIn(callback, "undefined")){
-                                            var owner = small(object);
-                                            small.each(object.events[current], function(event){
-                                                owner.unbind(current, event);
-                                            });
-                                            object.events[current] = [];
-                                        } else {
+                                        if(callback){
                                             var events = object.events[current], runFlag = true;
                                             small.each(events, function(key, value){
                                                 if(value.callback == callback && runFlag){
-                                                    if(value.detachEvent) value.detachEvent("on" + value, value.handler);
+                                                    if(value.detachEvent) value.detachEvent("on".concat(value), value.handler);
                                                     else if(value.removeEventListener) value.removeEventListener(value, value.handler, false);
                                                     delete events[key];
                                                     runFlag = false;
                                                 }
                                             });
+                                        }else{
+                                            var owner = small(object);
+                                            small.each(object.events[current], function(event){
+                                                owner.unbind(current, event);
+                                            });
+                                            object.events[current] = [];
                                         }
                                 });
                         }
+                    }else{
+                        var typeList = [];
+                        small.each(object.events, function(key, value){
+                            typeList[typeList.length] = key;
+                        });
+                        small(object).unbind(typeList);
+                        object.events = {};
                     }
                 }
             });
@@ -381,7 +370,7 @@
             if(typeIn(options, "object"))
                 this.each(function(value){
                     var repeat = options.repeat || 1;
-                    if(typeIn(value.timer, "undefined")) value.timer = [];
+                    if(!value.timer) value.timer = [];
                     var timer = value.timer[value.timer.length] = window.setInterval(function(){
                         if(options.callback && repeat-- > 0) options.callback.call(value);
                         else window.clearInterval(timer);
@@ -409,25 +398,23 @@
             return this.length() > 0 ? this.nodes[0].className : null;
         },
         addClass: function(name){
-            if(typeIn(name, "array")) name = name.join(" ");
-            if(typeIn(name, "string"))
+            if(typeIn(name, "string")) name = name.split(" ");
+            if(typeIn(name, "array"))
                 this.each(function(value){
-                    if(value.className.indexOf(name) == -1)
-                        value.className = small.trim(value.className) + " " + name;
+                    name = small.merge(value.className.split(" "), name), name = small.unique(name), name = name.join(" "), value.className = name;
                 });
             return this;
         },
         removeClass: function(name){
             return this.each(function(object){
-                if(typeIn(name, "undefined")) object.className = "";
-                else {
+                if(name){
                     name = typeIn(name, "string") ? [name] : name;
                     var classList = object.className.replace(/^\s+|\s+$/g, "").replace(/\s+/g, " ").split(" ");
                     classList = small.grep(classList, function(value){
                         return !small.contain(value, name);
                     });
                     object.className = classList.join(" ");
-                }
+                }else object.className = "";
             });
         },
         toggleClass: function(name){
@@ -448,12 +435,12 @@
                 });
             else if(length <= 2 && typeIn(data[0], "string")){
                 while ((matches = /\-([a-z]{1})/i.exec(data[0])) != null) data[0] = data[0].replace(matches[0], matches[1].toUpperCase());
-                if(typeIn(data[1], "undefined")) result = this.length() > 0 ? this.nodes[0].style[data[0]] : null;
-                else this.each(function(object){
+                if(data[1]) this.each(function(object){
                     try {
                         object.style[data[0]] = data[1];
                     } catch(err){}
                 });
+                else result = this.length() > 0 ? this.nodes[0].style[data[0]] : null;
             }
             return result;
         },
@@ -505,7 +492,7 @@
                 number = Math.ceil(number), result = this.each(function(object){
                     if(small.browser() == "msie"){
                         object.style.zoom = 1;
-                        object.style.filter = "alpha(opacity=" + number + ")";
+                        object.style.filter = "alpha(opacity=".concat(number, ")");
                     } else object.style.opacity = (number / 100).toFixed(2);
                 });
             return result;
@@ -538,7 +525,7 @@
         toString: function(){
             var result = "";
             this.each(function(object){
-                result = result.concat("[", object.nodeName, object.id ? ", id=" + object.id : "", object.className ? ", class=" + object.className : "", "]\n");
+                result = result.concat("[", object.nodeName, object.id ? ", id=".concat(object.id) : "", object.className ? ", class=".concat(object.className) : "", "]\n");
             });
             return result.length > 0 ? result : "[Null]";
         }
@@ -608,12 +595,12 @@
     small.each = function(object, callback){
         if(typeIn(object, "object,array") && object != null && typeIn(callback, "function") && callback.length < 3)
             if("length" in object){
-                for (var index = 0; index < object.length; index++)
-                    if(!typeIn(object[index], "undefined"))
+                for(var index = 0; index < object.length; index++)
+                    if(object[index])
                         if(callback.length == 1) callback.call(object, object[index]);
                         else callback.call(object, index, object[index]);
             }else
-                for (var key in object)
+                for(var key in object)
                     if(callback.length == 1) callback.call(object, object[key]);
                     else callback.call(object, key, object[key]);
     };
@@ -650,7 +637,7 @@
             params = null;
             if(options.params) 
                 params = [], small.each(options.params, function(key, value){
-                    params[params.length] = key + "=" + encodeURIComponent(value);
+                    params[params.length] = key.concat("=", encodeURIComponent(value));
                 }), params = params.join("&");
             try {
                 var request = window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
@@ -659,11 +646,11 @@
                         if(request.status == 200) callback(request.responseText, request);
                         else error(request.statusText, request);
                 };
-                request.open(method, method == "GET" && params ? url + (url.indexOf("?") > 0 ? "&" : "?") + params : url, async, user, password);
+                request.open(method, method == "GET" && params ? url.concat(url.indexOf("?") > 0 ? "&" : "?", params) : url, async, user, password);
                 request.setRequestHeader("Accept", dataType);
                 request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-                request.setRequestHeader("Content-Type", contentType + "; " + charset);
-                if(requestHeaders) for (var name in requestHeaders) request.setRequestHeader(name, requestHeaders[name]);
+                request.setRequestHeader("Content-Type", contentType.concat("; ", charset));
+                if(requestHeaders) for(var name in requestHeaders) request.setRequestHeader(name, requestHeaders[name]);
                 request.send(params);
                 if(async && timeout > 0)
                     var timer = setTimeout(function(){
@@ -685,14 +672,14 @@
             url = options.url || location.href,
             callback = options.callback || function(){},
             timeout = options.timeout || 0;
-            for (var index = 0; index < 15; index++) name += alpha.charAt(Math.ceil(Math.random() * alpha.length));
-            var params = "callback=" + name;
+            for(var index = 0; index < 15; index++) name += alpha.charAt(Math.ceil(Math.random() * alpha.length));
+            var params = "callback=".concat(name);
             if(options.params)
                 small.each(options.params, function(key, value){
-                    items[items.length] = key + "=" + encodeURIComponent(value);
-                }), params += ("&" + items.join("&"));
-            var link = url + (url.indexOf("?") > 0 ? "&" : "?") + params;
-            eval(name + " = function(response){callback(response);small.removeScript(link);};");
+                    items[items.length] = key.concat("=", encodeURIComponent(value));
+                }), params += "&".concat(items.join("&"));
+            var link = url.concat(url.indexOf("?") > 0 ? "&" : "?", params);
+            eval(name.concat(" = function(response){callback(response);small.removeScript(link);};"));
             small.loadScript(link);
             if(timeout > 0)
                 var timer = setTimeout(function(){
@@ -711,7 +698,7 @@
     };
     small.removeCss = function(url){
         small("head").find("link[rel=stylesheet]").grep(function(object){
-            return typeIn(url, "undefined") ? true : object.href == url;
+            return url ? object.href == url : true;
         }).remove();
     };
     small.listCss = function(){
@@ -748,7 +735,7 @@
     };
     small.removeScript = function(url){
         small("head").find("script").grep(function(object){
-            return typeIn(url, "undefined") ? true : object.href == url;
+            return url ? object.href == url : true;
         }).remove();
     };
     small.listScript = function(){
@@ -768,17 +755,14 @@
                 date.setTime(date.getTime() + options.expires * 86400000);
                 options.expires = date.toGMTString();
             }
-            document.cookie = options.name + "=" + escape(options.value)
-            + ((options.expires) ? "; expires=" + options.expires : "")
-            + "; path=" + ((options.path) ? options.path : "/")
-            + ((options.domain) ? "; domain=" + options.domain : "")
-            + ((options.secure) ? "; secure" : "");
+            document.cookie = options.name.concat("=", escape(options.value), ((options.expires) ? "; expires=".concat(options.expires) : ""),
+                "; path=", ((options.path) ? options.path : "/"), ((options.domain) ? "; domain=".concat(options.domain) : ""), ((options.secure) ? "; secure" : ""));
         }
     };
     small.getCookie = function(name){
         var result = null;
         if(typeIn(name, "string")){
-            var cookie = document.cookie, search = name + "=", start = 0, end = 0;
+            var cookie = document.cookie, search = name.concat("="), start = 0, end = 0;
             if(cookie.length > 0 && (start = cookie.indexOf(search)) >= 0){
                 end = cookie.indexOf(";", (start += search.length));
                 if(end == -1) end = cookie.length;
@@ -790,10 +774,7 @@
     small.removeCookie = function(options){
         if(typeIn(options, "object"))
             if(small.cookie.get(options.name))
-                document.cookie = options.name + "=" +
-                ((options.path) ? "; path=" + options.path : "") +
-                ((options.domain) ? "; domain=" + options.domain : "") +
-                "; expires=Thu, 01-Jan-70 00:00:01 GMT";
+                document.cookie = options.name.concat("=", ((options.path) ? "; path=".concat(options.path) : ""), ((options.domain) ? "; domain=".concat(options.domain) : ""), "; expires=Thu, 01-Jan-70 00:00:01 GMT");
     };
     small.enabledCookie = function(){
         return window.navigator.cookieEnabled;
@@ -803,7 +784,7 @@
     };
     small.find = function(selector, context){
         var result = null, list, length, index, item, objClasses;
-        if(typeIn(context, "undefined")) context = [document];
+        if(!context) context = [document];
         if(typeIn(selector, "string") && typeIn(context, "object,array")){
             result = [], context = typeIn(context.nodes, "array") ? context.nodes : context, list = small.trim(selector.split(","));
             small.each(context, function(object){
@@ -819,8 +800,8 @@
                     });
                     if(content) content = /([*^$!]*):([^:]+)$/.exec(content[0]);
                     list = object.querySelectorAll ? object.querySelectorAll(tag) : object.getElementsByTagName(tag), length = list.length;
-                    for (index = 0; index < length; index++) result[index] = list[index];
-                    for (index = 0; index < length; index++){
+                    for(index = 0; index < length; index++) result[index] = list[index];
+                    for(index = 0; index < length; index++){
                         item = result[index], objClasses = item.className ? small.trim(item.className.split(" ")) : null;
                         if((id && (!item.id || !check(id[1], id[2], item.id)))
                             || (classes && (!objClasses || objClasses.length < classes.length || small.grep(objClasses, function(curClass){
@@ -839,74 +820,11 @@
         }
         function check(type, line, value, method){
             var result = false;
-            if(!method || method == "regexp") result = (new RegExp((/\b\^*\b/.test(type) ? "^" : "") + line + ((/\b\$*\b/).test(type) ? "$" : ""))).test(value), result = type == "!" ? !result : result;
+            if(!method || method == "regexp") result = (new RegExp((/^(^|)$/.test(type) ? "^" : "").concat(line, /^($|)$/.test(type) ? "$" : ""))).test(value), result = type == "!" ? !result : result;
             else if(method == "condition") result = ((type == "" && line == value) || (type == "*" && value.indexOf(line) > 0) || (type == "^" && value.indexOf(line) == 0) || (type == "$" && value.indexOf(line) == value.length - line.length) || (type == "!" && line != value));
             return result;
         }
         return result;
-        
-    /* var result = null;
-        if(typeIn(context, "undefined")) context = [document];
-        if(typeIn(selector, "string") && typeIn(context, "object,array")){
-            var array = [];
-            context = typeIn(context.nodes, "array") ? context.nodes : context;
-            var tagList, matches, length, index;
-            var list = selector.split(",");
-            small.each(context, function(object){
-                small.each(list, function(value){
-                    value = small.trim(value);
-                    if(/\.{1}/.test(value)){
-                        matches = /^([a-z0-9\-_]*|\*)\.([a-z0-9\-_\s]+)$/i.exec(value);
-                        tagList = object.getElementsByTagName(matches[1] == "" ? "*" : matches[1].toUpperCase());
-                        length = tagList.length;
-                        for (index = 0; index < length; index++){
-                            value = tagList[index];
-                            if(small.trim(value.className) == matches[2]){
-                                array[array.length] = tagList[index];
-                            }
-                        }
-                    } else if(/#{1}/.test(value)){
-                        matches = /^([a-z0-9\-_]*|\*)#([a-z0-9\-_]+)$/i.exec(value);
-                        tagList = object.getElementsByTagName(matches[1] == "" ? "*" : matches[1].toUpperCase());
-                        length = tagList.length;
-                        for (index = 0; index < length; index++){
-                            value = tagList[index];
-                            if(typeIn(value.id, "string") && small.trim(value.id) == matches[2]){
-                                array[array.length] = value;
-                            }
-                        }
-                    } else if(/^([a-z0-9\-_]+|\*)$/i.test(value)){
-                        tagList = object.getElementsByTagName(value.toUpperCase());
-                        length = tagList.length;
-                        for (index = 0; index < length; index++){
-                            array[array.length] = tagList[index];
-                        }
-                    } else if(/\[+/.test(value)){
-                        matches = /^([a-z0-9\-_]*|\*)\[([a-z]+)((|=|\*=|\^=|\$=|\!=)([a-z0-9\-_]*))?\]$/i.exec(value);
-                        if(matches != null){
-                            tagList = object.getElementsByTagName(matches[1] == "" ? "*" : matches[1].toUpperCase());
-                            var attrName = matches[2];
-                            var type = matches[4];
-                            var attrValue = matches[5];
-                            length = tagList.length;
-                            for (index = 0; index < length; index++){
-                                var current = tagList[index][attrName];
-                                if(!typeIn(current, "undefined") && current != null)
-                                    if(type == ""
-                                        || (type == "=" && current == attrValue)
-                                        || (type == "*=" && current.indexOf(attrValue) > 0)
-                                        || (type == "^=" && current.indexOf(attrValue) == 0)
-                                        || (type == "$=" && current.indexOf(attrValue) == current.length - attrValue.length)
-                                        || (type == "!=" && current != attrValue))
-                                        array[array.length] = tagList[index];
-                            }
-                        }
-                    }
-                });
-            });
-            result = new small(array);
-        }
-        return result; */
     };
     small.trim = function(value, type){
         return proceed(value, function(){
@@ -997,7 +915,7 @@
     small.urlParams = function(){
         var result = {}, request = small.url(), position,
         get = (position = request.indexOf("?")) > 0 ? get = request.substring(position + 1) : "",
-        list = get.replace("#" + small.anchor(), "").split("&");
+        list = get.replace("#".concat(small.anchor()), "").split("&");
         small.each(list, function(value){
             var param = value.split("=");
             result[param[0]] = param[1];
@@ -1026,15 +944,10 @@
         return result;
     };
     small.merge = function(){
-        var result = null, data = arguments, list = [];
-        if(data.length > 0)
-            small.each(data, function(object){
-                if(typeIn(object, "object,array"))
-                    small.each(object, function(current){
-                        list[list.length] = current;
-                    });
-                else list[list.length] = object;
-            }), result = list;
+        var result = arguments.length > 0 ? [] : null;
+        small.each(arguments, function(object){
+            result = result.concat(object);
+        });
         return result;
     };
     small.unique = function(array){
@@ -1048,8 +961,8 @@
     small.shuffle = function(array, deep){
         if(typeIn(array, "object,array") && array.length){
             if(/^\d{,3}$/.test(deep)) deep = 1;
-            for (var step = 0; step < deep; step++)
-                for (var first = 0; first < array.length; first++){
+            for(var step = 0; step < deep; step++)
+                for(var first = 0; first < array.length; first++){
                     var second = Math.ceil(Math.random() * (array.length - 1)), temp = array[first];
                     array[first] = array[second], array[second] = temp;
                 }
@@ -1063,7 +976,7 @@
             if(type == "object") type = object instanceof Array ? "array" : "object";
             list = list.toLocaleString().replace(/\s+/g, "").split(",");
             var length = list.length;
-            for (var index = 0; index < length; index++)
+            for(var index = 0; index < length; index++)
                 if(type == list[index]){
                     result = true;
                     break;
