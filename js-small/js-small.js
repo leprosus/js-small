@@ -434,6 +434,7 @@
                     });
                 });
             else if(length <= 2 && typeIn(data[0], "string")){
+                data[0] = fix(data[0], "css");
                 while ((matches = /\-([a-z]{1})/i.exec(data[0])) != null) data[0] = data[0].replace(matches[0], matches[1].toUpperCase());
                 if(data[1]) this.each(function(object){
                     try {
@@ -459,12 +460,12 @@
         },
         attr: function(){
             var result = null, data = arguments, length = data.length;
-            if(length == 1 && typeIn(data[0], "string")) data[0] = attrFix(data[0]), result = this.length() > 0 && (data[0] in this.nodes[0]) ? this.nodes[0][data[0]] : null;
+            if(length == 1 && typeIn(data[0], "string")) data[0] = fix(data[0], "attr"), result = this.length() > 0 && (data[0] in this.nodes[0]) ? this.nodes[0][data[0]] : null;
             else if(length == 1 && typeIn(data[0], "object") || (length == 2 && typeIn(data[0], "string") && typeIn(data[1], "string,number")))
                 result = this.each(function(object){
                     if(length == 2)
                         try {
-                            object[attrFix(data[0])] = data[1];
+                            object[fix(data[0], "attr")] = data[1];
                         } catch(err){}
                     else
                         small.each(data[0], function(key, value){
@@ -551,7 +552,7 @@
                     if(attrs && attrs.length > 0) small.each(attrs, function(item){
                         var matches = /\[([a-z0-9_-]+)=([^\]]+)\]/.exec(item);
                         try {
-                            object[attrFix(matches[1])] = matches[2];
+                            object[fix(matches[1], "attr")] = matches[2];
                         } catch(err){}
                     });
                     if(content) object.appendChild(document.createTextNode(content[0].replace(/^:/, "")));
@@ -582,11 +583,11 @@
     small.language = function(){
         return window.navigator.userLanguage;
     };
-    small.start = function(parameters){
-        var repeat = parameters.repeat || 1, timer = window.setInterval(function(){
-            if(parameters.callback && repeat-- > 0) parameters.callback();
+    small.start = function(options){
+        var repeat = options.repeat || 1, timer = window.setInterval(function(){
+            if(options.callback && repeat-- > 0) options.callback();
             else window.clearInterval(timer);
-        }, parameters.time || 1);
+        }, options.time || 1);
         return timer;
     };
     small.stop = function(timer){
@@ -596,7 +597,7 @@
         if(typeIn(object, "object,array") && object != null && typeIn(callback, "function") && callback.length < 3)
             if("length" in object){
                 for(var index = 0; index < object.length; index++)
-                    if(object[index])
+                    if(!typeIn(object[index], "undefined"))
                         if(callback.length == 1) callback.call(object, object[index]);
                         else callback.call(object, index, object[index]);
             }else
@@ -802,12 +803,12 @@
                     list = object.querySelectorAll ? object.querySelectorAll(tag) : object.getElementsByTagName(tag), length = list.length;
                     for(index = 0; index < length; index++) result[index] = list[index];
                     for(index = 0; index < length; index++){
-                        item = result[index], objClasses = item.className ? small.trim(item.className.split(" ")) : null;
+                        item = result[index], objClasses = item.className ? small.trim(item.className.split(" ")) : [""];
                         if((id && (!item.id || !check(id[1], id[2], item.id)))
-                            || (classes && (!objClasses || objClasses.length < classes.length || small.grep(objClasses, function(curClass){
+                            || (classes && small.grep(objClasses, function(curClass){
                                 for(var curClasses = classes.concat(), flag = true, total = curClasses.length, num = 0; flag && num < total; num++) if(flag && !check(curClasses[num][1], curClasses[num][2], curClass)) flag = false, curClasses.splice(num, 1), num--, total--;
                                 return flag;
-                            }).length == 0))
+                            }).length == 0)
                             || (attrs && small.grep([item], function(curObject){
                                 for(var curAttrs = attrs.concat(), flag = true, total = curAttrs.length, num = 0; flag && num < total; num++) if(flag && (!(curAttrs[num][1] in curObject) || !check(curAttrs[num][2], curAttrs[num][3], curObject[curAttrs[num][1]], "condition"))) flag = false, curAttrs.splice(num, 1), num--, total--;
                                 return flag;
@@ -1077,29 +1078,33 @@
             });
         return result;
     };
-    var attrFix = function(attr){
+    var fix = function(value, type){
         var fixes = {
-            "for": "htmlFor", 
-            "usemap": "useMap", 
-            "cellspacing": "cellSpacing", 
-            "cellpadding": "cellPadding", 
-            "colspan": "colSpan", 
-            "rowspan": "rowSpan", 
-            "valign": "vAlign", 
-            "maxlength": "maxLength", 
-            "readonly": "readOnly", 
-            "tabindex": "tabIndex", 
-            "accesskey": "accessKey", 
-            "frameborder": "frameBorder", 
-            "framespacing": "frameSpacing"
+            "attr": {
+                "for": "htmlFor", 
+                "usemap": "useMap", 
+                "cellspacing": "cellSpacing", 
+                "cellpadding": "cellPadding", 
+                "colspan": "colSpan", 
+                "rowspan": "rowSpan", 
+                "valign": "vAlign", 
+                "maxlength": "maxLength", 
+                "readonly": "readOnly", 
+                "tabindex": "tabIndex", 
+                "accesskey": "accessKey", 
+                "frameborder": "frameBorder", 
+                "framespacing": "frameSpacing"
+            },
+            "css": {
+                "float": "styleFloat"
+            }
         }, matches;
-        if((matches = /\-([a-z]{1})/i.exec(attr)) != null){
-            do attr = attr.replace(matches[0], matches[1].toUpperCase());
-            while((matches = /\-([a-z]{1})/i.exec(attr)) != null);
-        }else small.each(fixes, function(search, replace){
-            attr = attr.replace(search, replace);
+        while((matches = /\-([a-z]{1})/i.exec(value)) != null)
+            value = value.replace(matches[0], matches[1].toUpperCase());
+        small.each(fixes[type], function(search, replace){
+            value = value.replace(search, replace);
         });
-        return attr;
+        return value;
     };
     var handler = function(event){
         var object = this, event = event || window.event;
