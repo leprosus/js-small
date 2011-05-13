@@ -217,6 +217,9 @@
             }
             return result;
         },
+        unwrap: function(){
+            return this.length() > 0 ? (this.after(this.child()), this.remove()) : null;
+        },
         remove: function(){
             this.children().unbind().empty();
             this.unbind().empty().each(function(object){
