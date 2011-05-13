@@ -47,7 +47,7 @@
             return result;
         },
         concat: function(text){
-            if(typeIn(text, "string"))
+            if(typeIn(text, "string,number"))
                 this.each(function(value){
                     try {
                         value.appendChild(document.createTextNode(text));
@@ -57,7 +57,7 @@
         },
         text: function(text){
             var result = null;
-            if(!text) result = this.length() > 0 ? (this.nodes[0].textContent ? this.nodes[0].textContent : this.nodes[0].innerHTML) : null;
+            if(typeIn(text) == "undefined") result = this.length() > 0 ? (this.nodes[0].textContent ? this.nodes[0].textContent : this.nodes[0].innerHTML) : null;
             else if(typeIn(text, "string,number")) result = this.empty().concat(text);
             return result;
         },
@@ -395,7 +395,10 @@
             return this;
         },
         getClass: function(){
-            return this.length() > 0 ? this.nodes[0].className : null;
+            return this.length() > 0 ? this.nodes[0].className : "";
+        },
+        hasClass: function(name){
+            return typeIn(name, "string,array") && small.contain(name, this.getClass().split(" "));
         },
         addClass: function(name){
             if(typeIn(name, "string")) name = name.split(" ");
@@ -446,21 +449,14 @@
             return result;
         },
         ajax: function(options){
-            var result = null;
-            if(typeIn(options, "object"))
-                result = this.each(function(value){
-                    options = small.extend(options, {
-                        callback: function(response){
-                            value.innerHTML = response;
-                        }
-                    });
-                    small.ajax(options);
-                });
-            return result;
+            return xhr(this, options, "ajax");
+        },
+        json: function(options){
+            return xhr(this, options, "json");
         },
         attr: function(){
             var result = null, data = arguments, length = data.length;
-            if(length == 1 && typeIn(data[0], "string")) data[0] = fix(data[0], "attr"), result = this.length() > 0 && (data[0] in this.nodes[0]) ? this.nodes[0][data[0]] : null;
+            if(length == 1 && typeIn(data[0], "string")) data[0] = fix(data[0], "attr"), result = this.length() > 0 ? this.nodes[0][data[0]] || this.nodes[0].getAttribute(data[0]) : null;
             else if(length == 1 && typeIn(data[0], "object") || (length == 2 && typeIn(data[0], "string") && typeIn(data[1], "string,number")))
                 result = this.each(function(object){
                     if(length == 2)
@@ -668,18 +664,15 @@
     };
     small.json = function(options){
         if(typeIn(options, "object")){
-            var name = "", items = [],
-            alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
-            url = options.url || location.href,
-            callback = options.callback || function(){},
-            timeout = options.timeout || 0;
+            var name = "", url = options.url || location.href, timeout = options.timeout || 0, params = [],
+            alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", callback = options.callback || function(){};
             for(var index = 0; index < 15; index++) name += alpha.charAt(Math.ceil(Math.random() * alpha.length));
-            var params = "callback=".concat(name);
+            params[params.length] = "callback=".concat(name);
             if(options.params)
                 small.each(options.params, function(key, value){
-                    items[items.length] = key.concat("=", encodeURIComponent(value));
-                }), params += "&".concat(items.join("&"));
-            var link = url.concat(url.indexOf("?") > 0 ? "&" : "?", params);
+                    params[params.length] = key.concat("=", encodeURIComponent(value));
+                });
+            var link = url.concat(url.indexOf("?") > 0 ? "&" : "?", params.join("&"));
             eval(name.concat(" = function(response){callback(response);small.removeScript(link);};"));
             small.loadScript(link);
             if(timeout > 0)
@@ -810,7 +803,7 @@
                                 return flag;
                             }).length == 0)
                             || (attrs && small.grep([item], function(curObject){
-                                for(var curAttrs = attrs.concat(), flag = true, total = curAttrs.length, num = 0; flag && num < total; num++) if(flag && (!(curAttrs[num][1] in curObject) || !check(curAttrs[num][2], curAttrs[num][3], curObject[curAttrs[num][1]], "condition"))) flag = false, curAttrs.splice(num, 1), num--, total--;
+                                for(var curAttrs = attrs.concat(), flag = true, total = curAttrs.length, num = 0; flag && num < total; num++) if(flag && (!check(curAttrs[num][2], curAttrs[num][3], curObject[curAttrs[num][1]] || curObject.getAttribute(curAttrs[num][1]), "condition"))) flag = false, curAttrs.splice(num, 1), num--, total--;
                                 return flag;
                             }).length == 0)
                             || (content && !check(content[1], content[2], item.innerHTML, "condition"))) result.splice(index, 1), index--, length--;
@@ -905,6 +898,15 @@
     };
     small.domain = function(){
         return document.location.hostname;
+    };
+    small.base = function() {
+        var result = document.location.protocol + "//" + document.location.hostname + "/";
+        if (document.location.hostname == "localhost") {
+            var position = null, query = document.location.href.replace(result, "");
+            if ((position = query.indexOf("/")) > -1)
+                result += query.substring(0, position) + "/";
+        }
+        return result;
     };
     small.url = function(){
         return document.location.href;
@@ -1075,6 +1077,20 @@
         else if(/^(checked|unchecked|disabled|enabled|selected|unselected|editable|uneditable)$/.test(type))
             result = this.grep(function(key, value){
                 return /^(input|select)$/i.test(value.nodeName) && type == "checked" ? value.checked : (type == "unchecked" ? !value.checked : (type == "disabled" ? value.disabled : (type == "enabled" ? !value.disabled : (type == "selected" ? value.selected : (type == "unselected" ? !value.selected : (type == "editable" ? !value.readonly : value.readonly))))));
+            });
+        return result;
+    };
+    var xhr = function(object, options, type){
+        var result = null;
+        if(/^(ajax|json)$/.test(type) && typeIn(options, "object"))
+            result = object.each(function(value){
+                var callback = !options.callback ? function(response){
+                    value.innerHTML = response;
+                } : options.callback;
+                options.callback = function(response){
+                    callback.call(value, response)
+                };
+                type == "ajax" ? small.ajax(options) : small.json(options);
             });
         return result;
     };
