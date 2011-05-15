@@ -545,8 +545,8 @@
                 if(line.length == 0){
                     var object = document.createElement(tag[0]);
                     if(id) object.setAttribute("id", id[0].replace("#", ""));
-                    if(classes && classes.length > 0) classes = small.proceed(classes, function(){
-                        return this.replace(".", "");
+                    if(classes && classes.length > 0) classes = small.proceed(classes, function(object){
+                        return object.replace(".", "");
                     }), object.className = classes.join(" ");
                     if(attrs && attrs.length > 0) small.each(attrs, function(item){
                         var matches = /\[([a-z0-9_-]+)=([^\]]+)\]/.exec(item);
@@ -608,7 +608,7 @@
         var array = [];
         if(typeIn(object, "object,array") && typeIn(callback, "function") && callback.length < 3)
             small.each(object, function(key, value){
-                if((callback.length == 2 && callback(key, value)) || (callback.length == 1 && callback(value))) array[array.length] = value;
+                if((callback.length == 2 && callback.call(object, key, value)) || (callback.length == 1 && callback.call(object, value))) array[array.length] = value;
             });
         return array;
     };
@@ -780,7 +780,7 @@
         small.window().load(callback);
     };
     small.find = function(selector, context){
-        var result = null, list, length, index, item, objClasses;
+        var result = null, list, length, index, item, objClasses, tags;
         if(!context) context = [document];
         if(typeIn(selector, "string") && typeIn(context, "object,array")){
             result = [], context = typeIn(context.nodes, "array") ? context.nodes : context, list = small.trim(selector.split(","));
@@ -789,15 +789,15 @@
                     var tag = line.match(/^[a-z]+\d*/), id = line.match(/[*^$!]*#[0-9a-z_-]+/g), classes = line.match(/[*^$!]*\.[0-9a-z_-]+/g), attrs = line.match(/\[[a-z0-9_-]+[*^$!]*=[^\]]+\]/g), content = line.match(/[*^$!]*:[^:]+$/g);
                     tag = tag ? tag[0].toUpperCase() : "*";
                     if(id) id = /([*^$!]*)#([0-9a-z_-]+)/.exec(id[0]);
-                    if(classes) classes = small.proceed(classes, function(){
-                        return /([*^$!]*)\.([0-9a-z_-]+)/.exec(this);
+                    if(classes) classes = small.proceed(classes, function(object){
+                        return /([*^$!]*)\.([0-9a-z_-]+)/.exec(object);
                     });
-                    if(attrs) attrs = small.proceed(attrs, function(){
-                        return /\[([a-z0-9_-]+)([*^$!]*)=([^\]]+)\]/.exec(this);
+                    if(attrs) attrs = small.proceed(attrs, function(object){
+                        return /\[([a-z0-9_-]+)([*^$!]*)=([^\]]+)\]/.exec(object);
                     });
                     if(content) content = /([*^$!]*):([^:]+)$/.exec(content[0]);
-                    list = object.querySelectorAll ? object.querySelectorAll(tag) : object.getElementsByTagName(tag), length = list.length;
-                    for(index = 0; index < length; index++) result[index] = list[index];
+                    tags = object.querySelectorAll ? object.querySelectorAll(tag) : object.getElementsByTagName(tag), length = tags.length;
+                    for(index = 0; index < length; index++) result[index] = tags[index];
                     for(index = 0; index < length; index++){
                         item = result[index], objClasses = item.className ? small.trim(item.className.split(" ")) : [""];
                         if((id && (!item.id || !check(id[1], id[2], item.id)))
@@ -824,33 +824,33 @@
         return result;
     };
     small.trim = function(value, type){
-        return proceed(value, function(){
+        return proceed(value, function(object){
             var types = {
                 "full": /^\s+|\s+$/g, 
                 "left": /^\s+/g, 
                 "right": /\s+$/g
             };
-            return this.replace(types[typeIn(type, "string") && (type in types) ? type : "full"], "");
+            return object.replace(types[typeIn(type, "string") && (type in types) ? type : "full"], "");
         });
     };
     small.decToHex = function(value){
-        return proceed(value, function(){
-            return Number(this).toString(16);
+        return proceed(value, function(object){
+            return Number(object).toString(16);
         });
     };
     small.hexToDec = function(value){
-        return proceed(value, function(){
-            return parseInt(this, 16);
+        return proceed(value, function(object){
+            return parseInt(object, 16);
         });
     };
     small.lower = function(value){
-        return proceed(value, function(){
-            return this.toLowerCase();
+        return proceed(value, function(object){
+            return object.toLowerCase();
         });
     };
     small.upper = function(value){
-        return proceed(value, function(){
-            return this.toUpperCase();
+        return proceed(value, function(object){
+            return object.toUpperCase();
         });
     };
     small.bound = function(object){
@@ -992,11 +992,10 @@
     };
     var proceed = small.proceed = function(object, callback){
         var result = null;
-        if(typeIn(object, "string,number")) result = callback.call(object);
-        else if(typeIn(object, "object,array"))
-            small.each(object, function(key, current){
-                object[key] = callback.call(current);
-            }), result = object;
+        if(typeIn(object, "string,number")) result = callback.call(object, object);
+        else if(typeIn(object, "object,array")) small.each(object, function(key, current){
+            object[key] = callback.call(object, current);
+        }), result = object;
         return result;
     };
     var isOwn = function(object){
