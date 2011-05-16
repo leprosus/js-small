@@ -390,38 +390,31 @@
             });
         },
         setClass: function(name){
-            if(typeIn(name, "array")) name = name.join(" ");
-            if(typeIn(name, "string"))
-                this.each(function(value){
-                    value.className = small.trim(name);
-                });
-            return this;
+            return this.removeClass().addClass(name);
         },
         getClass: function(){
             return this.length() > 0 ? this.nodes[0].className : "";
         },
         hasClass: function(name){
-            return typeIn(name, "string,array") && small.contain(name, this.getClass().split(" "));
+            return typeIn(name, "string,array") && small.contain(splitArg(name), splitArg(this.getClass()));
         },
         addClass: function(name){
-            if(typeIn(name, "string")) name = name.split(" ");
-            if(typeIn(name, "array"))
-                this.each(function(value){
-                    name = small.merge(value.className.split(" "), name), name = small.unique(name), name = name.join(" "), value.className = name;
+            if(typeIn(name, "string,array"))
+                name = splitArg(name), this.each(function(object){
+                    var classList = splitArg(object.className);
+                    object.className = classList.concat(name).join(" ");
                 });
             return this;
         },
         removeClass: function(name){
-            return this.each(function(object){
-                if(name){
-                    name = typeIn(name, "string") ? [name] : name;
-                    var classList = object.className.replace(/^\s+|\s+$/g, "").replace(/\s+/g, " ").split(" ");
-                    classList = small.grep(classList, function(value){
-                        return !small.contain(value, name);
-                    });
-                    object.className = classList.join(" ");
-                }else object.className = "";
+            if(typeIn(name, "undefined")) this.attr("class", "");
+            else name = splitArg(name), this.each(function(object){
+                var classList = small.grep(small.trim(object.className.split(" ")), function(value){
+                    return !small.contain(value, name);
+                });
+                object.className = classList.join(" ");
             });
+            return this;
         },
         toggleClass: function(name){
             if(typeIn(name, "string"))
@@ -1111,7 +1104,8 @@
                 "tabindex": "tabIndex", 
                 "accesskey": "accessKey", 
                 "frameborder": "frameBorder", 
-                "framespacing": "frameSpacing"
+                "framespacing": "frameSpacing",
+                "class": "className"
             },
             "css": {
                 "float": "styleFloat"
@@ -1123,6 +1117,10 @@
             value = value.replace(search, replace);
         });
         return value;
+    };
+    var splitArg = function(arg){
+        if(typeIn(arg, "string")) arg = arg.replace(",", " ").split(" ");
+        return typeIn(arg, "array") ? small.unique(small.trim(arg)) : [];
     };
     var handler = function(event){
         var object = this, event = event || window.event;
