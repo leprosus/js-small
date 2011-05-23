@@ -1,5 +1,5 @@
 /*
- * JS-Small JavaScript Framework version 0.9.3
+ * JS-Small JavaScript Framework version 0.9.4
  * Copyright (c) 2008 - 2011 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
@@ -987,7 +987,7 @@
         var result = null;
         if(typeIn(object, "string,number")) result = callback.call(object, object);
         else if(typeIn(object, "object,array")) small.each(object, function(key, current){
-            object[key] = callback.call(object, current);
+            object[key] = callback.length == 1 ? callback.call(object, current) : callback.call(object, key, current);
         }), result = object;
         return result;
     };
