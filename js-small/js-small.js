@@ -789,9 +789,9 @@
                         return /\[([a-z0-9_-]+)([*^$!]*)=([^\]]+)\]/.exec(object);
                     });
                     if(content) content = /([*^$!]*):([^:]+)$/.exec(content[0]);
-                    tags = object.querySelectorAll ? object.querySelectorAll(tag) : object.getElementsByTagName(tag), length = tags.length;
-                    for(index = 0; index < length; index++) result[index] = tags[index];
-                    for(index = 0; index < length; index++){
+                    tags = object.querySelectorAll ? object.querySelectorAll(tag) : object.getElementsByTagName(tag);
+                    for(index = 0, length = tags.length; index < length; index++) result[result.length] = tags[index];
+                    for(index = 0, length = result.length; index < length; index++){
                         item = result[index], objClasses = item.className ? small.trim(item.className.split(" ")) : [""];
                         if((id && (!item.id || !check(id[1], id[2], item.id)))
                             || (classes && small.grep(objClasses, function(curClass){
