@@ -8,8 +8,7 @@ var initDialogs = (function(){
         "borderColor": "blue",
         "backgroundColor": "black",
         "backgroundOpacity": 75,
-        "contentColor": "black",
-        "contentBackground": "white",
+        "color": "black",
         "titled": true,
         "defaultTitle": "",
         "titleBackground": "blue",
@@ -39,8 +38,7 @@ small.extendFunctions({
             "borderColor": small.typeIn(options.borderColor, "string") ? options.borderColor : initDialogs.borderColor,
             "backgroundColor": small.typeIn(options.backgroundColor, "string") ? options.backgroundColor : initDialogs.backgroundColor,
             "backgroundOpacity": small.typeIn(options.backgroundOpacity, "string") ? options.backgroundOpacity : initDialogs.backgroundOpacity,
-            "contentColor": small.typeIn(options.contentColor, "string") ? options.contentColor : initDialogs.contentColor,
-            "contentBackground": small.typeIn(options.contentBackground, "string") ? options.contentBackground : initDialogs.contentBackground,
+            "color": small.typeIn(options.color, "string") ? options.color : initDialogs.color,
             "titled": small.typeIn(options.titled, "boolean") ? options.titled : initDialogs.titled,
             "defaultTitle": small.typeIn(options.defaultTitle, "string,number") ? options.defaultTitle : initDialogs.defaultTitle,
             "titleBackground": small.typeIn(options.titleBackground, "string") ? options.titleBackground : initDialogs.titleBackground,
@@ -54,7 +52,7 @@ small.extendFunctions({
         var escapable = small.typeIn(options.escapable, "boolean") ? options.escapable : initDialogs.escapable,
         closable = small.typeIn(options.closable, "boolean") ? options.closable : initDialogs.closable,
         modal = small.typeIn(options.modal, "boolean") ? options.modal : initDialogs.modal,
-        autostart = small.typeIn(options.autostart, "boolean") ? options.autostart : initDialogs.autostart
+        autostart = small.typeIn(options.autostart, "boolean") ? options.autostart : initDialogs.autostart,
         titled = small.typeIn(options.titled, "boolean") ? options.titled : initDialogs.titled,
         layout = small.typeIn(options.layout, "string,number")
         && (/^(north|northeast|east|southeast|south|southwest|west|northwest|center)$/i.test(options.layout)
@@ -197,11 +195,10 @@ small.extendFunctions({
         
         dialog.append("div.content").css({
             "top": titled ? "25px" : "0",
-            "color": initDialogs.contentColor,
-            "background-color": initDialogs.contentBackground
+            "color": initDialogs.color
         }).append(content);
         
-        if(autostart) showDialog();
+        if(autostart) container.showDialog();
         
         return container;
     },
