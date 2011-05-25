@@ -968,6 +968,24 @@
         }
         return array;
     };
+    small.post = function(options){
+        if(typeIn(options, "object")){
+            var url = options.url || small.url(),
+            form = small.create("form").attr({
+                "action": url,
+                "method": "post"
+            });
+            small.each(options.data || {}, function(name, value){
+                small.create("input").attr({
+                    "type": "hidden",
+                    "name": name,
+                    "value": value
+                }).appendTo(form);
+            });
+            small.body().append(form);
+            form.node().submit();
+        }
+    };
     var typeIn = small.typeIn = function(object, list){
         var result = false;
         if(typeof(list) == "string"){
