@@ -102,7 +102,7 @@
         child: function(){
             var array = [];
             this.each(function(object){
-                for(var childList = object.childNodes, index = 0; index < childList.length; index++)
+                for(var childList = object.childNodes, max = childList.length - 1, index = max; index >= 0; index--)
                     if(childList[index].nodeType == 1) array[array.length] = childList[index];
             });
             return new small(array);
