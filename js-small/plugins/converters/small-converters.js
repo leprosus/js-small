@@ -59,9 +59,9 @@ small.extendFunctions({
         return eval("(" + string + ")");
     },
     xmlToJson: function(xml) {
-        //TODO It must be realized
+        //TODO It has to be realized
     },
     jsonToXml: function(json) {
-        //TODO It must be realized
+        //TODO It has to be realized
     }
 });

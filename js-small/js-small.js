@@ -57,7 +57,7 @@
         },
         text: function(text){
             var result = null;
-            if(typeIn(text) == "undefined") result = this.length() > 0 ? (this.nodes[0].textContent ? this.nodes[0].textContent : this.nodes[0].innerHTML) : null;
+            if(text == undefined) result = this.length() > 0 ? (this.nodes[0].textContent ? this.nodes[0].textContent : this.nodes[0].innerHTML) : null;
             else if(typeIn(text, "string,number")) result = this.empty().concat(text);
             return result;
         },
@@ -240,7 +240,7 @@
                                 var events = object.events[value];
                                 events[events.length] = {
                                     'callback': callback,
-                                    'attach': typeIn(attach, "array") ? attach : {}
+                                    'attach': typeIn(attach, "object") ? attach : {}
                                 };
                                 object.handler = function(event){
                                     handler.call(object, event);
@@ -366,7 +366,14 @@
         length: function(){
             return this.nodes.length;
         },
-        bound: function(){
+        bound: function(object){
+            if(isOwn(object)){
+                var bound = small.bound(object.nodes[0]);
+                this.css({
+                    "width": bound.width + "px",
+                    "height": bound.height + "px"
+                });
+            }
             return this.length() > 0 ? small.bound(this.nodes[0]) : null;
         },
         start: function(options){
@@ -402,17 +409,17 @@
             if(typeIn(name, "string,array"))
                 name = splitArg(name), this.each(function(object){
                     var classList = splitArg(object.className);
-                    object.className = classList.concat(name).join(" ");
+                    object.className = small.trim(classList.concat(name).join(" "));
                 });
             return this;
         },
         removeClass: function(name){
-            if(typeIn(name, "undefined")) this.attr("class", "");
+            if(name == undefined) this.attr("class", "");
             else name = splitArg(name), this.each(function(object){
                 var classList = small.grep(small.trim(object.className.split(" ")), function(value){
                     return !small.contain(value, name);
                 });
-                object.className = classList.join(" ");
+                object.className = small.trim(classList.join(" "));
             });
             return this;
         },
@@ -433,14 +440,13 @@
                     });
                 });
             else if(length <= 2 && typeIn(data[0], "string")){
-                data[0] = fix(data[0], "css");
                 while ((matches = /\-([a-z]{1})/i.exec(data[0])) != null) data[0] = data[0].replace(matches[0], matches[1].toUpperCase());
                 if(data[1]) this.each(function(object){
                     try {
-                        object.style[data[0]] = data[1];
+                        object.style[data[0]] = object.style[fix(data[0], "css")] = data[1];
                     } catch(err){}
                 });
-                else result = this.length() > 0 ? this.nodes[0].style[data[0]] : null;
+                else result = this.length() > 0 ? (this.nodes[0].style[data[0]] || this.nodes[0].style[fix(data[0], "css")]) : null;
             }
             return result;
         },
@@ -452,28 +458,26 @@
         },
         attr: function(){
             var result = null, data = arguments, length = data.length;
-            if(length == 1 && typeIn(data[0], "string")) data[0] = fix(data[0], "attr"), result = this.length() > 0 ? this.nodes[0][data[0]] || this.nodes[0].getAttribute(data[0]) : null;
-            else if(length == 1 && typeIn(data[0], "object") || (length == 2 && typeIn(data[0], "string") && typeIn(data[1], "string,number")))
+            if(length == 1 && typeIn(data[0], "string,number")) data[0] = fix(data[0], "attr"), result = this.length() > 0 ? this.nodes[0].getAttribute(data[0]) || this.nodes[0][data[0]] : null;
+            else if(length == 1 && typeIn(data[0], "object") || (length == 2 && typeIn(data[0], "string")))
                 result = this.each(function(object){
-                    if(length == 2)
-                        try {
-                            object[fix(data[0], "attr")] = data[1];
-                        } catch(err){}
-                    else
-                        small.each(data[0], function(key, value){
-                            small(object).attr(key, value);
-                        });
+                    if(length == 2) try {
+                        data[0] = fix(data[0], "attr"), object[data[0]] = data[1], object.setAttribute(data[0], data[1]);
+                    } catch(err){}
+                    else small.each(data[0], function(key, value){
+                        small(object).attr(key, value);
+                    });
                 });
             return result;
         },
         removeAttr: function(attr){
             return this.length() > 0 ? this.each(function(object){
-                object.removeAttribute(attr);
+                object.removeAttribute(fix(attr, "attr"));
             }) : null;
         },
         id: function(){
             var data = arguments, length = data.length, result = length == 1 ? null : (this.length() > 0 && ("id" in this.nodes[0]) ? this.nodes[0].id : null);
-            if(typeIn(data[0], "string")) 
+            if(typeIn(data[0], "string"))
                 result = this.each(function(object){
                     object.setAttribute("id", data[0]);
                 });
@@ -540,7 +544,7 @@
                     if(id) object.setAttribute("id", id[0].replace("#", ""));
                     if(classes && classes.length > 0) classes = small.proceed(classes, function(object){
                         return object.replace(".", "");
-                    }), object.className = classes.join(" ");
+                    }), object.className = small.trim(classes.join(" "));
                     if(attrs && attrs.length > 0) small.each(attrs, function(item){
                         var matches = /\[([a-z0-9_-]+)=([^\]]+)\]/.exec(item);
                         try {
@@ -589,7 +593,7 @@
         if(typeIn(object, "object,array") && object != null && typeIn(callback, "function") && callback.length < 3)
             if("length" in object){
                 for(var index = 0; index < object.length; index++)
-                    if(!typeIn(object[index], "undefined"))
+                    if(object[index] != undefined)
                         if(callback.length == 1) callback.call(object, object[index]);
                         else callback.call(object, index, object[index]);
             }else
@@ -628,7 +632,7 @@
             dataType = types[options.dataType] || "*\/*",
             requestHeaders = options.requestHeaders || null,
             params = null;
-            if(options.params) 
+            if(options.params)
                 params = [], small.each(options.params, function(key, value){
                     params[params.length] = key.concat("=", encodeURIComponent(value));
                 }), params = params.join("&");
@@ -702,7 +706,7 @@
         return small.contain(url, small.listCss());
     };
     small.loadScript = function(url, callback){
-        if(typeIn(url, "string") && typeIn(callback, "undefined,function"))
+        if(typeIn(url, "string"))
             if(!small.containScript(url)){
                 var script = small("head").append("script").attr({
                     "src": url,
@@ -773,44 +777,48 @@
         small.window().load(callback);
     };
     small.find = function(selector, context){
-        var result = null, list, length, index, item, objClasses, tags;
+        var result = null, array, list, length, index, item, objClass, tags;
         if(!context) context = [document];
         if(typeIn(selector, "string") && typeIn(context, "object,array")){
             result = [], context = typeIn(context.nodes, "array") ? context.nodes : context, list = small.trim(selector.split(","));
             small.each(context, function(object){
                 small.each(list, function(line){
-                    var tag = line.match(/^[a-z]+\d*/), id = line.match(/[*^$!]*#[0-9a-z_-]+/g), classes = line.match(/[*^$!]*\.[0-9a-z_-]+/g), attrs = line.match(/\[[a-z0-9_-]+[*^$!]*=[^\]]+\]/g), content = line.match(/[*^$!]*:[^:]+$/g);
+                    var array = [], tag = line.match(/^[a-z]+\d*/), id = line.match(/[*^$!]*#[0-9a-z_-]+/g), classes = line.match(/[*^$!]*\.[0-9a-z_-]+/g), attrs = line.match(/\[[a-z0-9_-]+([*^$!]*=[^\]]+)?\]/g), content = line.match(/[*^$!]*:[^:]+$/g);
                     tag = tag ? tag[0].toUpperCase() : "*";
                     if(id) id = /([*^$!]*)#([0-9a-z_-]+)/.exec(id[0]);
                     if(classes) classes = small.proceed(classes, function(object){
                         return /([*^$!]*)\.([0-9a-z_-]+)/.exec(object);
                     });
                     if(attrs) attrs = small.proceed(attrs, function(object){
-                        return /\[([a-z0-9_-]+)([*^$!]*)=([^\]]+)\]/.exec(object);
+                        return /\[([a-z0-9_-]+)(?:([*^$!]*)=([^\]]+))?\]/.exec(object);
                     });
                     if(content) content = /([*^$!]*):([^:]+)$/.exec(content[0]);
                     tags = object.querySelectorAll ? object.querySelectorAll(tag) : object.getElementsByTagName(tag);
-                    for(index = 0, length = tags.length; index < length; index++) result[result.length] = tags[index];
-                    for(index = 0, length = result.length; index < length; index++){
-                        item = result[index], objClasses = item.className ? small.trim(item.className.split(" ")) : [""];
+                    for(index = 0, length = tags.length; index < length; index++) array[array.length] = tags[index];
+                    for(index = 0, length = array.length; index < length; index++){
+                        item = array[index], objClass = item.className ? small.trim(item.className.replace(/\s+/g, " ")) : "";
                         if((id && (!item.id || !check(id[1], id[2], item.id)))
-                            || (classes && small.grep(objClasses, function(curClass){
-                                for(var curClasses = classes.concat(), flag = true, total = curClasses.length, num = 0; flag && num < total; num++) if(flag && !check(curClasses[num][1], curClasses[num][2], curClass)) flag = false, curClasses.splice(num, 1), num--, total--;
+                            || (classes && small.grep([objClass], function(curClass){
+                                for(var curClasses = classes.concat(), flag = true, total = curClasses.length, num = 0; flag && num < total; num++) flag = flag && check(curClasses[num][1], curClasses[num][2], curClass);
                                 return flag;
                             }).length == 0)
                             || (attrs && small.grep([item], function(curObject){
-                                for(var curAttrs = attrs.concat(), flag = true, total = curAttrs.length, num = 0; flag && num < total; num++) if(flag && (!check(curAttrs[num][2], curAttrs[num][3], curObject[curAttrs[num][1]] || curObject.getAttribute(curAttrs[num][1]), "condition"))) flag = false, curAttrs.splice(num, 1), num--, total--;
+                                for(var curAttrs = attrs.concat(), flag = true, total = curAttrs.length, num = 0; flag && num < total; num++)
+                                    if(flag && ((curAttrs[num][3] == undefined && curObject.getAttribute(curAttrs[num][1]) == null)
+                                        || (curAttrs[num][3] != undefined && !check(curAttrs[num][2], curAttrs[num][3], curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]], "condition"))))
+                                        flag = false, curAttrs.splice(num, 1), num--, total--;
                                 return flag;
                             }).length == 0)
-                            || (content && !check(content[1], content[2], item.innerHTML, "condition"))) result.splice(index, 1), index--, length--;
+                            || (content && !check(content[1], content[2], item.innerHTML, "condition"))) array.splice(index, 1), index--, length--;
                     }
+                    result = result.concat(array);
                 });
             });
             result = new small(result);
         }
         function check(type, line, value, method){
             var result = false;
-            if(!method || method == "regexp") result = (new RegExp((/^(^|)$/.test(type) ? "^" : "").concat(line, /^($|)$/.test(type) ? "$" : ""))).test(value), result = type == "!" ? !result : result;
+            if(!method || method == "regexp") result = (new RegExp((/^\^?$/.test(type) ? "\\b" : "")  + line + (/^\$?$/.test(type) ? "\\b" : ""))).test(value), result = type == "!" ? !result : result;
             else if(method == "condition") result = ((type == "" && line == value) || (type == "*" && value.indexOf(line) > 0) || (type == "^" && value.indexOf(line) == 0) || (type == "$" && value.indexOf(line) == value.length - line.length) || (type == "!" && line != value));
             return result;
         }
@@ -819,8 +827,8 @@
     small.trim = function(value, type){
         return proceed(value, function(object){
             var types = {
-                "full": /^\s+|\s+$/g, 
-                "left": /^\s+/g, 
+                "full": /^\s+|\s+$/g,
+                "left": /^\s+/g,
                 "right": /\s+$/g
             };
             return object.replace(types[typeIn(type, "string") && (type in types) ? type : "full"], "");
@@ -1110,18 +1118,18 @@
     var fix = function(value, type){
         var fixes = {
             "attr": {
-                "for": "htmlFor", 
-                "usemap": "useMap", 
-                "cellspacing": "cellSpacing", 
-                "cellpadding": "cellPadding", 
-                "colspan": "colSpan", 
-                "rowspan": "rowSpan", 
-                "valign": "vAlign", 
-                "maxlength": "maxLength", 
-                "readonly": "readOnly", 
-                "tabindex": "tabIndex", 
-                "accesskey": "accessKey", 
-                "frameborder": "frameBorder", 
+                "for": "htmlFor",
+                "usemap": "useMap",
+                "cellspacing": "cellSpacing",
+                "cellpadding": "cellPadding",
+                "colspan": "colSpan",
+                "rowspan": "rowSpan",
+                "valign": "vAlign",
+                "maxlength": "maxLength",
+                "readonly": "readOnly",
+                "tabindex": "tabIndex",
+                "accesskey": "accessKey",
+                "frameborder": "frameBorder",
                 "framespacing": "frameSpacing",
                 "class": "className"
             },
