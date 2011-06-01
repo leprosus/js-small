@@ -1,3 +1,13 @@
+/*
+ * JS-Small JavaScript Framework Plugin 0.0.1
+ * Description: Work with dynamic dialogs
+ * Copyright (c) 2008 - 2011 Denis Korolev
+ * Released under the MIT License.
+ * More information: http://www.js-small.ru/
+ *                   http://www.js-small.com/
+ * Project support:  http://www.evalab.ru/
+ *                   http://www.evalab.com/
+ */
 var initDialogs = (function(){
     return{
         "escapable": false,
@@ -210,7 +220,7 @@ small.extendFunctions({
             "width": options.width || 250,
             "height": options.height || 100,
             "modal": false,
-            "content": small.create("div").text(options.text || "")
+            "content": small.create("div").html(options.text || "")
         });
         notice.start({
             "time": options.time || 5000,

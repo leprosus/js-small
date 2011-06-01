@@ -457,12 +457,12 @@
             return xhr(this, options, "json");
         },
         attr: function(){
-            var result = null, data = arguments, length = data.length;
-            if(length == 1 && typeIn(data[0], "string,number")) data[0] = fix(data[0], "attr"), result = this.length() > 0 ? this.nodes[0].getAttribute(data[0]) || this.nodes[0][data[0]] : null;
+            var result = null, data = arguments, length = data.length, attr;
+            if(length == 1 && typeIn(data[0], "string,number")) attr = fix(data[0], "attr"), result = this.length() > 0 ? this.nodes[0][attr] : null;
             else if(length == 1 && typeIn(data[0], "object") || (length == 2 && typeIn(data[0], "string")))
                 result = this.each(function(object){
                     if(length == 2) try {
-                        data[0] = fix(data[0], "attr"), object[data[0]] = data[1], object.setAttribute(data[0], data[1]);
+                        attr = fix(data[0], "attr"), object[attr] = data[1];
                     } catch(err){}
                     else small.each(data[0], function(key, value){
                         small(object).attr(key, value);
@@ -472,7 +472,8 @@
         },
         removeAttr: function(attr){
             return this.length() > 0 ? this.each(function(object){
-                object.removeAttribute(fix(attr, "attr"));
+                attr = fix(attr, "attr");
+                delete object[attr];
             }) : null;
         },
         id: function(){
