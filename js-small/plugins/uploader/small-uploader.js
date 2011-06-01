@@ -11,17 +11,20 @@
 small.extendMethods({
     appendUploader: function(options){
         if(small.typeIn(options, "object")){
+            var name = options.name || "file",
+            url = options.url || "",
+            extensions = options.extensions || [],
+            maxSize = options.maxSize || 0,
+            onError = options.onError || function(){},
+            onSubmit = options.onSubmit || function(){},
+            onComplete = options.onComplete || function(){},
+            onCancel = options.onCancel || function(){};
+            
+            
             this.each(function(object){
                 object = small(object);
                 
-                var name = options.name || "file",
-                fileName = "",
-                url = options.url || "",
-                extensions = options.extensions || [],
-                onError = options.onError || function(){},
-                onSubmit = options.onSubmit || function(){},
-                onComplete = options.onComplete || function(){},
-                onCancel = options.onCancel || function(){},
+                var fileName = "",
                 file = small.create("input").attr({
                     "type": "file",
                     "name": name
@@ -59,6 +62,14 @@ small.extendMethods({
                             "enctype": "multipart/form-data"
                         });
                         form.append(current);
+                        if(maxSize > 0){
+                            var hidden = small.create("input").attr({
+                                "type": "hidden",
+                                "name": "MAX_FILE_SIZE",
+                                "value": maxSize
+                            });
+                            form.append(hidden);
+                        }
                         iframeBody.append(form);
                         onSubmit.call(current.node(), name);
                         form.node().submit();
