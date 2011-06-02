@@ -1,6 +1,6 @@
 small.extendFunctions({
     "plugins": function(list){
-        if(small.typeIn(list, "undefined")) list = "colors,converters,dialogs,password,uploader".split(",");
+        if(small.typeIn(list, "undefined")) list = "colors,converters,dialogs,password,uploader,hash".split(",");
         else if(small.typeIn(list, "string")) list = list.split(",");
         if(small.typeIn(list, "array")){
             var path = "",
@@ -10,6 +10,9 @@ small.extendFunctions({
                 },
                 "converters": function(){
                     small.loadScript(path + "plugins/converters/small-converters.js");
+                },
+                "hash": function(){
+                    small.loadScript(path + "plugins/hash/small-hash.js");
                 },
                 "dialogs": function(){
                     small.loadCss(path + "plugins/dialogs/small-dialogs.css");

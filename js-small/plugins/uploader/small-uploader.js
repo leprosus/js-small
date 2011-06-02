@@ -11,6 +11,8 @@
 small.extendMethods({
     appendUploader: function(options){
         if(small.typeIn(options, "object")){
+            var result = [];
+            
             var name = options.name || "file",
             url = options.url || "",
             extensions = options.extensions || [],
@@ -20,10 +22,9 @@ small.extendMethods({
             onComplete = options.onComplete || function(){},
             onCancel = options.onCancel || function(){};
             
-            
             this.each(function(object){
                 object = small(object);
-                
+                    
                 var fileName = "",
                 file = small.create("input").attr({
                     "type": "file",
@@ -71,7 +72,7 @@ small.extendMethods({
                             form.append(hidden);
                         }
                         iframeBody.append(form);
-                        onSubmit.call(current.node(), name);
+                        onSubmit(name, options);
                         form.node().submit();
                     
                         var progress = 0,
@@ -80,31 +81,31 @@ small.extendMethods({
                             iframe.remove();
                             uploader.remove();
                             object.appendUploader(options);
-                            onCancel.call(current.node(), name);
+                            onCancel(name, options);
                         });
                         var value = uploader.append("div.border").append("div.value");
                         value.append("div.animation").opacity(70);
                         value.start({
                             "time": 100,
                             "callback": function(){
-                                var current = (width - 16) * progress++ / 100;
-                                value.css("width", current + "px")
+                                value.css("width", ((width - 16) * progress++ / 100) + "px")
                             },
                             "repeat": 90
                         });
                     
                         iframe.load(function(){
                             uploader.empty().append("div.done").text(fileName);
-                            onComplete.call(current.node(), name);
+                            onComplete(name, options);
                         });
-                    }else onError.call(current.node(), name);
+                    }else onError(name, options);
                 });
                 
                 object.append(file);
+                
+                result[result.length] = file.node();
             });
-            
         }
         
-        return this;
+        return new small(result);
     }
 });
