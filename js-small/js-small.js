@@ -1146,7 +1146,7 @@
         return value;
     };
     var splitArg = function(arg){
-        if(typeIn(arg, "string")) arg = arg.replace(",", " ").split(" ");
+        if(typeIn(arg, "string")) arg = arg.replace(/,/g, " ").split(" ");
         return typeIn(arg, "array") ? small.unique(small.trim(arg)) : [];
     };
     var handler = function(event){

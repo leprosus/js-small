@@ -19,8 +19,8 @@ small.extendFunctions({
                     small.loadScript(path + "plugins/password/small-password.js");
                 },
                 "uploader": function(){
-                    small.loadCss(path + "plugins/dialogs/small-uploader.css");
-                    small.loadScript(path + "plugins/dialogs/small-uploader.js");
+                    small.loadCss(path + "plugins/uploader/small-uploader.css");
+                    small.loadScript(path + "plugins/uploader/small-uploader.js");
                 }
             };
             small("head").find("script").each(function(object){

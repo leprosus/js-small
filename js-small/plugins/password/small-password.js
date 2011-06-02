@@ -51,7 +51,7 @@ small.extendFunctions({
                 if (flags.other) charset += otherChars;
 
                 var bits = Math.floor(Math.log(charset) * length / Math.log(2));
-                if(bits < 56) result = 1;
+                if(bits < 32) result = 1;
                 else if(bits < 64) result = 2;
                 else if(bits < 128) result = 3;
                 else result = 4;
