@@ -29,6 +29,6 @@ div.uploader div.animation{
 }
 div.uploader div.done{
     background: url(done.png) no-repeat left;
-    padding: 3px 0 3px 16px;
+    padding: 3px 0 3px 18px;
     font: normal 400 11px Arial;
 }

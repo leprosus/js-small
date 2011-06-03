@@ -1,5 +1,5 @@
 /*
- * JS-Small JavaScript Framework Plugin 0.0.1
+ * JS-Small JavaScript Framework Plugin 0.0.3
  * Description: Work with dynamic dialogs
  * Copyright (c) 2008 - 2011 Denis Korolev
  * Released under the MIT License.
