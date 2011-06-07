@@ -458,7 +458,7 @@
         },
         attr: function(){
             var result = null, data = arguments, length = data.length, attr;
-            if(length == 1 && typeIn(data[0], "string,number")) attr = fix(data[0], "attr"), result = this.length() > 0 ? this.nodes[0][attr] : null;
+            if(length == 1 && typeIn(data[0], "string,number")) attr = fix(data[0], "attr"), result = this.length() > 0 ? (attr in this.nodes[0] ? this.nodes[0][attr] : this.nodes[0].getAttribute(attr)) : null;
             else if(length == 1 && typeIn(data[0], "object") || (length == 2 && typeIn(data[0], "string")))
                 result = this.each(function(object){
                     if(length == 2) try {
@@ -473,6 +473,7 @@
         removeAttr: function(attr){
             return this.length() > 0 ? this.each(function(object){
                 attr = fix(attr, "attr");
+                object.removeAttribute(attr);
                 delete object[attr];
             }) : null;
         },
