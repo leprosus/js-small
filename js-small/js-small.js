@@ -40,10 +40,8 @@
         },
         grep: function(callback){
             var result = null;
-            if(typeIn(callback, "function") && callback.length < 3){
-                this.nodes = small.grep(this.nodes, callback);
-                result = this;
-            }
+            if(typeIn(callback, "function") && callback.length < 3)
+                result = small.grep(this.nodes, callback), result = new small(result);
             return result;
         },
         concat: function(text){
