@@ -81,9 +81,11 @@ small.extendFunctions({
                     });
                     
                     iframe.load(function(){
+                        var idoc = iframe.node().contentDocument || iframe.node().document,
+                        content = idoc.documentElement.outerHTML || new XMLSerializer().serializeToString(idoc);
                         iframe.remove();
                         uploader.empty().append("div.done").text(fileName);
-                        onComplete(name, options);
+                        onComplete(name, options, content);
                     });
                 }else onError(name, options);
             });
