@@ -31,7 +31,7 @@ small.extendFunctions({
             uploader = form.append("div.uploader").hide(),
             iframe = small.create("iframe").attr({
                 "name": name,
-                "src": "javascript: false;"
+                "src": "javascript:;"
             }).hide();
             form.append(iframe);
             
@@ -81,8 +81,8 @@ small.extendFunctions({
                     });
                     
                     iframe.load(function(){
-                        var idoc = iframe.node().contentDocument || iframe.node().document,
-                        content = idoc.documentElement.outerHTML || new XMLSerializer().serializeToString(idoc);
+                        var idoc = iframe.node().contentDocument || iframe.node().contentWindow.document,
+                        content = idoc.body.innerHTML;
                         iframe.remove();
                         uploader.empty().append("div.done").text(fileName);
                         onComplete(name, options, content);
@@ -93,5 +93,19 @@ small.extendFunctions({
         }
         
         return form;
+    }
+});
+small.extendMethods({
+    "appendUploader": function(options){
+        return small(this).append(small.uploader(options));
+    },
+    "prependUploader": function(options){
+        return small(this).prepend(small.uploader(options));
+    },
+    "afterUploader": function(options){
+        return small(this).after(small.uploader(options));
+    },
+    "beforeUploader": function(options){
+        return small(this).before(small.uploader(options));
     }
 });

@@ -818,7 +818,7 @@
         }
         function check(type, line, value, method){
             var result = false;
-            if(!method || method == "regexp") result = (new RegExp((/^\^?$/.test(type) ? "\\b" : "")  + line + (/^\$?$/.test(type) ? "\\b" : ""))).test(value), result = type == "!" ? !result : result;
+            if(!method || method == "regexp") result = (new RegExp((/^\^?$/.test(type) ? "\\s" : "")  + line + (/^\$?$/.test(type) ? "\\s" : ""))).test(" " + value + " "), result = type == "!" ? !result : result;
             else if(method == "condition") result = ((type == "" && line == value) || (type == "*" && value.indexOf(line) > 0) || (type == "^" && value.indexOf(line) == 0) || (type == "$" && value.indexOf(line) == value.length - line.length) || (type == "!" && line != value));
             return result;
         }
