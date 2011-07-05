@@ -611,7 +611,7 @@
     };
     small.ajax = function(options){
         if(typeIn(options, "object")){
-            var method = (options.method || "GET").toUpperCase(),
+            var method = (options.method || "get").toUpperCase(),
             url = options.url || small.url(),
             callback = options.callback || function(){},
             error = options.error || function(){},
@@ -648,7 +648,7 @@
                 request.setRequestHeader("X-Requested-With", "XMLHttpRequest");
                 request.setRequestHeader("Content-Type", contentType.concat("; ", charset));
                 if(requestHeaders) for(var name in requestHeaders) request.setRequestHeader(name, requestHeaders[name]);
-                request.send(params);
+                request.send(method == "GET" ? null : params);
                 if(async && timeout > 0)
                     var timer = setTimeout(function(){
                         if(request.readyState != 4){
@@ -983,7 +983,7 @@
                 "action": url,
                 "method": "post"
             });
-            small.each(options.data || {}, function(name, value){
+            small.each(options.params || {}, function(name, value){
                 small.create("input").attr({
                     "type": "hidden",
                     "name": name,
