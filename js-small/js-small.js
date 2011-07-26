@@ -1046,7 +1046,7 @@
                         else array[array.length] = object.parentNode.insertBefore(tag, type == "after" ? object.nextSibling : object);
                 }), result = new small(array);
             else if(/^insert(After|Before)$/.test(type))
-                result = typeIn(tag, "string") ? small.find(tag) : (isOwn(tag) ? tag : new small(tag)), type == "insertAfter" ? result.after(this) : result.before(this), this.nodes = result.nodes, result = this;
+                result = typeIn(tag, "string") ? small.find(tag) : (isOwn(tag) ? tag : new small(tag)), type == "insertAfter" ? result.after(this) : result.before(this);
         return result;
     };
     var childDom = function(type){
@@ -1085,7 +1085,7 @@
     var selectDom = function(type, index){
         var result = null;
         if(/^(first|last)$/.test(type))
-            this.nodes = this.length() > 0 ? (type == "first" ? [this.nodes[0]] : [this.nodes[this.length() - 1]]) : [], result = this;
+            result = new small(this.length() > 0 ? (type == "first" ? [this.nodes[0]] : [this.nodes[this.length() - 1]]) : []);
         else if((/^(index|not|above|below)$/.test(type) && typeIn(index, "number")) || type == "even")
             result = this.grep(function(key, value){
                 return type == "index" ? key == index : (type == "not" ? key != index : (type == "above" ? key < index : (type == "above" ? key > index : key % 2 == 0)));
