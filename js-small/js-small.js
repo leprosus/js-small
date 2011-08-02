@@ -664,7 +664,7 @@
     };
     small.json = function(options){
         if(typeIn(options, "object")){
-            var name = "", url = options.url || location.href, timeout = options.timeout || 0, params = [],
+            var name = "", url = options.url || small.url(), timeout = options.timeout || 0, params = [],
             alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", callback = options.callback || function(){};
             for(var index = 0; index < 15; index++) name += alpha.charAt(Math.ceil(Math.random() * alpha.length));
             params[params.length] = "callback=".concat(name);
@@ -805,7 +805,7 @@
                             || (attrs && small.grep([item], function(curObject){
                                 for(var curAttrs = attrs.concat(), flag = true, total = curAttrs.length, num = 0; flag && num < total; num++)
                                     if(flag && ((curAttrs[num][3] == undefined && curObject.getAttribute(curAttrs[num][1]) == null)
-                                        || (curAttrs[num][3] != undefined && !check(curAttrs[num][2], curAttrs[num][3], curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]], "condition"))))
+                                        || (curAttrs[num][3] != undefined && !check(curAttrs[num][2], curAttrs[num][3], curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]] || "", "condition"))))
                                         flag = false, curAttrs.splice(num, 1), num--, total--;
                                 return flag;
                             }).length == 0)
