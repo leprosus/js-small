@@ -930,9 +930,11 @@
         return result;
     };
     small.redirect = function(link, unstore){
-        if(typeIn(link, "string"))
+        if(typeIn(link, "string")){
+            if(!/^[a-z0-9]{2,6}:\/\//.test(link)) link = small.base() + link;
             if(typeIn(unstore, "boolean") && unstore) document.location.replace(link);
             else document.location.href = link;
+        }
     };
     small.reload = function(withRequest){
         (typeIn(withRequest, "boolean") ? withRequest : true) ? document.location.reload() : (document.location.href = document.location.href);
