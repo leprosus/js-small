@@ -1,5 +1,5 @@
 /*
- * JS-Small JavaScript Framework Plugin 0.0.1
+ * JS-Small JavaScript Framework Plugin 0.0.2
  * Description: Plug-in for hashing
  * Copyright (c) 2008 - 2011 Denis Korolev
  * Released under the MIT License.
@@ -7,6 +7,7 @@
  *                   http://www.js-small.com/
  * Project support:  http://www.evalab.ru/
  *                   http://www.evalab.com/
+ * Thanks:           http://pajhome.org.uk/crypt/md5/md5.html
  */
 small.extendFunctions({
     encodeBase64: function(text){
@@ -105,26 +106,26 @@ small.extendFunctions({
   
         return result;
     },
-    //Has to be optimized
+    //It has to be optimized
     md5: function(text){
         function rotateLeft(lValue, iShiftBits) {
             return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits));
         }
-        function addUnsigned(lX, lY) {
-            var result, lX8 = (lX & 0x80000000),
-            lY8 = (lY & 0x80000000),
-            lX4 = (lX & 0x40000000),
-            lY4 = (lY & 0x40000000),
-            lResult = (lX & 0x3FFFFFFF)+(lY & 0x3FFFFFFF);
-            
-            if (lX4 & lY4) result = (lResult ^ 0x80000000 ^ lX8 ^ lY8);
-            if (lX4 | lY4)
-                if (lResult & 0x40000000) result = (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
-                else result = (lResult ^ 0x40000000 ^ lX8 ^ lY8);
-            else result = (lResult ^ lX8 ^ lY8);
-            
-            return result;
+ 
+        function addUnsigned(lX,lY) {
+            var lX4, lY4, lX8, lY8, lResult;
+            lX8 = (lX & 0x80000000);
+            lY8 = (lY & 0x80000000);
+            lX4 = (lX & 0x40000000);
+            lY4 = (lY & 0x40000000);
+            lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
+            if (lX4 & lY4) return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
+            if (lX4 | lY4) {
+                if (lResult & 0x40000000) return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
+                else return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
+            } else return (lResult ^ lX8 ^ lY8);
         }
+ 
         function F(x, y, z) {
             return (x & y) | ((~x) & z);
         }
@@ -138,32 +139,34 @@ small.extendFunctions({
             return (y ^ (x | (~z)));
         }
         function FF(a, b, c, d, x, s, ac) {
-            a = addUnsigned(a, AddUnsigned(AddUnsigned(F(b, c, d), x), ac));
+            a = addUnsigned(a, addUnsigned(addUnsigned(F(b, c, d), x), ac));
             return addUnsigned(rotateLeft(a, s), b);
         }
         function GG(a, b, c, d, x, s, ac) {
-            a = addUnsigned(a, AddUnsigned(AddUnsigned(G(b, c, d), x), ac));
+            a = addUnsigned(a, addUnsigned(addUnsigned(G(b, c, d), x), ac));
             return addUnsigned(rotateLeft(a, s), b);
         }
         function HH(a, b, c, d, x, s, ac) {
-            a = addUnsigned(a, AddUnsigned(AddUnsigned(H(b, c, d), x), ac));
+            a = addUnsigned(a, addUnsigned(addUnsigned(H(b, c, d), x), ac));
             return addUnsigned(rotateLeft(a, s), b);
         }
         function II(a, b, c, d, x, s, ac) {
-            a = addUnsigned(a, AddUnsigned(AddUnsigned(I(b, c, d), x), ac));
+            a = addUnsigned(a, addUnsigned(addUnsigned(I(b, c, d), x), ac));
             return addUnsigned(rotateLeft(a, s), b);
         }
         function convertToWordArray(string) {
-            var lWordCount, lMessageLength = string.length,
-            lNumberOfWordsTemp1 = lMessageLength + 8,
-            lNumberOfWordsTemp2 = (lNumberOfWordsTemp1 - (lNumberOfWordsTemp1 % 64)) / 64,
-            lNumberOfWords = (lNumberOfWordsTemp2 + 1) * 16,
-            lWordArray = new Array(lNumberOfWords - 1),
-            lBytePosition = 0, lByteCount = 0;
-            while (lByteCount < lMessageLength) {
-                lWordCount = (lByteCount-(lByteCount % 4)) / 4;
+            var lWordCount;
+            var lMessageLength = string.length;
+            var lNumberOfWordsTemp1 = lMessageLength + 8;
+            var lNumberOfWordsTemp2 = (lNumberOfWordsTemp1 - (lNumberOfWordsTemp1 % 64)) / 64;
+            var lNumberOfWords = (lNumberOfWordsTemp2 + 1) * 16;
+            var lWordArray = Array(lNumberOfWords - 1);
+            var lBytePosition = 0;
+            var lByteCount = 0;
+            while ( lByteCount < lMessageLength ) {
+                lWordCount = (lByteCount - (lByteCount % 4)) / 4;
                 lBytePosition = (lByteCount % 4) * 8;
-                lWordArray[lWordCount] = (lWordArray[lWordCount] | (string.charCodeAt(lByteCount) << lBytePosition));
+                lWordArray[lWordCount] = (lWordArray[lWordCount] | (string.charCodeAt(lByteCount)<<lBytePosition));
                 lByteCount++;
             }
             lWordCount = (lByteCount - (lByteCount % 4)) / 4;
@@ -173,23 +176,22 @@ small.extendFunctions({
             lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29;
             return lWordArray;
         }
- 
         function wordToHex(lValue) {
-            var WordToHexValue="",WordToHexValue_temp="",lByte,lCount;
-            for (lCount = 0;lCount<=3;lCount++) {
-                lByte = (lValue>>>(lCount*8)) & 255;
-                WordToHexValue_temp = "0" + lByte.toString(16);
-                WordToHexValue = WordToHexValue + WordToHexValue_temp.substr(WordToHexValue_temp.length-2,2);
+            var wordToHexValue = "", wordToHexValueTemp = "", lByte, lCount;
+            for (lCount = 0; lCount <= 3; lCount++) {
+                lByte = (lValue>>>(lCount * 8)) & 255;
+                wordToHexValueTemp = "0" + lByte.toString(16);
+                wordToHexValue = wordToHexValue + wordToHexValueTemp.substr(wordToHexValueTemp.length - 2, 2);
             }
-            return WordToHexValue;
+            return wordToHexValue;
         }
  
-        var x=Array();
-        var k,AA,BB,CC,DD,a,b,c,d;
-        var S11=7, S12=12, S13=17, S14=22;
-        var S21=5, S22=9 , S23=14, S24=20;
-        var S31=4, S32=11, S33=16, S34=23;
-        var S41=6, S42=10, S43=15, S44=21;
+        var x = [],
+        k, AA, BB, CC, DD, a, b, c, d,
+        S11 = 7, S12 = 12, S13 = 17, S14 = 22,
+        S21 = 5, S22 = 9, S23 = 14, S24 = 20,
+        S31 = 4, S32 = 11, S33 = 16, S34 = 23,
+        S41 = 6, S42 = 10, S43 = 15, S44 = 21;
  
         text = small.encodeUtf8(text);
  
@@ -200,7 +202,7 @@ small.extendFunctions({
         c = 0x98BADCFE;
         d = 0x10325476;
  
-        for (k=0;k<x.length;k+=16) {
+        for (k=0; k < x.length; k+=16) {
             AA=a;
             BB=b;
             CC=c;
@@ -275,8 +277,7 @@ small.extendFunctions({
             d=addUnsigned(d,DD);
         }
  
-        var temp = wordToHex(a)+wordToHex(b)+wordToHex(c)+wordToHex(d);
- 
+        var temp = wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d);
         return temp.toLowerCase();
     }
 });

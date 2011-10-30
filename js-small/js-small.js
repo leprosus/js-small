@@ -90,6 +90,15 @@
         node: function(){
             return this.length() > 0 ? this.nodes[0] : null;
         },
+        doFocus: function(){
+            return this.node().focus(), this;
+        },
+        doBlur: function(){
+            return this.node().blur(), this;
+        },
+        doSubmit: function(){
+            return this.node().submit();
+        },
         parent: function(){
             var array = [];
             this.each(function(object){
@@ -135,17 +144,16 @@
             return this.parent().firstChild().nextAll();
         },
         unique: function(){
-            for(var first = 0; first < this.nodes.length - 1; first++)
-                for(var second = first + 1; second < this.nodes.length; second++)
-                    if(this.nodes[first] == this.nodes[second]) this.nodes.splice(second, 1), first--, second--;
-            return this;
+            var array = this.nodes;
+            for(var first = 0; first < array.length - 1; first++)
+                for(var second = first + 1; second < array.length; second++)
+                    if(array[first] == array[second]) array.splice(second, 1), first--, second--;
+            return new small(array);
         },
-        merge: function(){
-            var current = this;
-            small.each(arguments, function(object){
-                if(isOwn(object)) current.nodes = current.nodes.concat(object.nodes);
-            });
-            return this;
+        merge: function(object){
+            var array = this.nodes;
+            if(isOwn(object)) array = array.concat(object.nodes);
+            return new small(array);
         },
         append: function(tag){
             return joinDom.call(this, tag, "append");
@@ -405,7 +413,7 @@
         },
         addClass: function(name){
             if(typeIn(name, "string,array"))
-                name = splitArg(name), this.each(function(object){
+                name = splitArg(name), this.removeClass(name).each(function(object){
                     var classList = splitArg(object.className);
                     object.className = small.trim(classList.concat(name).join(" "));
                 });
@@ -517,7 +525,7 @@
             return this;
         },
         isOwn: function(){
-            return typeIn(this, "object") && typeIn(this.nodes, "array");
+            return isOwn(this);
         },
         toString: function(){
             var result = "";

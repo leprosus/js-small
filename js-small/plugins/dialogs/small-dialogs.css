@@ -1,4 +1,4 @@
-div.window div.modal{
+div.ui-dialog div.modal{
     position: fixed;
     top: 0;
     right: 0;
@@ -6,14 +6,15 @@ div.window div.modal{
     left: 0;
     z-index: 100;
 }
-div.window div.dialog{
+div.ui-dialog div.dialog{
     position: fixed;
     z-index: 110;
     border: 1px solid;
     border-radius: 5px 5px;
-    box-shadow: rgba(0, 0, 0, 0.2) 0 2px;
+    box-shadow: 0 2px rgba(0, 0, 0, 0.2);
+    background: repeat center;
 }
-div.window div.title{
+div.ui-dialog div.title{
     overflow: hidden;
     border-top-left-radius: 4px 4px;
     border-top-right-radius: 4px 4px;
@@ -21,13 +22,13 @@ div.window div.title{
     font: normal 400 12px Tahoma;
     padding: 5px 10px 7px 10px;
 }
-div.window div.close{
+div.ui-dialog div.close{
     float: right;
     font: normal 400 16px Tahoma;
     margin: -2px -5px -3px -3px;
     cursor: pointer;
 }
-div.window div.content{
+div.ui-dialog div.content{
     overflow: auto;
     border-bottom-left-radius: 4px 4px;
     border-bottom-right-radius: 4px 4px;

@@ -57,7 +57,7 @@ small.extendFunctions({
                         
                 if(!error){
                     var width = current.bound().width;
-                    onSubmit(name, options);
+                    onSubmit.call(form.node(), name, options);
                     form.node().submit();
                     
                     var progress = 0;
@@ -68,7 +68,7 @@ small.extendFunctions({
                         uploader.after(newUploader);
                         uploader.remove();
                         iframe.remove();
-                        onCancel(name, options);
+                        onCancel.call(form.node(), name, options);
                     });
                     var value = uploader.append("div.border").append("div.value");
                     value.append("div.animation").opacity(70);
@@ -85,9 +85,9 @@ small.extendFunctions({
                         content = idoc.body.innerHTML;
                         iframe.remove();
                         uploader.empty().append("div.done").text(fileName);
-                        onComplete(name, options, content);
+                        onComplete.call(form.node(), name, options, content);
                     });
-                }else onError(name, options);
+                } else onError.call(form.node(), name, options);
             });
             form.append(file);
         }
