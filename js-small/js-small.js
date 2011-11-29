@@ -90,6 +90,9 @@
         node: function(){
             return this.length() > 0 ? this.nodes[0] : null;
         },
+        tagName: function(){
+            return this.length() > 0 ? this.nodes[0].nodeName.toLowerCase() : null;
+        },
         doFocus: function(){
             return this.node().focus(), this;
         },
@@ -618,6 +621,7 @@
         return array;
     };
     small.ajax = function(options){
+        var request = null;
         if(typeIn(options, "object")){
             var method = (options.method || "get").toUpperCase(),
             url = options.url || small.url(),
@@ -645,7 +649,7 @@
                     params[params.length] = key.concat("=", encodeURIComponent(value));
                 }), params = params.join("&");
             try {
-                var request = window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
+                request = window.ActiveXObject ? new ActiveXObject("Microsoft.XMLHTTP") : new XMLHttpRequest();
                 request.onreadystatechange = function(){
                     if(request.readyState == 4)
                         if(request.status == 200) callback(request.responseText, request);
@@ -669,8 +673,14 @@
                 error(err);
             }
         }
+        return {
+            abord: function(){
+                if(request != null) request.abort();
+            }
+        };
     };
     small.json = function(options){
+        var link = null;
         if(typeIn(options, "object")){
             var name = "", url = options.url || small.url(), timeout = options.timeout || 0, params = [],
             alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz", callback = options.callback || function(){};
@@ -680,7 +690,7 @@
                 small.each(options.params, function(key, value){
                     params[params.length] = key.concat("=", encodeURIComponent(value));
                 });
-            var link = url.concat(url.indexOf("?") > 0 ? "&" : "?", params.join("&"));
+            link = url.concat(url.indexOf("?") > 0 ? "&" : "?", params.join("&"));
             eval(name.concat(" = function(response){callback(response);small.removeScript(link);};"));
             small.loadScript(link);
             if(timeout > 0)
@@ -688,6 +698,11 @@
                     small.removeScript(link);
                     clearTimeout(timer);
                 }, timeout);
+        }
+        return {
+            abord: function(){
+                if(link != null) small.removeScript(link);
+            }
         }
     };
     small.loadCss = function(url){
