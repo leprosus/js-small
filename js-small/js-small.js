@@ -94,13 +94,13 @@
             return this.length() > 0 ? this.nodes[0].nodeName.toLowerCase() : null;
         },
         doFocus: function(){
-            return this.node().focus(), this;
+            return this.length() > 0 ? (this.node().focus(), this) : null;
         },
         doBlur: function(){
-            return this.node().blur(), this;
+            return this.length() > 0 ? (this.node().blur(), this) : null;
         },
         doSubmit: function(){
-            return this.node().submit();
+            return this.length() > 0 ? (this.node().submit(), this) : null;
         },
         parent: function(){
             var array = [];
