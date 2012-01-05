@@ -737,7 +737,7 @@
                 }).node();
                 if(typeIn(callback, "function")){
                     var handler = function(){
-                        if(script.readyState != "loading"){
+                        if(/loaded|complete/.test(script.readyState)){
                             if(script.detachEvent) script.detachEvent("onreadystatechange", handler);
                             else if(script.removeEventListener) script.removeEventListener("load", handler, false);
                             callback.call(script);
@@ -798,6 +798,13 @@
     };
     small.ready = function(callback){
         small.window().load(callback);
+    };
+    small.domReady = function(callback){
+        var func = function(){
+            callback();
+            small.document().unbind("readystatechange", func);
+        };
+        small.document().bind("readystatechange", func);
     };
     small.find = function(selector, context){
         var result = null, array, list, length, index, item, objClass, tags;
@@ -927,11 +934,15 @@
         return document.location.hostname;
     };
     small.base = function() {
-        var result = document.location.protocol + "//" + document.location.hostname + "/";
-        if (document.location.hostname == "localhost") {
-            var position = null, query = document.location.href.replace(result, "");
-            if ((position = query.indexOf("/")) > -1)
-                result += query.substring(0, position) + "/";
+        var base = small("base"), result;
+        if(base.length() > 0) result = base.attr("href");
+        else {
+            result = document.location.protocol + "//" + document.location.hostname + "/";
+            if (document.location.hostname == "localhost") {
+                var position = null, query = document.location.href.replace(result, "");
+                if ((position = query.indexOf("/")) > -1)
+                    result += query.substring(0, position) + "/";
+            }
         }
         return result;
     };
@@ -1196,11 +1207,12 @@
             }
         });
     };
-    var eventList = "resize,scroll,blur,focus,error,abort,click,dblclick,mousedown,mouseup,mousemove,mouseover,mouseout,keydown,keypress,keyup,load,unload,change,select,submit,reset".split(",");
+    var eventList = "resize,scroll,blur,focus,error,abort,click,dblclick,mousedown,mouseup,mousemove,mouseover,mouseout,keydown,keypress,keyup,load,unload,change,select,submit,reset,readystatechange".split(",");
     small.each(eventList, function(type){
-        small.prototype[type] = function(callback, attach){
-            this.bind(type, callback, attach);
-            return this;
-        };
+        if(type != "readystatechange")
+            small.prototype[type] = function(callback, attach){
+                this.bind(type, callback, attach);
+                return this;
+            };
     });
 })();

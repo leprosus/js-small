@@ -22,7 +22,7 @@ small.extendMethods({
                     if(value.length > max){
                         matches = value.split(' ');
                         value = small.proceed(matches, function(item){
-                            if(!/&nbsp;/.test(item)
+                            if(!/(&nbsp;|\s)/.test(item)
                                 && !/(ht|f)tp(s?)\:\/\/[0-9a-z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?/i.test(item)
                                 && !/[0-9a-z]+[-\._0-9a-z]*@[0-9a-z]+[-\._^0-9a-z]*[0-9a-z]*[\.]{1}[a-z]{2,6}/i.test(item)){
                                 var matches = item.replace('&shy;', '').match(regExp);
