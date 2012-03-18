@@ -1,5 +1,5 @@
 /*
- * JS-Small JavaScript Framework Plugin 0.0.1
+ * JS-Small JavaScript Framework Plugin 0.0.2
  * Description: Plug-in for wrapping long text nodes
  * Copyright (c) 2008 - 2011 Denis Korolev
  * Released under the MIT License.
@@ -27,7 +27,7 @@ small.extendMethods({
                                 && !/[0-9a-z]+[-\._0-9a-z]*@[0-9a-z]+[-\._^0-9a-z]*[0-9a-z]*[\.]{1}[a-z]{2,6}/i.test(item)){
                                 var matches = item.replace('&shy;', '').match(regExp);
                                 if(matches && matches.length > 1)
-                                    item = item.length > max ? item.replace(regExp, '$1\u00ad') : item;
+                                    item = item.length > max ? matches.join('\u00ad') : item;
                             }
                             return item;
                         }).join(' ');
