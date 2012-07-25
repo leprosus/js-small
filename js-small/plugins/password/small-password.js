@@ -1,7 +1,7 @@
 /*
  * JS-Small JavaScript Framework Plugin 0.1.0
  * Description: Plug-in can assees and generate passwords
- * Copyright (c) 2008 - 2011 Denis Korolev
+ * Copyright (c) 2008 - 2012 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
@@ -11,11 +11,11 @@
 small.extendFunctions({
     assessPassword: function(password){
         var result = 0;
-        if(small.typeIn(password, "string,number")){
-            var alpha = "abcdefghijklmnopqrstuvwxyz",
-            upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            simbols = "~`!@#$%^&*()-_+=",
-            digits = "1234567890",
+        if(small.typeIn(password, 'string,number')){
+            var alpha = 'abcdefghijklmnopqrstuvwxyz',
+            upper = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            simbols = '~`!@#$%^&*()-_+=',
+            digits = '1234567890',
             totalChars = 0x7f - 0x20,
             alphaChars = alpha.length,
             upperChars = upper.length,
@@ -23,13 +23,13 @@ small.extendFunctions({
             digitChars = digits.length,
             otherChars = totalChars - (alphaChars + upperChars + simbolsChars + digitChars);
 
-            if (password.length > 0){
+            if (password.length > 0) {
                 var flags = {
-                    "alpha": false,
-                    "upper": false,
-                    "simbol": false,
-                    "digit": false,
-                    "other": false
+                    'alpha': false,
+                    'upper': false,
+                    'simbol': false,
+                    'digit': false,
+                    'other': false
                 }, length = password.length;
 
                 for (var index = 0; index < length; index++) {
@@ -42,7 +42,7 @@ small.extendFunctions({
                     else flags.other = true;
 
                 }
-            
+
                 var charset = 0;
                 if (flags.alpha) charset += alphaChars;
                 if (flags.upper) charset += upperChars;
@@ -60,14 +60,13 @@ small.extendFunctions({
         return result;
     },
     generatePassword: function(length){
-        length = small.typeIn(length, "number") ? length : 8;
-        var charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890",
-        charsetLength = charset.length - 1,
-        result = "";
-        
+        length = small.typeIn(length, 'number') ? length : 8;
+        var charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890',
+        charsetLength = charset.length - 1, result = '';
+
         for(var index = 0; index < length; index++)
             result += charset.charAt(Math.random() * charsetLength);
-        
+
         return result;
     }
 });

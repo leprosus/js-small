@@ -1,11 +1,13 @@
-/*
- * JS-Small JavaScript Framework version 0.9.4
- * Copyright (c) 2008 - 2011 Denis Korolev
+/**
+ * JS-Small JavaScript Framework
+ * Copyright (c) 2008 - 2012 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
  * Project support:  http://www.evalab.ru/
  *                   http://www.evalab.com/
+ * @author Denis Korolev
+ * @version 0.9.5
  */
 (function(){
     var small = window.small = function(node){
@@ -17,6 +19,13 @@
         }
         this.nodes = node;
     };
+
+    /**
+     * Extends any object by new properties
+     * @param {object} object Object for extending
+     * @param {object} properties Object with new properties
+     * @return {object} Extended object
+     */
     small.extend = function(object, properties){
         if(typeIn(object, 'object,function') && typeIn(properties, 'object'))
             small.each(properties, function(key, value){
@@ -26,13 +35,42 @@
             });
         return object;
     };
+
+    /**
+     * Extends JS-Small framework by new functions
+     * @param {object} functions Object of new functions
+     * @example small.extendFunction({
+     *     newFunction: function(){
+     *         ...
+     *     }
+     * });
+     * small.newFunction();
+     * @return void
+     */
     small.extendFunctions = function(functions){
         small = small.extend(small, functions);
     };
+
+    /**
+     * Extends JS-Small framework by new methods
+     * @param {object} methods Object with new methods
+     * @example small.extendMethods({
+     *     newMethod: function(){
+     *         small(this). ...
+     *     }
+     * });
+     * small('div#id').newMethod();
+     * @return void
+     */
     small.extendMethods = function(methods){
         small.extend(small.prototype, methods);
     };
     small.prototype = {
+        /**
+         * Method provides an way to iterate over a JS-Small object
+         * @param {function} callback The callback is passed an small object item
+         * @return {object} JS-Small object
+         */
         each: function(callback){
             if(typeIn(callback, 'function') && callback.length < 3)
                 small.each(this.nodes, callback);
@@ -467,16 +505,21 @@
         },
         attr: function(){
             var result = null, data = arguments, length = data.length, attr;
-            if(length == 1 && typeIn(data[0], 'string,number')) attr = fix(data[0], 'attr'), result = this.length() > 0 ? (attr in this.nodes[0] ? this.nodes[0][attr] : this.nodes[0].getAttribute(attr)) : null;
-            else if(length == 1 && typeIn(data[0], 'object') || (length == 2 && typeIn(data[0], 'string')))
-                result = this.each(function(object){
-                    if(length == 2) try {
-                        attr = fix(data[0], 'attr'), object[attr] = data[1];
-                    } catch(err){}
-                    else small.each(data[0], function(key, value){
-                        small(object).attr(key, value);
+            if(this.length() > 0)
+                if(length == 1 && typeIn(data[0], 'string,number')){
+                    result = data[0] in this.nodes[0] ? this.nodes[0][data[0]] : this.nodes[0].getAttribute(data[0]);
+                    if(result == null) attr = fix(data[0], 'attr'), result = attr in this.nodes[0] ? this.nodes[0][attr] : this.nodes[0].getAttribute(attr);
+                }else if(length == 1 && typeIn(data[0], 'object') || (length == 2 && typeIn(data[0], 'string')))
+                    result = this.each(function(object){
+                        if(length == 2) try {
+                            object[data[0]] = data[1];
+                            object[fix(data[0], 'attr')] = data[1];
+                            object.setAttribute(data[0], data[1])
+                        } catch(err){}
+                        else small.each(data[0], function(key, value){
+                            small(object).attr(key, value);
+                        });
                     });
-                });
             return result;
         },
         removeAttr: function(attr){
@@ -540,6 +583,7 @@
     };
     small.context = function(callback, context){
         if(typeIn(callback, 'function') && typeIn(context, 'object')) callback.call(context);
+        return this;
     };
     small.create = function(line){
         var result = [];
@@ -599,6 +643,7 @@
     };
     small.stop = function(timer){
         window.clearInterval(timer);
+        return this;
     };
     small.each = function(object, callback){
         if(typeIn(object, 'object,array') && object != null && typeIn(callback, 'function') && callback.length < 3)
@@ -611,6 +656,7 @@
                 for(var key in object)
                     if(callback.length == 1) callback.call(object, object[key]);
                     else callback.call(object, key, object[key]);
+        return this;
     };
     small.grep = function(object, callback){
         var array = [];
@@ -674,7 +720,7 @@
             }
         }
         return {
-            abord: function(){
+            abort: function(){
                 if(request != null) request.abort();
             }
         };
@@ -700,7 +746,7 @@
                 }, timeout);
         }
         return {
-            abord: function(){
+            abort: function(){
                 if(link != null) small.removeScript(link);
             }
         }
@@ -712,11 +758,13 @@
                 'type': 'text/css',
                 'rel': 'stylesheet'
             });
+        return this;
     };
     small.removeCss = function(url){
         small('head').find('link[rel=stylesheet]').grep(function(object){
             return url ? object.href == url : true;
         }).remove();
+        return this;
     };
     small.listCss = function(){
         var list = [];
@@ -749,11 +797,13 @@
             }else small.each(small.listScript(), function(object){
                 if(object == url) callback.call(object);
             });
+        return this;
     };
     small.removeScript = function(url){
         small('head').find('script').grep(function(object){
             return url ? object.href == url : true;
         }).remove();
+        return this;
     };
     small.listScript = function(){
         var list = [];
@@ -775,6 +825,7 @@
             document.cookie = options.name.concat('=', escape(options.value), ((options.expires) ? '; expires='.concat(options.expires) : ''),
                 '; path=', ((options.path) ? options.path : '/'), ((options.domain) ? '; domain='.concat(options.domain) : ''), ((options.secure) ? '; secure' : ''));
         }
+        return this;
     };
     small.getCookie = function(name){
         var result = null;
@@ -792,12 +843,14 @@
         if(typeIn(options, 'object'))
             if(small.cookie.get(options.name))
                 document.cookie = options.name.concat('=', ((options.path) ? '; path='.concat(options.path) : ''), ((options.domain) ? '; domain='.concat(options.domain) : ''), '; expires=Thu, 01-Jan-70 00:00:01 GMT');
+        return this;
     };
     small.enabledCookie = function(){
         return window.navigator.cookieEnabled;
     };
     small.ready = function(callback){
         small.window().load(callback);
+        return this;
     };
     small.domReady = function(callback){
         var func = function(){
@@ -805,6 +858,7 @@
             small.document().unbind('readystatechange', func);
         };
         small.document().bind('readystatechange', func);
+        return this;
     };
     small.find = function(selector, context){
         var result = null, array, list, length, index, item, objClass, tags;
@@ -834,7 +888,7 @@
                             }).length == 0)
                             || (attrs && small.grep([item], function(curObject){
                                 for(var curAttrs = attrs.concat(), flag = true, total = curAttrs.length, num = 0; flag && num < total; num++)
-                                    if(flag && ((curAttrs[num][3] == undefined && curObject.getAttribute(curAttrs[num][1]) == null)
+                                    if(flag && ((curAttrs[num][3] == undefined && !small.typeIn(curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]], 'string'))
                                         || (curAttrs[num][3] != undefined && !check(curAttrs[num][2], curAttrs[num][3], curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]] || '', 'condition'))))
                                         flag = false, curAttrs.splice(num, 1), num--, total--;
                                 return flag;
@@ -863,6 +917,7 @@
             };
             return object.replace(types[typeIn(type, 'string') && (type in types) ? type : 'full'], '');
         });
+        return this;
     };
     small.decToHex = function(value){
         return proceed(value, function(object){
@@ -899,7 +954,39 @@
                 'width': object.offsetWidth,
                 'height': object.offsetHeight
             };
+
+            result.padding = {
+                'top': getComputedProp('padding-top'),
+                'right': getComputedProp('padding-right'),
+                'bottom': getComputedProp('padding-bottom'),
+                'left': getComputedProp('padding-left')
+            };
+            result.border = {
+                'top': getComputedProp('border-top-width'),
+                'right': getComputedProp('border-right-width'),
+                'bottom': getComputedProp('border-bottom-width'),
+                'left': getComputedProp('border-left-width')
+            };
+            result.margin = {
+                'top': getComputedProp('margin-top'),
+                'right': getComputedProp('margin-right'),
+                'bottom': getComputedProp('margin-bottom'),
+                'left': getComputedProp('margin-left')
+            };
         }
+        function getComputedProp(style){
+            var value = 0;
+
+            if (object.currentStyle)
+                value = object.currentStyle[fix(style, 'css')];
+            else if (window.getComputedStyle)
+                value = window.getComputedStyle(object, null).getPropertyValue(style);
+            else
+                value = object.style[style] || object.style[fix(style, 'css')];
+
+            return parseInt(value.replace(/[^\d]+/g, ''), 10);
+        }
+
         return result;
     };
     small.viewport = function(){
@@ -1199,6 +1286,10 @@
             event.pageY = event.clientY + (document.documentElement && document.documentElement.scrollTop || document.body && document.body.scrollTop || 0) - (document.documentElement.clientTop || 0);
         }
         if(!event.which && event.button) event.which = (event.button & 1 ? 1 : ( event.button & 2 ? 3 : ( event.button & 4 ? 2 : 0 ) ));
+        if(/^key(down|press|up)$/.test(event.type)){
+            event.keyCode= event.keyCode || event.which;
+            event.keyChar = String.fromCharCode(event.keyCode);
+        }
         small.each(object.events[event.type], function(handler){
             event.attach = handler.attach;
             if(!handler.callback.call(object, event)){
@@ -1207,12 +1298,19 @@
             }
         });
     };
-    var eventList = 'resize,scroll,blur,focus,error,abort,click,dblclick,mousedown,mouseup,mousemove,mouseover,mouseout,keydown,keypress,keyup,load,unload,change,select,submit,reset,readystatechange'.split(',');
+    var eventList = 'resize,scroll,blur,focus,error,abort,click,dblclick,mousedown,mouseup,mousemove,mouseover,mouseout,keydown,keypress,keyup,load,unload,change,select,submit,reset,readystatechange,dragover,dragleave,dragenter,drop'.split(',');
     small.each(eventList, function(type){
         if(type != 'readystatechange')
             small.prototype[type] = function(callback, attach){
                 this.bind(type, callback, attach);
                 return this;
+            };
+    });
+    var logList = 'log,debug,info,warn,error'.split(',');
+    small.each(logList, function(type){
+        if(window.console)
+            small[type] = function(message){
+                window.console.log(type + ': ' + message);
             };
     });
 })();

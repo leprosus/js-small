@@ -1,7 +1,7 @@
 /*
  * JS-Small JavaScript Framework Plugin 0.0.2
  * Description: Convert various data formats (JSON, XML)
- * Copyright (c) 2008 - 2011 Denis Korolev
+ * Copyright (c) 2008 - 2012 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/

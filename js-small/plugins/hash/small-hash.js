@@ -1,7 +1,7 @@
 /*
  * JS-Small JavaScript Framework Plugin 0.0.2
  * Description: Plug-in for hashing
- * Copyright (c) 2008 - 2011 Denis Korolev
+ * Copyright (c) 2008 - 2012 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
@@ -14,59 +14,59 @@ small.extendFunctions({
         var result = "", index = 0,
         chr1, chr2, chr3, enc1, enc2, enc3, enc4,
         charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-        
+
         text = text.replace(/\r\n/g, "\n");
         text = small.encodeUtf8(text);
-        
+
         while (index < text.length) {
             chr1 = text.charCodeAt(index++);
             chr2 = text.charCodeAt(index++);
             chr3 = text.charCodeAt(index++);
- 
+
             enc1 = chr1 >> 2;
             enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
             enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
             enc4 = chr3 & 63;
- 
+
             if (isNaN(chr2)) enc3 = enc4 = 64;
             else if (isNaN(chr3)) enc4 = 64;
- 
+
             result = result.concat(charset.charAt(enc1), charset.charAt(enc2), charset.charAt(enc3), charset.charAt(enc4));
         }
- 
+
         return result;
     },
     decodeBase64: function (text) {
         var result = "", index = 0,
         chr1, chr2, chr3, enc1, enc2, enc3, enc4,
         charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-        
+
         text = text.replace(/[^A-Za-z0-9\+\/\=]/g, "");
- 
+
         while (index < text.length) {
             enc1 = charset.indexOf(text.charAt(index++));
             enc2 = charset.indexOf(text.charAt(index++));
             enc3 = charset.indexOf(text.charAt(index++));
             enc4 = charset.indexOf(text.charAt(index++));
- 
+
             chr1 = (enc1 << 2) | (enc2 >> 4);
             chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
             chr3 = ((enc3 & 3) << 6) | enc4;
- 
+
             result = result + String.fromCharCode(chr1);
- 
+
             if (enc3 != 64) result = result + String.fromCharCode(chr2);
             if (enc4 != 64) result = result + String.fromCharCode(chr3);
         }
- 
+
         result = small.decodeUtf8(result);
- 
+
         return result;
     },
     encodeUtf8: function (text) {
         var result = "";
         text = text.replace(/\r\n/g,"\n");
-  
+
         for(var index = 0, length = text.length; index < length; index++){
             var c = text.charCodeAt(index);
             if (c < 128) result += String.fromCharCode(c);
@@ -79,16 +79,16 @@ small.extendFunctions({
                 result += String.fromCharCode((c & 63) | 128);
             }
         }
-  
+
         return result;
     },
     decodeUtf8: function (text) {
         var result = "", index = 0, length = text.length,
         c1 = 0, c2 = 0, c3 = 0;
-  
+
         while(index < length){
             c1 = text.charCodeAt(index);
-  
+
             if(c1 < 128){
                 result += String.fromCharCode(c1);
                 index++;
@@ -103,7 +103,7 @@ small.extendFunctions({
                 index += 3;
             }
         }
-  
+
         return result;
     },
     //It has to be optimized
@@ -111,7 +111,7 @@ small.extendFunctions({
         function rotateLeft(lValue, iShiftBits) {
             return (lValue<<iShiftBits) | (lValue>>>(32-iShiftBits));
         }
- 
+
         function addUnsigned(lX,lY) {
             var lX4, lY4, lX8, lY8, lResult;
             lX8 = (lX & 0x80000000);
@@ -125,7 +125,7 @@ small.extendFunctions({
                 else return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
             } else return (lResult ^ lX8 ^ lY8);
         }
- 
+
         function F(x, y, z) {
             return (x & y) | ((~x) & z);
         }
@@ -185,23 +185,23 @@ small.extendFunctions({
             }
             return wordToHexValue;
         }
- 
+
         var x = [],
         k, AA, BB, CC, DD, a, b, c, d,
         S11 = 7, S12 = 12, S13 = 17, S14 = 22,
         S21 = 5, S22 = 9, S23 = 14, S24 = 20,
         S31 = 4, S32 = 11, S33 = 16, S34 = 23,
         S41 = 6, S42 = 10, S43 = 15, S44 = 21;
- 
+
         text = small.encodeUtf8(text);
- 
+
         x = convertToWordArray(text);
- 
+
         a = 0x67452301;
         b = 0xEFCDAB89;
         c = 0x98BADCFE;
         d = 0x10325476;
- 
+
         for (k=0; k < x.length; k+=16) {
             AA=a;
             BB=b;
@@ -276,7 +276,7 @@ small.extendFunctions({
             c=addUnsigned(c,CC);
             d=addUnsigned(d,DD);
         }
- 
+
         var temp = wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d);
         return temp.toLowerCase();
     }

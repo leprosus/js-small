@@ -1,7 +1,7 @@
 /*
  * JS-Small JavaScript Framework Plugin 0.0.3
  * Description: Work with dynamic dialogs
- * Copyright (c) 2008 - 2011 Denis Korolev
+ * Copyright (c) 2008 - 2012 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
@@ -80,7 +80,7 @@ small.extendFunctions({
         height = /^\d+$/.test(options.height) ? options.height : null,
         onOpen = small.typeIn(options.onOpen, "function") ? options.onOpen : function(){},
         onClose = small.typeIn(options.onClose, "function") ? options.onClose : function(){};
-        
+
         var container = small.body().append("div.ui-dialog");
         if(width == null || height == null){
             var wrap = container.append("div.content"),
@@ -89,11 +89,11 @@ small.extendFunctions({
             var bound = temp.bound();
             width = bound.width + 30;
             height = bound.height + 16;
-            
+
             wrap.remove();
         }
         container.hide();
-        
+
         var positions = {
             "1": {
                 "top": "0",
@@ -150,17 +150,17 @@ small.extendFunctions({
                 "leftMargin": -width /2
             }
         };
-        
+
         function showDialog(){
             onOpen();
-            
+
             var opacity = 0,
             object = container.child(),
             backgroundFlag = false;
-            
+
             object.opacity(opacity);
             container.show();
-            
+
             small.start({
                 "time": 100,
                 "callback": function(){
@@ -175,11 +175,11 @@ small.extendFunctions({
                 "repeat": 5
             });
         }
-        
+
         function hideDialog(){
             var opacity = 100,
             object = container.child();
-            
+
             small.start({
                 "time": 100,
                 "callback": function(){
@@ -189,15 +189,15 @@ small.extendFunctions({
                 },
                 "repeat": 5
             });
-            
+
             onClose();
         }
-        
+
         small.extend(container, {
             "showDialog": showDialog,
             "hideDialog": hideDialog
         });
-        
+
         if(modal)
             container.append("div.modal").css("background-color", backgroundColor).opacity(backgroundOpacity);
 
@@ -211,7 +211,7 @@ small.extendFunctions({
             "width": width + "px",
             "height": height + "px"
         });
-        
+
         if(titled){
             dialog.append("div.title").css({
                 "background-color": titleBackground,
@@ -221,14 +221,14 @@ small.extendFunctions({
                 if(closable) close.click(hideDialog);
             }).concat(title);
         }
-        
+
         dialog.append("div.content").css({
             "top": titled ? "25px" : "0",
             "color": color
         }).append(content);
-        
+
         if(autostart) container.showDialog();
-        
+
         return container;
     },
     showNotice: function(options){
@@ -245,7 +245,7 @@ small.extendFunctions({
                 notice.hideDialog();
             }
         });
-        
+
         return notice;
     }
 });

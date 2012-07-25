@@ -1,7 +1,7 @@
 /*
  * JS-Small JavaScript Framework Plugin 0.0.2
  * Description: Plug-in for wrapping long text nodes
- * Copyright (c) 2008 - 2011 Denis Korolev
+ * Copyright (c) 2008 - 2012 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
@@ -13,7 +13,7 @@ small.extendMethods({
     wrapText: function(max){
         if(small.typeIn(max, "undefined")) max = 10;
         var regExp = new RegExp("([^\\s]{1," + max + "})", "g");
-        
+
         function walk(node) {
             var child, next, value, matches;
             switch (node.nodeType) {

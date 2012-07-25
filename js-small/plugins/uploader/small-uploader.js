@@ -1,7 +1,7 @@
 /*
  * JS-Small JavaScript Framework Plugin 0.1.1
  * Description: Plug-in allows to upload files
- * Copyright (c) 2008 - 2011 Denis Korolev
+ * Copyright (c) 2008 - 2012 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
@@ -19,7 +19,7 @@ small.extendFunctions({
             onSubmit = options.onSubmit || function(){},
             onComplete = options.onComplete || function(){},
             onCancel = options.onCancel || function(){};
-            
+
             var fileName = "",
             form = small.create("form").attr({
                 "name": name,
@@ -34,7 +34,7 @@ small.extendFunctions({
                 "src": "javascript:;"
             }).hide();
             form.append(iframe);
-            
+
             if(maxSize > 0){
                 var hidden = small.create("input").attr({
                     "type": "hidden",
@@ -43,7 +43,7 @@ small.extendFunctions({
                 });
                 form.append(hidden);
             }
-            
+
             var file = small.create("input").attr({
                 "type": "file",
                 "name": name
@@ -54,12 +54,12 @@ small.extendFunctions({
                     var regExp = new RegExp("\\.(" + small.trim(extensions).join("|") + ")$", "i");
                     error = !regExp.test(fileName);
                 }
-                        
+
                 if(!error){
                     var width = current.bound().width;
                     onSubmit.call(form.node(), name, options);
                     form.node().submit();
-                    
+
                     var progress = 0;
                     file.hide();
                     uploader.show().css("width", width + "px")
@@ -79,7 +79,7 @@ small.extendFunctions({
                         },
                         "repeat": 90
                     });
-                    
+
                     iframe.load(function(){
                         var idoc = iframe.node().contentDocument || iframe.node().contentWindow.document,
                         content = idoc.body.innerHTML;
@@ -91,7 +91,7 @@ small.extendFunctions({
             });
             form.append(file);
         }
-        
+
         return form;
     }
 });
