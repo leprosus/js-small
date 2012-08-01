@@ -150,7 +150,7 @@
         child: function(){
             var array = [];
             this.each(function(object){
-                for(var childList = object.childNodes, max = childList.length - 1, index = max; index >= 0; index--)
+                for(var childList = object.childNodes, max = childList.length, index = 0; index < max; index++)
                     if(childList[index].nodeType == 1) array[array.length] = childList[index];
             });
             return new small(array);
@@ -265,7 +265,14 @@
             return result;
         },
         unwrap: function(){
-            return this.length() > 0 ? (this.after(this.child()), this.remove()) : null;
+            var array = [];
+            this.each(function(object){
+                for(var childList = object.childNodes, max = childList.length, index = 0; index < max; index++)
+                    array[array.length] = childList[index];
+            });
+            var result = new small(array);
+            this.after(result), this.remove();
+            return result;
         },
         remove: function(){
             this.children().unbind().empty();
@@ -504,12 +511,12 @@
             return xhr(this, options, 'json');
         },
         attr: function(){
-            var result = null, data = arguments, length = data.length, attr;
+            var result = this.length() > 0 ? null : this, data = arguments, length = data.length, attr;
             if(this.length() > 0)
                 if(length == 1 && typeIn(data[0], 'string,number')){
                     result = data[0] in this.nodes[0] ? this.nodes[0][data[0]] : this.nodes[0].getAttribute(data[0]);
                     if(result == null) attr = fix(data[0], 'attr'), result = attr in this.nodes[0] ? this.nodes[0][attr] : this.nodes[0].getAttribute(attr);
-                }else if(length == 1 && typeIn(data[0], 'object') || (length == 2 && typeIn(data[0], 'string')))
+                }else if(length == 1 && typeIn(data[0], 'object') || (length == 2 && typeIn(data[0], 'string'))){
                     result = this.each(function(object){
                         if(length == 2) try {
                             object[data[0]] = data[1];
@@ -520,7 +527,12 @@
                             small(object).attr(key, value);
                         });
                     });
+                }
             return result;
+        },
+        hasAttr: function(attr){
+            var value;
+            return (arguments.length == 1 && typeIn(arguments[0], 'string,number')) ? (typeIn(value = this.attr(attr), 'string,number') && value.length > 0) : null;
         },
         removeAttr: function(attr){
             return this.length() > 0 ? this.each(function(object){
@@ -794,14 +806,15 @@
                     if(script.attachEvent) script.attachEvent('onreadystatechange', handler);
                     else if(script.addEventListener) script.addEventListener('load', handler, false);
                 }
-            }else small.each(small.listScript(), function(object){
-                if(object == url) callback.call(object);
-            });
+            } else if(typeIn(callback, 'function'))
+                small.each(small.listScript(), function(object){
+                    if(object == url) callback.call(object);
+                });
         return this;
     };
     small.removeScript = function(url){
         small('head').find('script').grep(function(object){
-            return url ? object.href == url : true;
+            return url ? object.src == url : true;
         }).remove();
         return this;
     };
@@ -909,13 +922,13 @@
         return result;
     };
     small.trim = function(value, type){
-        return proceed(value, function(object){
+        return proceed(value, function(item){
             var types = {
                 'full': /^\s+|\s+$/g,
                 'left': /^\s+/g,
                 'right': /\s+$/g
             };
-            return object.replace(types[typeIn(type, 'string') && (type in types) ? type : 'full'], '');
+            return typeIn(item, 'string') ? item.replace(types[typeIn(type, 'string') && (type in types) ? type : 'full'], '') : item;
         });
         return this;
     };
@@ -1121,7 +1134,7 @@
         var result = false;
         if(typeof(list) == 'string'){
             var type = typeof(object);
-            if(type == 'object') type = object instanceof Array ? 'array' : 'object';
+            if(type == 'object') type = object == null ? 'null' : (object instanceof Array ? 'array' : 'object');
             list = list.toLocaleString().replace(/\s+/g, '').split(',');
             var length = list.length;
             for(var index = 0; index < length; index++)
@@ -1134,7 +1147,7 @@
     };
     var proceed = small.proceed = function(object, callback){
         var result = null;
-        if(typeIn(object, 'string,number')) result = callback.call(object, object);
+        if(typeIn(object, 'string,number,null')) result = callback.call(object, object);
         else if(typeIn(object, 'object,array')) small.each(object, function(key, current){
             object[key] = callback.length == 1 ? callback.call(object, current) : callback.call(object, key, current);
         }), result = object;
@@ -1298,7 +1311,7 @@
             }
         });
     };
-    var eventList = 'resize,scroll,blur,focus,error,abort,click,dblclick,mousedown,mouseup,mousemove,mouseover,mouseout,keydown,keypress,keyup,load,unload,change,select,submit,reset,readystatechange,dragover,dragleave,dragenter,drop'.split(',');
+    var eventList = 'resize,scroll,blur,focus,error,abort,click,dblclick,contextmenu,mousedown,mouseup,mousemove,mouseover,mouseout,keydown,keypress,keyup,load,unload,change,select,submit,reset,readystatechange,dragover,dragleave,dragenter,drop'.split(',');
     small.each(eventList, function(type){
         if(type != 'readystatechange')
             small.prototype[type] = function(callback, attach){
