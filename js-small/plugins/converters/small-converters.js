@@ -1,5 +1,5 @@
 /*
- * JS-Small JavaScript Framework Plugin 0.0.2
+ * JS-Small JavaScript Framework Plugin
  * Description: Convert various data formats (JSON, XML)
  * Copyright (c) 2008 - 2012 Denis Korolev
  * Released under the MIT License.
@@ -7,6 +7,8 @@
  *                   http://www.js-small.com/
  * Project support:  http://www.evalab.ru/
  *                   http://www.evalab.com/
+ * @author Denis Korolev
+ * @version 0.0.2
  */
 small.extendFunctions({
     jsonToString: function(json) {
@@ -56,7 +58,11 @@ small.extendFunctions({
         return result
     },
     stringToJson: function(string) {
-        return eval("(" + string + ")");
+        var result = {};
+        try{
+            result = eval('('.concat(string, ')'));
+        } catch (err){}
+        return result;
     },
     xmlToJson: function(xml) {
         //TODO It has to be realized
