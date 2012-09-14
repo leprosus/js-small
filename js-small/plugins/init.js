@@ -37,7 +37,7 @@ small.extendFunctions({
             var path = '';
             small('head').find('script').each(function(object){
                 if(path.length == 0){
-                    var matches = /^(.+)plugins\/init\.js$/.exec(object.src);
+                    var matches = /^(.+)plugins\/init\.js/.exec(object.src);
                     if(matches != null) path = matches[1];
                 }
             });
