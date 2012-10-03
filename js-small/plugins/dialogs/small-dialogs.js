@@ -7,6 +7,8 @@
  *                   http://www.js-small.com/
  * Project support:  http://www.evalab.ru/
  *                   http://www.evalab.com/
+ * @author Denis Korolev
+ * @version 0.0.3
  */
 var initDialogs = {
     "escapable": false,

@@ -1,5 +1,5 @@
 /*
- * JS-Small JavaScript Framework Plugin 0.1.0
+ * JS-Small JavaScript Framework Plugin
  * Description: Plug-in can assees and generate passwords
  * Copyright (c) 2008 - 2012 Denis Korolev
  * Released under the MIT License.
@@ -7,6 +7,8 @@
  *                   http://www.js-small.com/
  * Project support:  http://www.evalab.ru/
  *                   http://www.evalab.com/
+ * @author Denis Korolev
+ * @version 0.1.0
  */
 small.extendFunctions({
     assessPassword: function(password){

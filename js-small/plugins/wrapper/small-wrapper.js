@@ -1,5 +1,5 @@
 /*
- * JS-Small JavaScript Framework Plugin 0.0.2
+ * JS-Small JavaScript Framework Plugin
  * Description: Plug-in for wrapping long text nodes
  * Copyright (c) 2008 - 2012 Denis Korolev
  * Released under the MIT License.
@@ -8,6 +8,8 @@
  * Project support:  http://www.evalab.ru/
  *                   http://www.evalab.com/
  * Thanks:           http://www.crowdersoftware.com/
+ * @author Denis Korolev
+ * @version 0.0.2
  */
 small.extendMethods({
     wrapText: function(max){
