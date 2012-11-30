@@ -644,7 +644,7 @@
         return window.navigator.userAgent.replace(/^.*(?:msie|firefox|chrome)(?:\s|\/)([\d\.]+).*$/i, '$1').replace(/^.*(?:version|mozilla)\/([\d\.]+).*$/i, '$1');
     };
     small.language = function(){
-        return window.navigator.userLanguage;
+        return (window.navigator.userLanguage || window.navigator.language || 'en').replace(/-[a-z]+$/i, '').toLowerCase();
     };
     small.start = function(options){
         var repeat = options.repeat || 1, timer = window.setInterval(function(){

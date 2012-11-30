@@ -1,7 +1,7 @@
 small.extendFunctions({
     'plugins': function(list){
         // Initialization
-        if(small.typeIn(list, 'undefined')) list = 'colors,converters,dialogs,password,uploader,hash,wrapper,onfly';
+        if(small.typeIn(list, 'undefined')) list = 'colors,converters,dialogs,password,uploader,hash,wrapper,onfly,renewal';
         if(small.typeIn(list, 'string')) list = list.split(',');
         if(small.typeIn(list, 'array')){
             var plugins = {
@@ -23,6 +23,10 @@ small.extendFunctions({
                 },
                 'password': function(){
                     small.loadScript(path + 'plugins/password/small-password.js');
+                },
+                'renewal': function(){
+                    small.loadCss(path + 'plugins/renewal/small-renewal.css');
+                    small.loadScript(path + 'plugins/renewal/small-renewal.js');
                 },
                 'uploader': function(){
                     small.loadCss(path + 'plugins/uploader/small-uploader.css');

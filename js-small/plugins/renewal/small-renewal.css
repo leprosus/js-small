@@ -1,0 +1,49 @@
+div.renewal{
+    position: fixed;
+    top: -60px;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: rgb(231, 222, 203) url(line.png) repeat-x bottom;
+    background-color: rgba(231, 222, 203, 0.75);
+    overflow: hidden;
+}
+div.renewal div.message{
+    margin: 5px auto 0 auto;
+    min-width: 200px;
+    max-width: 800px;
+    text-align: center;
+    font: normal 400 11px Tahoma;
+    white-space: nowrap;
+    color: #324b4b;
+    text-shadow: rgba(255, 255, 255, 0.8) 0px 1px 0px;
+}
+div.renewal div.browsers{
+    margin: 0 auto;
+    width: 175px;
+    height: 35px;
+    overflow: hidden;
+}
+div.renewal div.browsers a{
+    display: block;
+    float: left;
+    width: 25px;
+    height: 25px;
+    margin: 5px;
+    background-image: url(browsers.png);
+}
+div.renewal div.browsers a.chrome{
+    background-position: 0 0;
+}
+div.renewal div.browsers a.firefox{
+    background-position: -25px 0;
+}
+div.renewal div.browsers a.opera{
+    background-position: -50px 0;
+}
+div.renewal div.browsers a.safari{
+    background-position: -75px 0;
+}
+div.renewal div.browsers a.msie{
+    background-position: -100px 0;
+}
