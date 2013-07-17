@@ -13,8 +13,11 @@
     var small = window.small = function(node){
         if(this.small){
             var result = null;
-            if(typeIn(node, 'string')) result = small.find(node);
-            else if(typeIn(node, 'object')) result = typeIn(node.nodes, 'array') ? node : new small([node]);
+            if(typeIn(node, 'string')){
+                result = small.find(node);
+            } else if(typeIn(node, 'object')){
+                result = typeIn(node.nodes, 'array') ? node : new small([node]);
+            }
             return result;
         }
         this.nodes = node;
@@ -27,12 +30,14 @@
      * @return {object} Extended object
      */
     small.extend = function(object, properties){
-        if(typeIn(object, 'object,function') && typeIn(properties, 'object'))
+        if(typeIn(object, 'object,function') && typeIn(properties, 'object')){
             small.each(properties, function(key, value){
-                try {
+                try{
                     object[key] = value;
-                }catch(err){}
+                } catch(err){
+                }
             });
+        }
         return object;
     };
 
@@ -72,35 +77,44 @@
          * @return {object} JS-Small object
          */
         each: function(callback){
-            if(typeIn(callback, 'function') && callback.length < 3)
+            if(typeIn(callback, 'function') && callback.length < 3){
                 small.each(this.nodes, callback);
+            }
             return this;
         },
         grep: function(callback){
             var result = null;
-            if(typeIn(callback, 'function') && callback.length < 3)
+            if(typeIn(callback, 'function') && callback.length < 3){
                 result = small.grep(this.nodes, callback), result = new small(result);
+            }
             return result;
         },
         concat: function(text){
-            if(typeIn(text, 'string,number'))
+            if(typeIn(text, 'string,number')){
                 this.each(function(value){
-                    try {
+                    try{
                         value.appendChild(document.createTextNode(text));
-                    } catch(err){}
+                    } catch(err){
+                    }
                 });
+            }
             return this;
         },
         text: function(text){
             var result = null;
-            if(text == undefined) result = this.length() > 0 ? (this.nodes[0].textContent ? this.nodes[0].textContent : this.nodes[0].innerHTML) : null;
-            else if(typeIn(text, 'string,number')) result = this.empty().concat(text);
+            if(text == undefined){
+                result = this.length() > 0 ? (this.nodes[0].textContent ? this.nodes[0].textContent
+                    : this.nodes[0].innerHTML) : null;
+            } else if(typeIn(text, 'string,number')){
+                result = this.empty().concat(text);
+            }
             return result;
         },
         html: function(text){
             var result = null;
-            if(!text) result = this.length() > 0 ? (this.nodes[0].innerHTML || this.nodes[0].textContent) : null;
-            else if(typeIn(text, 'string')){
+            if(!text){
+                result = this.length() > 0 ? (this.nodes[0].innerHTML || this.nodes[0].textContent) : null;
+            } else if(typeIn(text, 'string')){
                 this.each(function(value){
                     value.innerHTML = text;
                 });
@@ -110,17 +124,19 @@
         },
         empty: function(){
             var callback = arguments, length = callback.length;
-            if(length == 0)
+            if(length == 0){
                 this.each(function(object){
-                    while (object.firstChild){
+                    while(object.firstChild){
                         small(object.firstChild).unbind();
                         object.removeChild(object.firstChild);
                     }
                 });
-            else if(length > 0){
+            } else if(length > 0){
                 this.each(function(object){
                     var result = (object.textContent ? object.textContent : object.innerHTML) == '';
-                    if(length > 0 && ((length < 3 && result) || (length == 2 && !result))) (result ? callback[0] : callback[1]).call(object);
+                    if(length > 0 && ((length < 3 && result) || (length == 2 && !result))){
+                        (result ? callback[0] : callback[1]).call(object);
+                    }
                 });
             }
             return this;
@@ -150,8 +166,11 @@
         child: function(){
             var array = [];
             this.each(function(object){
-                for(var childList = object.childNodes, max = childList.length, index = 0; index < max; index++)
-                    if(childList[index].nodeType == 1) array[array.length] = childList[index];
+                for(var childList = object.childNodes, max = childList.length, index = 0; index < max; index++){
+                    if(childList[index].nodeType == 1){
+                        array[array.length] = childList[index];
+                    }
+                }
             });
             return new small(array);
         },
@@ -160,7 +179,7 @@
             do{
                 childList = childList.child();
                 array = small.merge(array, childList.nodes);
-            } while (childList.length() > 0);
+            } while(childList.length() > 0);
             return new small(array);
         },
         firstChild: function(){
@@ -186,14 +205,20 @@
         },
         unique: function(){
             var array = this.nodes;
-            for(var first = 0; first < array.length - 1; first++)
-                for(var second = first + 1; second < array.length; second++)
-                    if(array[first] == array[second]) array.splice(second, 1), first--, second--;
+            for(var first = 0; first < array.length - 1; first++){
+                for(var second = first + 1; second < array.length; second++){
+                    if(array[first] == array[second]){
+                        array.splice(second, 1), first--, second--;
+                    }
+                }
+            }
             return new small(array);
         },
         merge: function(object){
             var array = this.nodes;
-            if(isOwn(object)) array = array.concat(object.nodes);
+            if(isOwn(object)){
+                array = array.concat(object.nodes);
+            }
             return new small(array);
         },
         append: function(tag){
@@ -224,16 +249,19 @@
             var result = this.length() > 0, data = arguments, length = data.length;
             if(length > 0 && ((length < 3 && result) || (length == 2 && !result))){
                 var callback = result ? data[0] : data[1];
-                if(result)
+                if(result){
                     this.each(function(object){
                         callback.call(object);
                     });
-                else callback();
+                } else{
+                    callback();
+                }
             }
             return result;
         },
         serialize: function(){
-            return this.length() > 0 ? (this.nodes[0].outerHTML || new XMLSerializer().serializeToString(this.nodes[0])) : null;
+            return this.length() > 0 ? (this.nodes[0].outerHTML || new XMLSerializer().serializeToString(this.nodes[0]))
+                : null;
         },
         replace: function(tag){
             var result = this;
@@ -257,7 +285,9 @@
             if(typeIn(tag, 'string,object')){
                 result = isOwn(tag) ? tag : small.create(tag);
                 this.each(function(object){
-                    for(var childList = object.childNodes, index = 0; index < childList.length; index++) array[array.length] = childList[index];
+                    for(var childList = object.childNodes, index = 0; index < childList.length; index++){
+                        array[array.length] = childList[index];
+                    }
                 });
                 result.append(new small(array));
                 this.append(result);
@@ -267,8 +297,9 @@
         unwrap: function(){
             var array = [];
             this.each(function(object){
-                for(var childList = object.childNodes, max = childList.length, index = 0; index < max; index++)
+                for(var childList = object.childNodes, max = childList.length, index = 0; index < max; index++){
                     array[array.length] = childList[index];
+                }
             });
             var result = new small(array);
             this.after(result), this.remove();
@@ -277,20 +308,28 @@
         remove: function(){
             this.children().unbind().empty();
             this.unbind().empty().each(function(object){
-                if(object.parentNode) object.parentNode.removeChild(object);
+                if(object.parentNode){
+                    object.parentNode.removeChild(object);
+                }
             });
             return null;
         },
         bind: function(type, callback, attach){
             if(typeIn(callback, 'function')){
-                if(typeIn(type, 'string')) type = type.replace(/\s+/g, '').split(',');
+                if(typeIn(type, 'string')){
+                    type = type.replace(/\s+/g, '').split(',');
+                }
                 if(typeIn(type, 'array')){
                     type = small.lower(small.trim(type));
-                    if(small.contain(type, eventList))
+                    if(small.contain(type, eventList)){
                         this.each(function(object){
                             small.each(type, function(value){
-                                if(!object.events) object.events = {};
-                                if(!object.events[value]) object.events[value] = [];
+                                if(!object.events){
+                                    object.events = {};
+                                }
+                                if(!object.events[value]){
+                                    object.events[value] = [];
+                                }
                                 var events = object.events[value];
                                 events[events.length] = {
                                     'callback': callback,
@@ -299,10 +338,14 @@
                                 object.handler = function(event){
                                     handler.call(object, event);
                                 };
-                                if(object.attachEvent) object.attachEvent('on'.concat(value), object.handler);
-                                else if(object.addEventListener) object.addEventListener(value, object.handler, false);
+                                if(object.attachEvent){
+                                    object.attachEvent('on'.concat(value), object.handler);
+                                } else if(object.addEventListener){
+                                    object.addEventListener(value, object.handler, false);
+                                }
                             });
                         });
+                    }
                 }
             }
             return this;
@@ -311,32 +354,39 @@
             this.each(function(object){
                 if(object.events){
                     if(type){
-                        if(typeIn(type, 'string')) type = type.replace(/\s+/g, '').split(',');
+                        if(typeIn(type, 'string')){
+                            type = type.replace(/\s+/g, '').split(',');
+                        }
                         if(typeIn(type, 'array')){
                             type = small.lower(small.trim(type));
-                            if(small.contain(type, eventList))
+                            if(small.contain(type, eventList)){
                                 small.each(type, function(current){
-                                    if(object.events[current])
+                                    if(object.events[current]){
                                         if(callback){
                                             var events = object.events[current], runFlag = true;
                                             small.each(events, function(key, value){
                                                 if(value.callback == callback && runFlag){
-                                                    if(value.detachEvent) value.detachEvent('on'.concat(value), value.handler);
-                                                    else if(value.removeEventListener) value.removeEventListener(value, value.handler, false);
+                                                    if(value.detachEvent){
+                                                        value.detachEvent('on'.concat(value), value.handler);
+                                                    } else if(value.removeEventListener){
+                                                        value.removeEventListener(value, value.handler, false);
+                                                    }
                                                     delete events[key];
                                                     runFlag = false;
                                                 }
                                             });
-                                        }else{
+                                        } else{
                                             var owner = small(object);
                                             small.each(object.events[current], function(event){
                                                 owner.unbind(current, event);
                                             });
                                             object.events[current] = [];
                                         }
+                                    }
                                 });
+                            }
                         }
-                    }else{
+                    } else{
                         var typeList = [];
                         small.each(object.events, function(key, value){
                             typeList[typeList.length] = key;
@@ -362,9 +412,9 @@
             return this.each(function(object){
                 object.toggleEvent = first;
             }).click(function(event){
-                this.toggleEvent.call(this, event);
-                this.toggleEvent = (this.toggleEvent == first) ? second : first;
-            });
+                    this.toggleEvent.call(this, event);
+                    this.toggleEvent = (this.toggleEvent == first) ? second : first;
+                });
         },
         first: function(){
             return selectDom.call(this, 'first');
@@ -431,15 +481,21 @@
             return this.length() > 0 ? small.bound(this.nodes[0]) : null;
         },
         start: function(options){
-            if(typeIn(options, 'object'))
+            if(typeIn(options, 'object')){
                 this.each(function(value){
                     var repeat = options.repeat || 1;
-                    if(!value.timer) value.timer = [];
+                    if(!value.timer){
+                        value.timer = [];
+                    }
                     var timer = value.timer[value.timer.length] = window.setInterval(function(){
-                        if(options.callback && repeat-- > 0) options.callback.call(value);
-                        else window.clearInterval(timer);
+                        if(options.callback && repeat-- > 0){
+                            options.callback.call(value);
+                        } else{
+                            window.clearInterval(timer);
+                        }
                     }, options.time || 1);
                 });
+            }
             return this;
         },
         stop: function(){
@@ -460,47 +516,63 @@
             return typeIn(name, 'string,array') && small.contain(splitArg(name), splitArg(this.getClass()));
         },
         addClass: function(name){
-            if(typeIn(name, 'string,array'))
+            if(typeIn(name, 'string,array')){
                 name = splitArg(name), this.removeClass(name).each(function(object){
                     var classList = splitArg(object.className);
                     object.className = small.trim(classList.concat(name).join(' '));
                 });
+            }
             return this;
         },
         removeClass: function(name){
-            if(name == undefined) this.attr('class', '');
-            else name = splitArg(name), this.each(function(object){
-                var classList = small.grep(small.trim(object.className.split(' ')), function(value){
-                    return !small.contain(value, name);
+            if(name == undefined){
+                this.attr('class', '');
+            } else{
+                name = splitArg(name), this.each(function(object){
+                    var classList = small.grep(small.trim(object.className.split(' ')), function(value){
+                        return !small.contain(value, name);
+                    });
+                    object.className = small.trim(classList.join(' '));
                 });
-                object.className = small.trim(classList.join(' '));
-            });
+            }
             return this;
         },
         toggleClass: function(name){
-            if(typeIn(name, 'string'))
+            if(typeIn(name, 'string')){
                 this.each(function(value){
-                    if(value.className.indexOf(name) >= 0) small.removeClass(name);
-                    else small.addClass(name);
+                    if(value.className.indexOf(name) >= 0){
+                        small.removeClass(name);
+                    } else{
+                        small.addClass(name);
+                    }
                 });
+            }
             return this;
         },
         css: function(){
-            var data = arguments, length = data.length, result = length > 0 && typeIn(data[0], 'string,object') ? this : null, matches;
-            if(length == 1 && typeIn(data[0], 'object'))
+            var data = arguments, length = data.length, result = length > 0 && typeIn(data[0], 'string,object') ? this
+                : null, matches;
+            if(length == 1 && typeIn(data[0], 'object')){
                 this.each(function(object){
                     small.each(data[0], function(style, param){
                         small(object).css(style, param);
                     });
                 });
-            else if(length <= 2 && typeIn(data[0], 'string')){
-                while ((matches = /\-([a-z]{1})/i.exec(data[0])) != null) data[0] = data[0].replace(matches[0], matches[1].toUpperCase());
-                if(data[1]) this.each(function(object){
-                    try {
-                        object.style[data[0]] = object.style[fix(data[0], 'css')] = data[1];
-                    } catch(err){}
-                });
-                else result = this.length() > 0 ? (this.nodes[0].style[data[0]] || this.nodes[0].style[fix(data[0], 'css')]) : null;
+            } else if(length <= 2 && typeIn(data[0], 'string')){
+                while((matches = /\-([a-z]{1})/i.exec(data[0])) != null){
+                    data[0] = data[0].replace(matches[0], matches[1].toUpperCase());
+                }
+                if(data[1]){
+                    this.each(function(object){
+                        try{
+                            object.style[data[0]] = object.style[fix(data[0], 'css')] = data[1];
+                        } catch(err){
+                        }
+                    });
+                } else{
+                    result = this.length() > 0
+                        ? (this.nodes[0].style[data[0]] || this.nodes[0].style[fix(data[0], 'css')]) : null;
+                }
             }
             return result;
         },
@@ -512,27 +584,36 @@
         },
         attr: function(){
             var result = this.length() > 0 ? null : this, data = arguments, length = data.length, attr;
-            if(this.length() > 0)
+            if(this.length() > 0){
                 if(length == 1 && typeIn(data[0], 'string,number')){
                     result = data[0] in this.nodes[0] ? this.nodes[0][data[0]] : this.nodes[0].getAttribute(data[0]);
-                    if(result == null) attr = fix(data[0], 'attr'), result = attr in this.nodes[0] ? this.nodes[0][attr] : this.nodes[0].getAttribute(attr);
-                }else if(length == 1 && typeIn(data[0], 'object') || (length == 2 && typeIn(data[0], 'string'))){
+                    if(result == null){
+                        attr = fix(data[0], 'attr'), result = attr in this.nodes[0] ? this.nodes[0][attr]
+                            : this.nodes[0].getAttribute(attr);
+                    }
+                } else if(length == 1 && typeIn(data[0], 'object') || (length == 2 && typeIn(data[0], 'string'))){
                     result = this.each(function(object){
-                        if(length == 2) try {
-                            object[data[0]] = data[1];
-                            object[fix(data[0], 'attr')] = data[1];
-                            object.setAttribute(data[0], data[1])
-                        } catch(err){}
-                        else small.each(data[0], function(key, value){
-                            small(object).attr(key, value);
-                        });
+                        if(length == 2){
+                            try{
+                                object[data[0]] = data[1];
+                                object[fix(data[0], 'attr')] = data[1];
+                                object.setAttribute(data[0], data[1])
+                            } catch(err){
+                            }
+                        } else{
+                            small.each(data[0], function(key, value){
+                                small(object).attr(key, value);
+                            });
+                        }
                     });
                 }
+            }
             return result;
         },
         hasAttr: function(attr){
             var value;
-            return (arguments.length == 1 && typeIn(arguments[0], 'string,number')) ? (typeIn(value = this.attr(attr), 'string,number') && value.length > 0) : null;
+            return (arguments.length == 1 && typeIn(arguments[0], 'string,number'))
+                ? (typeIn(value = this.attr(attr), 'string,number') && value.length > 0) : null;
         },
         removeAttr: function(attr){
             return this.length() > 0 ? this.each(function(object){
@@ -542,22 +623,27 @@
             }) : null;
         },
         id: function(){
-            var data = arguments, length = data.length, result = length == 1 ? null : (this.length() > 0 && ('id' in this.nodes[0]) ? this.nodes[0].id : null);
-            if(typeIn(data[0], 'string'))
+            var data = arguments, length = data.length, result = length == 1 ? null
+                : (this.length() > 0 && ('id' in this.nodes[0]) ? this.nodes[0].id : null);
+            if(typeIn(data[0], 'string')){
                 result = this.each(function(object){
                     object.setAttribute('id', data[0]);
                 });
+            }
             return result;
         },
         opacity: function(number){
             var result = this;
-            if(typeIn(number, 'number'))
+            if(typeIn(number, 'number')){
                 number = Math.ceil(number), result = this.each(function(object){
-                    if(small.browser() == 'msie'){
+                    if(small.browser() == 'msie' && small.version() < 9){
                         object.style.zoom = 1;
                         object.style.filter = 'alpha(opacity='.concat(number, ')');
-                    } else object.style.opacity = (number / 100).toFixed(2);
+                    } else{
+                        object.style.opacity = (number / 100).toFixed(2);
+                    }
                 });
+            }
             return result;
         },
         hide: function(){
@@ -575,11 +661,11 @@
             return typeIn(selector, 'string') ? small.find(selector, this) : null;
         },
         condition: function(condition, callback1, callback2){
-            if(typeIn(condition, 'boolean')
-                && ((condition && typeIn(callback1, 'function')) || (!condition && typeIn(callback2, 'function'))))
+            if(typeIn(condition, 'boolean') && ((condition && typeIn(callback1, 'function')) || (!condition && typeIn(callback2, 'function')))){
                 this.each(function(object){
                     (condition ? callback1 : callback2).call(object);
                 });
+            }
             return this;
         },
         isOwn: function(){
@@ -588,13 +674,16 @@
         toString: function(){
             var result = '';
             this.each(function(object){
-                result = result.concat('[', object.nodeName, object.id ? ', id='.concat(object.id) : '', object.className ? ', class='.concat(object.className) : '', "]\n");
+                result = result.concat('[', object.nodeName, object.id ? ', id='.concat(object.id)
+                    : '', object.className ? ', class='.concat(object.className) : '', "]\n");
             });
             return result.length > 0 ? result : '[Null]';
         }
     };
     small.context = function(callback, context){
-        if(typeIn(callback, 'function') && typeIn(context, 'object')) callback.call(context);
+        if(typeIn(callback, 'function') && typeIn(context, 'object')){
+            callback.call(context);
+        }
         return this;
     };
     small.create = function(line){
@@ -608,17 +697,26 @@
                 });
                 if(line.length == 0){
                     var object = document.createElement(tag[0]);
-                    if(id) object.setAttribute('id', id[0].replace('#', ''));
-                    if(classes && classes.length > 0) classes = small.proceed(classes, function(object){
-                        return object.replace('.', '');
-                    }), object.className = small.trim(classes.join(' '));
-                    if(attrs && attrs.length > 0) small.each(attrs, function(item){
-                        var matches = /\[([a-z0-9_-]+)=([^\]]+)\]/.exec(item);
-                        try {
-                            object[fix(matches[1], 'attr')] = matches[2];
-                        } catch(err){}
-                    });
-                    if(content) object.appendChild(document.createTextNode(content[0].replace(/^:/, '')));
+                    if(id){
+                        object.setAttribute('id', id[0].replace('#', ''));
+                    }
+                    if(classes && classes.length > 0){
+                        classes = small.proceed(classes, function(object){
+                            return object.replace('.', '');
+                        }), object.className = small.trim(classes.join(' '));
+                    }
+                    if(attrs && attrs.length > 0){
+                        small.each(attrs, function(item){
+                            var matches = /\[([a-z0-9_-]+)=([^\]]+)\]/.exec(item);
+                            try{
+                                object[fix(matches[1], 'attr')] = matches[2];
+                            } catch(err){
+                            }
+                        });
+                    }
+                    if(content){
+                        object.appendChild(document.createTextNode(content[0].replace(/^:/, '')));
+                    }
                     result = [object];
                 }
             }
@@ -638,18 +736,25 @@
         return small(window);
     };
     small.browser = function(){
-        return window.navigator.userAgent.toLowerCase().replace(/^.*(msie|firefox|chrome).*$/, '$1').replace(/^.*(opera|safari|mozilla).*$/, '$1');
+        return window.navigator
+            ? window.navigator.userAgent.toLowerCase().replace(/^.*(msie|firefox|chrome).*$/, '$1').replace(/^.*(opera|safari|mozilla).*$/, '$1')
+            : null;
     };
     small.version = function(){
-        return window.navigator.userAgent.replace(/^.*(?:msie|firefox|chrome)(?:\s|\/)([\d\.]+).*$/i, '$1').replace(/^.*(?:version|mozilla)\/([\d\.]+).*$/i, '$1');
+        return window.navigator
+            ? window.navigator.userAgent.replace(/^.*(?:msie|firefox|chrome)(?:\s|\/)([\d\.]+).*$/i, '$1').replace(/^.*(?:version|mozilla)\/([\d\.]+).*$/i, '$1')
+            : null;
     };
     small.language = function(){
         return (window.navigator.userLanguage || window.navigator.language || 'en').replace(/-[a-z]+$/i, '').toLowerCase();
     };
     small.start = function(options){
         var repeat = options.repeat || 1, timer = window.setInterval(function(){
-            if(options.callback && repeat-- > 0) options.callback();
-            else window.clearInterval(timer);
+            if(options.callback && repeat-- > 0){
+                options.callback();
+            } else{
+                window.clearInterval(timer);
+            }
         }, options.time || 1);
         return timer;
     };
@@ -658,68 +763,81 @@
         return this;
     };
     small.each = function(object, callback){
-        if(typeIn(object, 'object,array') && object != null && typeIn(callback, 'function') && callback.length < 3)
+        if(typeIn(object, 'object,array') && object != null && typeIn(callback, 'function') && callback.length < 3){
             if('length' in object){
-                for(var index = 0; index < object.length; index++)
-                    if(object[index] != undefined)
-                        if(callback.length == 1) callback.call(object, object[index]);
-                        else callback.call(object, index, object[index]);
-            }else
-                for(var key in object)
-                    if(callback.length == 1) callback.call(object, object[key]);
-                    else callback.call(object, key, object[key]);
+                for(var index = 0; index < object.length; index++){
+                    if(object[index] != undefined){
+                        if(callback.length == 1){
+                            callback.call(object, object[index]);
+                        } else{
+                            callback.call(object, index, object[index]);
+                        }
+                    }
+                }
+            } else{
+                for(var key in object){
+                    if(callback.length == 1){
+                        callback.call(object, object[key]);
+                    } else{
+                        callback.call(object, key, object[key]);
+                    }
+                }
+            }
+        }
         return this;
     };
     small.grep = function(object, callback){
         var array = [];
-        if(typeIn(object, 'object,array') && typeIn(callback, 'function') && callback.length < 3)
+        if(typeIn(object, 'object,array') && typeIn(callback, 'function') && callback.length < 3){
             small.each(object, function(key, value){
-                if((callback.length == 2 && callback.call(object, key, value)) || (callback.length == 1 && callback.call(object, value))) array[array.length] = value;
+                if((callback.length == 2 && callback.call(object, key, value)) || (callback.length == 1 && callback.call(object, value))){
+                    array[array.length] = value;
+                }
             });
+        }
         return array;
     };
     small.ajax = function(options){
         var request = null;
         if(typeIn(options, 'object')){
-            var method = (options.method || 'get').toUpperCase(),
-            url = options.url || small.url(),
-            callback = options.callback || function(){},
-            error = options.error || function(){},
-            async = options.async || true,
-            user = options.user || null,
-            password = options.password || null,
-            timeout = options.timeout || 0,
-            types = {
+            var method = (options.method || 'get').toUpperCase(), url = options.url || small.url(), callback = options.callback || function(){
+            }, error = options.error || function(){
+            }, async = options.async || true, user = options.user || null, password = options.password || null, timeout = options.timeout || 0, types = {
                 'html': 'text/html',
                 'text': 'text/plain',
                 'xml': 'application/xml, text/xml',
                 'json': 'application/json, text/javascript',
                 'script': 'text/javascript, application/javascript',
                 'default': 'application/x-www-form-urlencoded'
-            },
-            contentType = types[options.contentType] || types['default'],
-            charset = options.charset || 'UTF-8',
-            dataType = types[options.dataType] || '*\/*',
-            requestHeaders = options.requestHeaders || null,
-            params = null;
-            if(options.params)
+            }, contentType = types[options.contentType] || types['default'], charset = options.charset || 'UTF-8', dataType = types[options.dataType] || '*\/*', requestHeaders = options.requestHeaders || null, params = null;
+            if(options.params){
                 params = [], small.each(options.params, function(key, value){
                     params[params.length] = key.concat('=', encodeURIComponent(value));
                 }), params = params.join('&');
-            try {
+            }
+            try{
                 request = window.ActiveXObject ? new ActiveXObject('Microsoft.XMLHTTP') : new XMLHttpRequest();
                 request.onreadystatechange = function(){
-                    if(request.readyState == 4)
-                        if(request.status == 200) callback(request.responseText, request);
-                        else error(request.statusText, request);
+                    if(request.readyState == 4){
+                        if(request.status == 200){
+                            callback(request.responseText, request);
+                        } else{
+                            error(request.statusText, request);
+                        }
+                    }
                 };
-                request.open(method, method == 'GET' && params ? url.concat(url.indexOf('?') > 0 ? '&' : '?', params) : url, async, user, password);
+                request.open(method, method == 'GET' && params ? url.concat(url.indexOf('?') > 0 ? '&' : '?', params)
+                    : url, async, user, password);
                 request.setRequestHeader('Accept', dataType);
                 request.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
                 request.setRequestHeader('Content-Type', contentType.concat('; ', charset));
-                if(requestHeaders) for(var name in requestHeaders) request.setRequestHeader(name, requestHeaders[name]);
+                if(requestHeaders){
+                    for(var name in requestHeaders){
+                        request.setRequestHeader(name, requestHeaders[name]);
+                    }
+                }
                 request.send(method == 'GET' ? null : params);
-                if(async && timeout > 0)
+                if(async && timeout > 0){
                     var timer = setTimeout(function(){
                         if(request.readyState != 4){
                             request.abort();
@@ -727,49 +845,60 @@
                             clearTimeout(timer);
                         }
                     }, timeout);
+                }
             } catch(err){
                 error(err);
             }
         }
         return {
             abort: function(){
-                if(request != null) request.abort();
+                if(request != null){
+                    request.abort();
+                }
             }
         };
     };
     small.json = function(options){
         var link = null;
         if(typeIn(options, 'object')){
-            var name = '', url = options.url || small.url(), timeout = options.timeout || 0, params = [],
-            alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', callback = options.callback || function(){};
-            for(var index = 0; index < 15; index++) name += alpha.charAt(Math.ceil(Math.random() * alpha.length));
+            var name = '', url = options.url || small.url(), timeout = options.timeout || 0, params = [
+            ], alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', callback = options.callback || function(){
+            };
+            for(var index = 0; index < 15; index++){
+                name += alpha.charAt(Math.ceil(Math.random() * alpha.length));
+            }
             params[params.length] = 'callback='.concat(name);
-            if(options.params)
+            if(options.params){
                 small.each(options.params, function(key, value){
                     params[params.length] = key.concat('=', encodeURIComponent(value));
                 });
+            }
             link = url.concat(url.indexOf('?') > 0 ? '&' : '?', params.join('&'));
             eval(name.concat(' = function(response){callback(response);small.removeScript(link);};'));
             small.loadScript(link);
-            if(timeout > 0)
+            if(timeout > 0){
                 var timer = setTimeout(function(){
                     small.removeScript(link);
                     clearTimeout(timer);
                 }, timeout);
+            }
         }
         return {
             abort: function(){
-                if(link != null) small.removeScript(link);
+                if(link != null){
+                    small.removeScript(link);
+                }
             }
         }
     };
     small.loadCss = function(url){
-        if(typeIn(url, 'string') && !small.containCss(url))
+        if(typeIn(url, 'string') && !small.containCss(url)){
             small('head').append('link').attr({
                 'href': url,
                 'type': 'text/css',
                 'rel': 'stylesheet'
             });
+        }
         return this;
     };
     small.removeCss = function(url){
@@ -789,7 +918,7 @@
         return small.contain(url, small.listCss());
     };
     small.loadScript = function(url, callback){
-        if(typeIn(url, 'string'))
+        if(typeIn(url, 'string')){
             if(!small.containScript(url)){
                 var script = small('head').append('script').attr({
                     'src': url,
@@ -798,18 +927,28 @@
                 if(typeIn(callback, 'function')){
                     var handler = function(){
                         if(/loaded|complete/.test(script.readyState)){
-                            if(script.detachEvent) script.detachEvent('onreadystatechange', handler);
-                            else if(script.removeEventListener) script.removeEventListener('load', handler, false);
+                            if(script.detachEvent){
+                                script.detachEvent('onreadystatechange', handler);
+                            } else if(script.removeEventListener){
+                                script.removeEventListener('load', handler, false);
+                            }
                             callback.call(script);
                         }
                     };
-                    if(script.attachEvent) script.attachEvent('onreadystatechange', handler);
-                    else if(script.addEventListener) script.addEventListener('load', handler, false);
+                    if(script.attachEvent){
+                        script.attachEvent('onreadystatechange', handler);
+                    } else if(script.addEventListener){
+                        script.addEventListener('load', handler, false);
+                    }
                 }
-            } else if(typeIn(callback, 'function'))
+            } else if(typeIn(callback, 'function')){
                 small.each(small.listScript(), function(object){
-                    if(object == url) callback.call(object);
+                    if(object == url){
+                        callback.call(object);
+                    }
                 });
+            }
+        }
         return this;
     };
     small.removeScript = function(url){
@@ -835,8 +974,10 @@
                 date.setTime(date.getTime() + options.expires * 86400000);
                 options.expires = date.toGMTString();
             }
-            document.cookie = options.name.concat('=', escape(options.value), ((options.expires) ? '; expires='.concat(options.expires) : ''),
-                '; path=', ((options.path) ? options.path : '/'), ((options.domain) ? '; domain='.concat(options.domain) : ''), ((options.secure) ? '; secure' : ''));
+            document.cookie = options.name.concat('=', escape(options.value), ((options.expires)
+                ? '; expires='.concat(options.expires) : ''), '; path=', ((options.path) ? options.path
+                : '/'), ((options.domain) ? '; domain='.concat(options.domain) : ''), ((options.secure) ? '; secure'
+                : ''));
         }
         return this;
     };
@@ -846,16 +987,22 @@
             var cookie = document.cookie, search = name.concat('='), start = 0, end = 0;
             if(cookie.length > 0 && (start = cookie.indexOf(search)) >= 0){
                 end = cookie.indexOf(';', (start += search.length));
-                if(end == -1) end = cookie.length;
+                if(end == -1){
+                    end = cookie.length;
+                }
                 result = unescape(cookie.substring(start, end));
             }
         }
         return result;
     };
     small.removeCookie = function(options){
-        if(typeIn(options, 'object'))
-            if(small.cookie.get(options.name))
-                document.cookie = options.name.concat('=', ((options.path) ? '; path='.concat(options.path) : ''), ((options.domain) ? '; domain='.concat(options.domain) : ''), '; expires=Thu, 01-Jan-70 00:00:01 GMT');
+        if(typeIn(options, 'object')){
+            if(small.cookie.get(options.name)){
+                document.cookie = options.name.concat('=', ((options.path) ? '; path='.concat(options.path)
+                    : ''), ((options.domain) ? '; domain='.concat(options.domain)
+                    : ''), '; expires=Thu, 01-Jan-70 00:00:01 GMT');
+            }
+        }
         return this;
     };
     small.enabledCookie = function(){
@@ -875,38 +1022,59 @@
     };
     small.find = function(selector, context){
         var result = null, array, list, length, index, item, objClass, tags;
-        if(!context) context = [document];
+        if(!context){
+            context = [document];
+        }
         if(typeIn(selector, 'string') && typeIn(context, 'object,array')){
-            result = [], context = typeIn(context.nodes, 'array') ? context.nodes : context, list = small.trim(selector.split(','));
+            result = [], context = typeIn(context.nodes, 'array') ? context.nodes
+                : context, list = small.trim(selector.split(','));
             small.each(context, function(object){
                 small.each(list, function(line){
-                    var array = [], tag = line.match(/^[a-z]+\d*/), id = line.match(/[*^$!]*#[0-9a-z_-]+/g), classes = line.match(/[*^$!]*\.[0-9a-z_-]+/g), attrs = line.match(/\[[a-z0-9_-]+([*^$!]*=[^\]]+)?\]/g), content = line.match(/[*^$!]*:[^:]+$/g);
+                    var array = [
+                    ], tag = line.match(/^[a-z]+\d*/), id = line.match(/[*^$!]*#[0-9a-z_-]+/g), classes = line.match(/[*^$!]*\.[0-9a-z_-]+/g), attrs = line.match(/\[[a-z0-9_-]+([*^$!]*=[^\]]+)?\]/g), content = line.match(/[*^$!]*:[^:]+$/g);
                     tag = tag ? tag[0].toUpperCase() : '*';
-                    if(id) id = /([*^$!]*)#([0-9a-z_-]+)/.exec(id[0]);
-                    if(classes) classes = small.proceed(classes, function(object){
-                        return /([*^$!]*)\.([0-9a-z_-]+)/.exec(object);
-                    });
-                    if(attrs) attrs = small.proceed(attrs, function(object){
-                        return /\[([a-z0-9_-]+)(?:([*^$!]*)=([^\]]+))?\]/.exec(object);
-                    });
-                    if(content) content = /([*^$!]*):([^:]+)$/.exec(content[0]);
+                    if(id){
+                        id = /([*^$!]*)#([0-9a-z_-]+)/.exec(id[0]);
+                    }
+                    if(classes){
+                        classes = small.proceed(classes, function(object){
+                            return /([*^$!]*)\.([0-9a-z_-]+)/.exec(object);
+                        });
+                    }
+                    if(attrs){
+                        attrs = small.proceed(attrs, function(object){
+                            return /\[([a-z0-9_-]+)(?:([*^$!]*)=([^\]]+))?\]/.exec(object);
+                        });
+                    }
+                    if(content){
+                        content = /([*^$!]*):([^:]+)$/.exec(content[0]);
+                    }
                     tags = object.querySelectorAll ? object.querySelectorAll(tag) : object.getElementsByTagName(tag);
-                    for(index = 0, length = tags.length; index < length; index++) array[array.length] = tags[index];
+                    for(index = 0, length = tags.length; index < length; index++){
+                        array[array.length] = tags[index];
+                    }
                     for(index = 0, length = array.length; index < length; index++){
-                        item = array[index], objClass = item.className ? small.trim(item.className.replace(/\s+/g, ' ')) : '';
-                        if((id && (!item.id || !check(id[1], id[2], item.id)))
-                            || (classes && small.grep([objClass], function(curClass){
-                                for(var curClasses = classes.concat(), flag = true, total = curClasses.length, num = 0; flag && num < total; num++) flag = flag && check(curClasses[num][1], curClasses[num][2], curClass);
-                                return flag;
-                            }).length == 0)
-                            || (attrs && small.grep([item], function(curObject){
-                                for(var curAttrs = attrs.concat(), flag = true, total = curAttrs.length, num = 0; flag && num < total; num++)
-                                    if(flag && ((curAttrs[num][3] == undefined && !small.typeIn(curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]], 'string'))
-                                        || (curAttrs[num][3] != undefined && !check(curAttrs[num][2], curAttrs[num][3], curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]] || '', 'condition'))))
-                                        flag = false, curAttrs.splice(num, 1), num--, total--;
-                                return flag;
-                            }).length == 0)
-                            || (content && !check(content[1], content[2], item.innerHTML, 'condition'))) array.splice(index, 1), index--, length--;
+                        item = array[index], objClass = item.className ? small.trim(item.className.replace(/\s+/g, ' '))
+                            : '';
+                        if((id && (!item.id || !check(id[1], id[2], item.id))) || (classes && small.grep([
+                            objClass
+                        ],function(curClass){
+                            for(var curClasses = classes.concat(), flag = true, total = curClasses.length, num = 0;
+                                flag && num < total; num++){
+                                flag = flag && check(curClasses[num][1], curClasses[num][2], curClass);
+                            }
+                            return flag;
+                        }).length == 0) || (attrs && small.grep([item],function(curObject){
+                            for(var curAttrs = attrs.concat(), flag = true, total = curAttrs.length, num = 0;
+                                flag && num < total; num++){
+                                if(flag && ((curAttrs[num][3] == undefined && !small.typeIn(curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]], 'string')) || (curAttrs[num][3] != undefined && !check(curAttrs[num][2], curAttrs[num][3], curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]] || '', 'condition')))){
+                                    flag = false, curAttrs.splice(num, 1), num--, total--;
+                                }
+                            }
+                            return flag;
+                        }).length == 0) || (content && !check(content[1], content[2], item.innerHTML, 'condition'))){
+                            array.splice(index, 1), index--, length--;
+                        }
                     }
                     result = result.concat(array);
                 });
@@ -915,10 +1083,15 @@
         }
         function check(type, line, value, method){
             var result = false;
-            if(!method || method == 'regexp') result = (new RegExp((/^\^?$/.test(type) ? "\\s" : '')  + line + (/^\$?$/.test(type) ? "\\s" : ''))).test(' ' + value + ' '), result = type == '!' ? !result : result;
-            else if(method == 'condition') result = ((type == '' && line == value) || (type == '*' && value.indexOf(line) > 0) || (type == '^' && value.indexOf(line) == 0) || (type == '$' && value.indexOf(line) == value.length - line.length) || (type == '!' && line != value));
+            if(!method || method == 'regexp'){
+                result = (new RegExp((/^\^?$/.test(type) ? "\\s" : '') + line + (/^\$?$/.test(type) ? "\\s"
+                    : ''))).test(' ' + value + ' '), result = type == '!' ? !result : result;
+            } else if(method == 'condition'){
+                result = ((type == '' && line == value) || (type == '*' && value.indexOf(line) > 0) || (type == '^' && value.indexOf(line) == 0) || (type == '$' && value.indexOf(line) == value.length - line.length) || (type == '!' && line != value));
+            }
             return result;
         }
+
         return result;
     };
     small.trim = function(value, type){
@@ -928,7 +1101,8 @@
                 'left': /^\s+/g,
                 'right': /\s+$/g
             };
-            return typeIn(item, 'string') ? item.replace(types[typeIn(type, 'string') && (type in types) ? type : 'full'], '') : item;
+            return typeIn(item, 'string') ? item.replace(types[typeIn(type, 'string') && (type in types) ? type
+                : 'full'], '') : item;
         });
         return this;
     };
@@ -956,7 +1130,7 @@
         var result = null;
         if(typeIn(object, 'object')){
             var current = object, left = 0, top = 0;
-            while (current){
+            while(current){
                 left += current.offsetLeft;
                 top += current.offsetTop;
                 current = current.offsetParent;
@@ -990,12 +1164,13 @@
         function getComputedProp(style){
             var value = 0;
 
-            if (object.currentStyle)
+            if(object.currentStyle){
                 value = object.currentStyle[fix(style, 'css')];
-            else if (window.getComputedStyle)
+            } else if(window.getComputedStyle){
                 value = window.getComputedStyle(object, null).getPropertyValue(style);
-            else
+            } else{
                 value = object.style[style] || object.style[fix(style, 'css')];
+            }
 
             return parseInt(value.replace(/[^\d]+/g, ''), 10);
         }
@@ -1004,16 +1179,22 @@
     };
     small.viewport = function(){
         return {
-            'width': window.innerWidth ? window.innerWidth : (document.documentElement.clientWidth ? document.documentElement.clientWidth : document.body.offsetWidth),
-            'height': window.innerHeight ? window.innerHeight : (document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.offsetHeight)
+            'width': window.innerWidth ? window.innerWidth : (document.documentElement.clientWidth
+                ? document.documentElement.clientWidth : document.body.offsetWidth),
+            'height': window.innerHeight ? window.innerHeight : (document.documentElement.clientHeight
+                ? document.documentElement.clientHeight : document.body.offsetHeight)
         };
     };
     small.page = function(){
         return {
-            'width': (document.body.scrollWidth > document.body.offsetWidth) ? document.body.scrollWidth : document.body.offsetWidth,
-            'height': (document.body.scrollHeight > document.body.offsetHeight) ? document.body.scrollHeight : document.body.offsetHeight,
-            'left': self.pageXOffset ? self.pageXOffset : (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft),
-            'top': self.pageYOffset ? self.pageYOffset : (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop)
+            'width': (document.body.scrollWidth > document.body.offsetWidth) ? document.body.scrollWidth
+                : document.body.offsetWidth,
+            'height': (document.body.scrollHeight > document.body.offsetHeight) ? document.body.scrollHeight
+                : document.body.offsetHeight,
+            'left': self.pageXOffset ? self.pageXOffset : (document.documentElement.scrollLeft
+                ? document.documentElement.scrollLeft : document.body.scrollLeft),
+            'top': self.pageYOffset ? self.pageYOffset : (document.documentElement.scrollTop
+                ? document.documentElement.scrollTop : document.body.scrollTop)
         };
     };
     small.center = function(){
@@ -1033,15 +1214,17 @@
     small.domain = function(){
         return document.location.hostname;
     };
-    small.base = function() {
+    small.base = function(){
         var base = small('base'), result;
-        if(base.length() > 0) result = base.attr('href');
-        else {
+        if(base.length() > 0){
+            result = base.attr('href');
+        } else{
             result = document.location.protocol + '//' + document.location.hostname + '/';
-            if (document.location.hostname == 'localhost') {
+            if(document.location.hostname == 'localhost'){
                 var position = null, query = document.location.href.replace(result, '');
-                if ((position = query.indexOf('/')) > -1)
+                if((position = query.indexOf('/')) > -1){
                     result += query.substring(0, position) + '/';
+                }
             }
         }
         return result;
@@ -1054,9 +1237,8 @@
         return (position = request.indexOf('#')) > 0 ? request.substring(position + 1) : '';
     };
     small.urlParams = function(){
-        var result = {}, request = small.url(), position,
-        get = (position = request.indexOf('?')) > 0 ? get = request.substring(position + 1) : '',
-        list = get.replace('#'.concat(small.anchor()), '').split('&');
+        var result = {}, request = small.url(), position, get = (position = request.indexOf('?')) > 0
+            ? get = request.substring(position + 1) : '', list = get.replace('#'.concat(small.anchor()), '').split('&');
         small.each(list, function(value){
             var param = value.split('=');
             result[param[0]] = param[1];
@@ -1065,25 +1247,37 @@
     };
     small.redirect = function(link, unstore){
         if(typeIn(link, 'string')){
-            if(!/^[a-z0-9]{2,6}:\/\//.test(link)) link = small.base() + link;
-            if(typeIn(unstore, 'boolean') && unstore) document.location.replace(link);
-            else document.location.href = link;
+            if(!/^[a-z0-9]{2,6}:\/\//.test(link)){
+                link = small.base() + link;
+            }
+            if(typeIn(unstore, 'boolean') && unstore){
+                document.location.replace(link);
+            } else{
+                document.location.href = link;
+            }
         }
     };
     small.reload = function(withRequest){
-        (typeIn(withRequest, 'boolean') ? withRequest : true) ? document.location.reload() : (document.location.href = document.location.href);
+        (typeIn(withRequest, 'boolean') ? withRequest : true) ? document.location.reload()
+            : (document.location.href = document.location.href);
     };
     small.contain = function(what, where){
         var result = false;
-        if(typeIn(where, 'object,array'))
-            if(typeIn(what, 'object,array'))
+        if(typeIn(where, 'object,array')){
+            if(typeIn(what, 'object,array')){
                 small.each(what, function(current){
-                    if(small.contain(current, where)) result = true;
+                    if(small.contain(current, where)){
+                        result = true;
+                    }
                 });
-            else
+            } else{
                 small.each(where, function(value){
-                    if(value == what) result = true;
+                    if(value == what){
+                        result = true;
+                    }
                 });
+            }
+        }
         return result;
     };
     small.merge = function(){
@@ -1095,27 +1289,32 @@
     };
     small.unique = function(array){
         var result = [];
-        if(typeIn(array, 'object,array') && array.length)
+        if(typeIn(array, 'object,array') && array.length){
             small.each(array, function(value){
-                if(!small.contain(value, result)) result[result.length] = value;
+                if(!small.contain(value, result)){
+                    result[result.length] = value;
+                }
             });
+        }
         return result;
     };
     small.shuffle = function(array, deep){
         if(typeIn(array, 'object,array') && array.length){
-            if(/^\d{,3}$/.test(deep)) deep = 1;
-            for(var step = 0; step < deep; step++)
+            if(/^\d{,3}$/.test(deep)){
+                deep = 1;
+            }
+            for(var step = 0; step < deep; step++){
                 for(var first = 0; first < array.length; first++){
                     var second = Math.ceil(Math.random() * (array.length - 1)), temp = array[first];
                     array[first] = array[second], array[second] = temp;
                 }
+            }
         }
         return array;
     };
     small.post = function(options){
         if(typeIn(options, 'object')){
-            var url = options.url || small.url(),
-            form = small.create('form').attr({
+            var url = options.url || small.url(), form = small.create('form').attr({
                 'action': url,
                 'method': 'post'
             });
@@ -1134,23 +1333,30 @@
         var result = false;
         if(typeof(list) == 'string'){
             var type = typeof(object);
-            if(type == 'object') type = object == null ? 'null' : (object instanceof Array ? 'array' : 'object');
+            if(type == 'object'){
+                type = object == null ? 'null' : (object instanceof Array ? 'array' : 'object');
+            }
             list = list.toLocaleString().replace(/\s+/g, '').split(',');
             var length = list.length;
-            for(var index = 0; index < length; index++)
+            for(var index = 0; index < length; index++){
                 if(type == list[index]){
                     result = true;
                     break;
                 }
+            }
         }
         return result;
     };
     var proceed = small.proceed = function(object, callback){
         var result = null;
-        if(typeIn(object, 'string,number,null')) result = callback.call(object, object);
-        else if(typeIn(object, 'object,array')) small.each(object, function(key, current){
-            object[key] = callback.length == 1 ? callback.call(object, current) : callback.call(object, key, current);
-        }), result = object;
+        if(typeIn(object, 'string,number,null')){
+            result = callback.call(object, object);
+        } else if(typeIn(object, 'object,array')){
+            small.each(object, function(key, current){
+                object[key] = callback.length == 1 ? callback.call(object, current)
+                    : callback.call(object, key, current);
+            }), result = object;
+        }
         return result;
     };
     var isOwn = function(object){
@@ -1158,88 +1364,134 @@
     };
     var joinDom = function(tag, type){
         var result = null, array = [];
-        if(typeIn(tag, 'string,object'))
-            if(/^(append|prepend)$/.test(type))
+        if(typeIn(tag, 'string,object')){
+            if(/^(append|prepend)$/.test(type)){
                 this.each(function(object){
-                    if(typeIn(tag, 'string')) array[array.length] = type == 'append' ? object.appendChild(small.create(tag).node()) : object.insertBefore(small.create(tag).node(), object.firstChild);
-                    else if(typeIn(tag, 'object'))
-                        if(typeIn(tag.nodes, 'array'))
+                    if(typeIn(tag, 'string')){
+                        array[array.length] = type == 'append' ? object.appendChild(small.create(tag).node())
+                            : object.insertBefore(small.create(tag).node(), object.firstChild);
+                    } else if(typeIn(tag, 'object')){
+                        if(typeIn(tag.nodes, 'array')){
                             tag.each(function(current){
-                                array[array.length] = type == 'append' ? object.appendChild(current) : object.insertBefore(current, object.firstChild);
+                                array[array.length] = type == 'append' ? object.appendChild(current)
+                                    : object.insertBefore(current, object.firstChild);
                             });
-                        else array[array.length] =  type == 'append' ? object.appendChild(tag) : array[array.length] = object.insertBefore(tag, object.firstChild);
+                        } else{
+                            array[array.length] = type == 'append' ? object.appendChild(tag)
+                                : array[array.length] = object.insertBefore(tag, object.firstChild);
+                        }
+                    }
                 }), result = new small(array);
-            else if(/^(append|prepend)To$/.test(type))
-                result = typeIn(tag, 'string') ? small.find(tag) : (isOwn(tag) ? tag : new small(tag)), type == 'appendTo' ? result.append(this) : result.prepend(this);
-            else if(/^(after|before)$/.test(type))
+            } else if(/^(append|prepend)To$/.test(type)){
+                result = typeIn(tag, 'string') ? small.find(tag) : (isOwn(tag) ? tag
+                    : new small(tag)), type == 'appendTo' ? result.append(this) : result.prepend(this);
+            } else if(/^(after|before)$/.test(type)){
                 this.each(function(object){
-                    if(typeIn(tag, 'string')) array[array.length] = object.parentNode.insertBefore(small.create(tag).node(), type == 'after' ? object.nextSibling : object);
-                    else if(typeIn(tag, 'object'))
-                        if(typeIn(tag.nodes, 'array'))
+                    if(typeIn(tag, 'string')){
+                        array[array.length] = object.parentNode.insertBefore(small.create(tag).node(), type == 'after'
+                            ? object.nextSibling : object);
+                    } else if(typeIn(tag, 'object')){
+                        if(typeIn(tag.nodes, 'array')){
                             tag.each(function(current){
-                                array[array.length] = object.parentNode.insertBefore(current, type == 'after' ? object.nextSibling : object);
+                                array[array.length] = object.parentNode.insertBefore(current, type == 'after'
+                                    ? object.nextSibling : object);
                             });
-                        else array[array.length] = object.parentNode.insertBefore(tag, type == 'after' ? object.nextSibling : object);
+                        } else{
+                            array[array.length] = object.parentNode.insertBefore(tag, type == 'after'
+                                ? object.nextSibling : object);
+                        }
+                    }
                 }), result = new small(array);
-            else if(/^insert(After|Before)$/.test(type))
-                result = typeIn(tag, 'string') ? small.find(tag) : (isOwn(tag) ? tag : new small(tag)), type == 'insertAfter' ? result.after(this) : result.before(this);
+            } else if(/^insert(After|Before)$/.test(type)){
+                result = typeIn(tag, 'string') ? small.find(tag) : (isOwn(tag) ? tag
+                    : new small(tag)), type == 'insertAfter' ? result.after(this) : result.before(this);
+            }
+        }
         return result;
     };
     var childDom = function(type){
         var array = [], getNext;
-        if(/^(firstChild|lastChild|next|prev)$/.test(type))
+        if(/^(firstChild|lastChild|next|prev)$/.test(type)){
             this.each(function(object){
-                try {
-                    if(type == 'firstChild') array[array.length] = 'childElementCount' in object ? object.firstElementChild : object.firstChild;
-                    else if(type == 'lastChild') array[array.length] = 'childElementCount' in object ? object.lastElementChild : object.lastChild;
-                    else if(type == 'next') array[array.length] = 'childElementCount' in object ? object.nextElementSibling : object.nextSibling;
-                    else if(type == 'prev') array[array.length] = 'childElementCount' in object ? object.previousElementSibling : object.previousSibling;
-                } catch(err){}
+                try{
+                    if(type == 'firstChild'){
+                        array[array.length] = 'childElementCount' in object ? object.firstElementChild
+                            : object.firstChild;
+                    } else if(type == 'lastChild'){
+                        array[array.length] = 'childElementCount' in object ? object.lastElementChild
+                            : object.lastChild;
+                    } else if(type == 'next'){
+                        array[array.length] = 'childElementCount' in object ? object.nextElementSibling
+                            : object.nextSibling;
+                    } else if(type == 'prev'){
+                        array[array.length] = 'childElementCount' in object ? object.previousElementSibling
+                            : object.previousSibling;
+                    }
+                } catch(err){
+                }
             });
-        else if(/^(next|prev)All$/.test(type))
+        } else if(/^(next|prev)All$/.test(type)){
             this.each(function(object){
                 if('childElementCount' in object){
-                    if(type == 'nextAll') getNext = function(object){
-                        return object.nextElementSibling
-                    }; else getNext = function(object){
-                        return object.previousElementSibling
-                    };
-                }else{
-                    if(type == 'nextAll') getNext = function(object){
-                        return object.nextSibling
-                    }; else getNext = function(object){
-                        return object.previousSibling
-                    };
+                    if(type == 'nextAll'){
+                        getNext = function(object){
+                            return object.nextElementSibling
+                        };
+                    } else{
+                        getNext = function(object){
+                            return object.previousElementSibling
+                        };
+                    }
+                } else{
+                    if(type == 'nextAll'){
+                        getNext = function(object){
+                            return object.nextSibling
+                        };
+                    } else{
+                        getNext = function(object){
+                            return object.previousSibling
+                        };
+                    }
                 }
-                while ((object = getNext(object)) != null)
-                    try {
+                while((object = getNext(object)) != null){
+                    try{
                         array[array.length] = object;
-                    } catch(err){}
+                    } catch(err){
+                    }
+                }
             });
+        }
         return new small(array);
     };
     var selectDom = function(type, index){
         var result = null;
-        if(/^(first|last)$/.test(type))
-            result = new small(this.length() > 0 ? (type == 'first' ? [this.nodes[0]] : [this.nodes[this.length() - 1]]) : []);
-        else if((/^(index|not|above|below)$/.test(type) && typeIn(index, 'number')) || type == 'even')
+        if(/^(first|last)$/.test(type)){
+            result = new small(this.length() > 0 ? (type == 'first' ? [this.nodes[0]] : [this.nodes[this.length() - 1]])
+                : []);
+        } else if((/^(index|not|above|below)$/.test(type) && typeIn(index, 'number')) || type == 'even'){
             result = this.grep(function(key, value){
-                return type == 'index' ? key == index : (type == 'not' ? key != index : (type == 'above' ? key < index : (type == 'above' ? key > index : key % 2 == 0)));
+                return type == 'index' ? key == index : (type == 'not' ? key != index : (type == 'above' ? key < index
+                    : (type == 'above' ? key > index : key % 2 == 0)));
             });
-        else if(/^(visible|hidden)$/.test(type))
+        } else if(/^(visible|hidden)$/.test(type)){
             result = this.grep(function(key, value){
-                return type == 'visible' ? (value.offsetWidth > 0 && value.offsetHeight > 0 && value.style.visibility != 'hidden' && value.style.display != 'none')
-                : (value.offsetWidth == 0 || value.offsetHeight == 0 || value.style.visibility == 'hidden' || value.style.display == 'none');
+                return type == 'visible'
+                    ? (value.offsetWidth > 0 && value.offsetHeight > 0 && value.style.visibility != 'hidden' && value.style.display != 'none')
+                    : (value.offsetWidth == 0 || value.offsetHeight == 0 || value.style.visibility == 'hidden' || value.style.display == 'none');
             });
-        else if(/^(checked|unchecked|disabled|enabled|selected|unselected|editable|uneditable)$/.test(type))
+        } else if(/^(checked|unchecked|disabled|enabled|selected|unselected|editable|uneditable)$/.test(type)){
             result = this.grep(function(key, value){
-                return /^(input|select)$/i.test(value.nodeName) && type == 'checked' ? value.checked : (type == 'unchecked' ? !value.checked : (type == 'disabled' ? value.disabled : (type == 'enabled' ? !value.disabled : (type == 'selected' ? value.selected : (type == 'unselected' ? !value.selected : (type == 'editable' ? !value.readonly : value.readonly))))));
+                return /^(input|select)$/i.test(value.nodeName) && type == 'checked' ? value.checked
+                    : (type == 'unchecked' ? !value.checked : (type == 'disabled' ? value.disabled : (type == 'enabled'
+                    ? !value.disabled : (type == 'selected' ? value.selected : (type == 'unselected' ? !value.selected
+                    : (type == 'editable' ? !value.readonly : value.readonly))))));
             });
+        }
         return result;
     };
     var xhr = function(object, options, type){
         var result = null;
-        if(/^(ajax|json)$/.test(type) && typeIn(options, 'object'))
+        if(/^(ajax|json)$/.test(type) && typeIn(options, 'object')){
             result = object.each(function(value){
                 var callback = !options.callback ? function(response){
                     value.innerHTML = response;
@@ -1249,6 +1501,7 @@
                 };
                 type == 'ajax' ? small.ajax(options) : small.json(options);
             });
+        }
         return result;
     };
     var fix = function(value, type){
@@ -1273,34 +1526,45 @@
                 'float': 'styleFloat'
             }
         }, matches;
-        while((matches = /\-([a-z]{1})/i.exec(value)) != null)
+        while((matches = /\-([a-z]{1})/i.exec(value)) != null){
             value = value.replace(matches[0], matches[1].toUpperCase());
+        }
         small.each(fixes[type], function(search, replace){
             value = value.replace(search, replace);
         });
         return value;
     };
     var splitArg = function(arg){
-        if(typeIn(arg, 'string')) arg = arg.replace(/,/g, ' ').split(' ');
+        if(typeIn(arg, 'string')){
+            arg = arg.replace(/,/g, ' ').split(' ');
+        }
         return typeIn(arg, 'array') ? small.unique(small.trim(arg)) : [];
     };
     var handler = function(event){
         var object = this, event = event || window.event;
-        if(event.isFixed) return event;
+        if(event.isFixed){
+            return event;
+        }
         event.isFixed = true, event.preventDefault = event.preventDefault || function(){
             event.returnValue = false;
         }, event.stopPropagation = event.stopPropagation || function(){
             event.cancelBubble = true;
         };
-        if(!event.target) event.target = event.srcElement;
-        if(!event.relatedTarget && event.fromElement) event.relatedTarget = event.fromElement == event.target ? event.toElement : event.fromElement;
+        if(!event.target){
+            event.target = event.srcElement;
+        }
+        if(!event.relatedTarget && event.fromElement){
+            event.relatedTarget = event.fromElement == event.target ? event.toElement : event.fromElement;
+        }
         if(event.pageX == null && event.clientX != null){
             event.pageX = event.clientX + (document.documentElement && document.documentElement.scrollLeft || document.body && document.body.scrollLeft || 0) - (document.documentElement.clientLeft || 0);
             event.pageY = event.clientY + (document.documentElement && document.documentElement.scrollTop || document.body && document.body.scrollTop || 0) - (document.documentElement.clientTop || 0);
         }
-        if(!event.which && event.button) event.which = (event.button & 1 ? 1 : ( event.button & 2 ? 3 : ( event.button & 4 ? 2 : 0 ) ));
+        if(!event.which && event.button){
+            event.which = (event.button & 1 ? 1 : ( event.button & 2 ? 3 : ( event.button & 4 ? 2 : 0 ) ));
+        }
         if(/^key(down|press|up)$/.test(event.type)){
-            event.keyCode= event.keyCode || event.which;
+            event.keyCode = event.keyCode || event.which;
             event.keyChar = String.fromCharCode(event.keyCode);
         }
         small.each(object.events[event.type], function(handler){
@@ -1313,17 +1577,19 @@
     };
     var eventList = 'resize,scroll,blur,focus,error,abort,click,dblclick,contextmenu,mousedown,mouseup,mousemove,mouseover,mouseout,keydown,keypress,keyup,load,unload,change,select,submit,reset,readystatechange,dragover,dragleave,dragenter,drop'.split(',');
     small.each(eventList, function(type){
-        if(type != 'readystatechange')
+        if(type != 'readystatechange'){
             small.prototype[type] = function(callback, attach){
                 this.bind(type, callback, attach);
                 return this;
             };
+        }
     });
     var logList = 'log,debug,info,warn,error'.split(',');
     small.each(logList, function(type){
-        if(window.console)
+        if(window.console){
             small[type] = function(message){
                 window.console.log(type + ': ' + message);
             };
+        }
     });
 })();

@@ -1,8 +1,12 @@
 small.extendFunctions({
     'plugins': function(list){
         // Initialization
-        if(small.typeIn(list, 'undefined')) list = 'colors,converters,dialogs,password,uploader,hash,wrapper,onfly,renewal';
-        if(small.typeIn(list, 'string')) list = list.split(',');
+        if(small.typeIn(list, 'undefined')){
+            list = 'colors,converters,dialogs,password,uploader,hash,wrapper,onfly,renewal';
+        }
+        if(small.typeIn(list, 'string')){
+            list = list.split(',');
+        }
         if(small.typeIn(list, 'array')){
             var plugins = {
                 'colors': function(){
@@ -42,14 +46,18 @@ small.extendFunctions({
             small('head').find('script').each(function(object){
                 if(path.length == 0){
                     var matches = /^(.+)plugins\/init\.js/.exec(object.src);
-                    if(matches != null) path = matches[1];
+                    if(matches != null){
+                        path = matches[1];
+                    }
                 }
             });
 
             // Load plugins
             list = small.trim(list);
             small.each(list, function(item){
-                if(small.typeIn(plugins[item], 'function')) plugins[item]();
+                if(small.typeIn(plugins[item], 'function')){
+                    plugins[item]();
+                }
             });
 
         }

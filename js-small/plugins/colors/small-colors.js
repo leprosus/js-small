@@ -12,13 +12,13 @@
  * @version 0.1.1
  */
 small.extendFunctions({
-    RGBtoHSV: function() {
+    RGBtoHSV: function(){
         var result, red = 0, green = 0, blue = 0, args = arguments;
-        if (args.length == 1) {
+        if(args.length == 1){
             red = args[0].red >= 0 && args[0].red < 256 ? args[0].red : 0;
             green = args[0].green >= 0 && args[0].green < 256 ? args[0].green : 0;
             blue = args[0].blue >= 0 && args[0].blue < 256 ? args[0].blue : 0;
-        } else if (arguments.length == 3) {
+        } else if(arguments.length == 3){
             red = args[0] >= 0 && args[0] < 256 ? args[0] : 0;
             green = args[1] >= 0 && args[1] < 256 ? args[1] : 0;
             blue = args[2] >= 0 && args[2] < 256 ? args[2] : 0;
@@ -30,9 +30,13 @@ small.extendFunctions({
         var saturation = (max == 0) ? 0 : Math.round(100 * (1 - min / max));
         var hue = 0;
         var shift = max - min;
-        if (max == red) hue = 60 * (green - blue) / shift + (green < blue ? 360 : 0);
-        else if (max == green) hue = 60 * (blue - red) / shift + 120;
-        else if (max == blue) hue = 60 * (red - green) / shift + 240;
+        if(max == red){
+            hue = 60 * (green - blue) / shift + (green < blue ? 360 : 0);
+        } else if(max == green){
+            hue = 60 * (blue - red) / shift + 120;
+        } else if(max == blue){
+            hue = 60 * (red - green) / shift + 240;
+        }
         hue = Math.round(hue);
         result = {
             "hue": hue,
@@ -42,13 +46,13 @@ small.extendFunctions({
 
         return result;
     },
-    HSVtoRGB: function () {
+    HSVtoRGB: function(){
         var result, hue = 0, saturation = 0, value = 0, args = arguments;
-        if (args.length == 1) {
+        if(args.length == 1){
             hue = args[0].hue >= 0 && args[0].hue <= 360 ? args[0].hue : 0;
             saturation = args[0].saturation >= 0 && args[0].saturation <= 100 ? args[0].saturation : 0;
             value = args[0].value >= 0 && args[0].value <= 100 ? args[0].value : 0;
-        } else if (arguments.length == 3) {
+        } else if(arguments.length == 3){
             hue = args[0] >= 0 && args[0] <= 360 ? args[0] : 0;
             saturation = args[1] >= 0 && args[1] <= 100 ? args[1] : 0;
             value = args[2] >= 0 && args[2] <= 100 ? args[2] : 0;
@@ -57,7 +61,7 @@ small.extendFunctions({
         saturation = saturation / 100;
         value = value / 100;
 
-        if (saturation > 0) {
+        if(saturation > 0){
             var sector = hue * 6;
             var sectorFloor = Math.floor(sector);
             var var1 = value * (1 - saturation);
@@ -74,17 +78,18 @@ small.extendFunctions({
                 "green": Math.round(greenList[index] * 255),
                 "blue": Math.round(blueList[index] * 255)
             };
-        } else
+        } else{
             result = {
                 "red": Math.round(value * 255),
                 "green": Math.round(value * 255),
                 "blue": Math.round(value * 255)
             };
+        }
         return result;
     },
-    HEXtoRGB: function(hex) {
+    HEXtoRGB: function(hex){
         var result = {"red": "00", "green": "00", "blue": "00"};
-        if (/[\da-h]{6}/i.test(hex)) {
+        if(/[\da-h]{6}/i.test(hex)){
             result = {
                 "red": parseInt(hex.substring(0, 2), 16),
                 "green": parseInt(hex.substring(2, 4), 16),
@@ -94,13 +99,13 @@ small.extendFunctions({
 
         return result;
     },
-    RGBtoHEX: function() {
+    RGBtoHEX: function(){
         var result, red = 0, green = 0, blue = 0, args = arguments;
-        if (args.length == 1) {
+        if(args.length == 1){
             red = args[0].red >= 0 && args[0].red < 256 ? args[0].red : 0;
             green = args[0].green >= 0 && args[0].green < 256 ? args[0].green : 0;
             blue = args[0].blue >= 0 && args[0].blue < 256 ? args[0].blue : 0;
-        } else if (arguments.length == 3) {
+        } else if(arguments.length == 3){
             red = args[0] >= 0 && args[0] < 256 ? args[0] : 0;
             green = args[1] >= 0 && args[1] < 256 ? args[1] : 0;
             blue = args[2] >= 0 && args[2] < 256 ? args[2] : 0;
@@ -113,16 +118,16 @@ small.extendFunctions({
 
         return result;
     },
-    HEXtoHSV: function(hex) {
+    HEXtoHSV: function(hex){
         return small.RGBtoHSV(small.HEXtoRGB(hex));
     },
-    HSVtoHEX: function() {
+    HSVtoHEX: function(){
         var hue = 0, saturation = 0, value = 0, args = arguments;
-        if (args.length == 1) {
+        if(args.length == 1){
             hue = args[0].hue >= 0 && args[0].hue <= 360 ? args[0].hue : 0;
             saturation = args[0].saturation >= 0 && args[0].saturation <= 100 ? args[0].saturation : 0;
             value = args[0].value >= 0 && args[0].value <= 100 ? args[0].value : 0;
-        } else if (arguments.length == 3) {
+        } else if(arguments.length == 3){
             hue = args[0] >= 0 && args[0] <= 360 ? args[0] : 0;
             saturation = args[1] >= 0 && args[1] <= 100 ? args[1] : 0;
             value = args[2] >= 0 && args[2] <= 100 ? args[2] : 0;

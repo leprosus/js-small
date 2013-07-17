@@ -12,10 +12,10 @@
  */
 (function(){
     small.extendFunctions({
-        cssOnFly: function(time) {
+        cssOnFly: function(time){
             onFly('css', time);
         },
-        jsOnFly: function(time) {
+        jsOnFly: function(time){
             onFly('js', time);
         },
         preloadImages: function(){
@@ -24,20 +24,22 @@
                 try{
                     var sheet = document.styleSheets[index], CSSClasses = sheet.rules || sheet.cssRules;
                     small.each(CSSClasses, function(CSSStyle){
-                        if(CSSStyle.style.backgroundImage
-                            && (matches = CSSStyle.style.backgroundImage.match(/url\([^,]+\)/g))){
+                        if(CSSStyle.style.backgroundImage && (matches = CSSStyle.style.backgroundImage.match(/url\([^,]+\)/g))){
                             small.each(matches, function(url){
                                 var image = new Image();
 
                                 url = url.replace(/^url\(("|'|)|\/?("|'|)\)$/g, '');
-                                if(!/^(ht|f)tp(s?)\:\/\//.test(url)) url = sheet.href.replace(/[^\/]+$/, '') + url;
+                                if(!/^(ht|f)tp(s?)\:\/\//.test(url)){
+                                    url = sheet.href.replace(/[^\/]+$/, '') + url;
+                                }
                                 image.src = url;
 
                                 preloader.push(image);
                             });
                         }
                     });
-                } catch(error){}
+                } catch(error){
+                }
             }
         }
     });
@@ -46,20 +48,25 @@
 
         var list = [], baseRegExp = new RegExp('^' + small.base(), 'i'), objects = new small([]), attr = '';
 
-        if(type == 'css') objects = small('head').find('link[rel=stylesheet]'), attr = 'href';
-        else if(type == 'js') objects = small.document().find('script[src]'), attr = 'src';
+        if(type == 'css'){
+            objects = small('head').find('link[rel=stylesheet]'), attr = 'href';
+        } else if(type == 'js'){
+            objects = small.document().find('script[src]'), attr = 'src';
+        }
 
         objects.each(function(object){
-            if(baseRegExp.test(object[attr]))
+            if(baseRegExp.test(object[attr])){
                 list[list.length] = {
                     'url': object[attr],
                     'tail': ''.concat(object[attr].indexOf('?') > 0 ? '&' : '?', 'time='),
                     'last': null,
                     'object': object
                 };
+            }
         });
         refresh(type, attr, list, time);
     }
+
     function refresh(type, attr, list, time){
         var current = (new Date()).getTime();
         small.start({
@@ -67,12 +74,12 @@
             'callback': function(){
                 small.each(list, function(index, item){
                     var url = item.url.concat(item.tail, current);
-                    try {
-                        var request = window.ActiveXObject ? new ActiveXObject('Microsoft.XMLHTTP') : new XMLHttpRequest();
+                    try{
+                        var request = window.ActiveXObject ? new ActiveXObject('Microsoft.XMLHTTP')
+                            : new XMLHttpRequest();
                         request.onreadystatechange = function(){
                             if(request.readyState == 4 && request.status == 200){
-                                var matches = /Last-Modified:\s?([^\n]+)/ig.exec(request.getAllResponseHeaders()),
-                                modified = Date.parse(matches[1] || 0);
+                                var matches = /Last-Modified:\s?([^\n]+)/ig.exec(request.getAllResponseHeaders()), modified = Date.parse(matches[1] || 0);
 
                                 if(modified > list[index].last){
                                     list[index].last = modified;
@@ -90,7 +97,8 @@
 
                         request.open('HEAD', url, true);
                         request.send(null);
-                    } catch(err){}
+                    } catch(err){
+                    }
                 });
 
                 refresh(type, attr, list, time);

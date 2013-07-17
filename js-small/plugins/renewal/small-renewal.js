@@ -32,9 +32,7 @@ small.ready(function(){
         'ca': 'El teu navegador està desactualitzat. Té vulnerabilitats conegudes i pot no mostrar totes les característiques d\'aquest i altres llocs web.',
         'tr': 'Tarayıcınız güncel değildir.. Eski versiyon olduğu için güvenlik açıkları vardır ve görmek istediğiniz bu web sitesinin ve diğer web sitelerinin tüm özelliklerini hatasız bir şekilde gösteremeyecektir.',
         'fa': 'مرورگر شما از رده خارج شده می باشد. این مرورگر دارای مشکلات امنیتی شناخته شده می باشد و نمی تواند تمامی ویژگی های این وب سایت و دیگر وب سایت ها را به خوبی نمایش دهد.'
-    },
-    message = l10n[small.language()],
-    list = {
+    }, message = l10n[small.language()], list = {
         'chrome': {
             'title': 'Google Chrome',
             'link': 'http://google.com/chrome'
@@ -55,15 +53,12 @@ small.ready(function(){
             'title': 'Internet Explorer',
             'link': 'http://windows.microsoft.com/ie'
         }
-    },
-    browser = small.browser(),
-    version = parseInt(small.version().replace(/(\d+(?:\.\d+)?).*/, '$1'), 10),
-    url = 'http://api.evalab.ru/browsers.php';
+    }, browser = small.browser(), version = parseInt(small.version().replace(/(\d+(?:\.\d+)?).*/, '$1'), 10), url = 'http://api.evalab.ru/browsers.php';
     small.json({
         'url': url,
         'callback': function(response){
             var lastVersion = response[browser] ? parseInt(response[browser]['version']) : Number.MAX_VALUE;
-            if(lastVersion >= version){
+            if(lastVersion > version){
                 var renewal = small.body().append('div.renewal');
                 renewal.append('div.message').text(message);
 
@@ -88,6 +83,7 @@ small.ready(function(){
                         }
                     });
                 }
+
                 function close(){
                     renewal.stop().start({
                         'time': 10,

@@ -11,15 +11,17 @@
  * @version 0.0.2
  */
 small.extendFunctions({
-    jsonToString: function(json) {
+    jsonToString: function(json){
         var result = null, sub;
 
-        if (!small.typeIn(json, "undefined"))
-            switch (typeof(json)) {
+        if(!small.typeIn(json, "undefined")){
+            switch(typeof(json)){
                 case "object":
                     result = [];
-                    small.each(json, function(key, value) {
-                        if ((sub = small.jsonToString(value))) result[result.length] = '"' + key + '":' + sub;
+                    small.each(json, function(key, value){
+                        if((sub = small.jsonToString(value))){
+                            result[result.length] = '"' + key + '":' + sub;
+                        }
                     });
                     result = "{" + result.join(",") + "}";
                     break;
@@ -37,8 +39,9 @@ small.extendFunctions({
                 default:
 
             }
+        }
 
-        function translater(object) {
+        function translater(object){
             var specChars = {
                 "\t": "t",
                 "\n": "n",
@@ -46,28 +49,28 @@ small.extendFunctions({
                 "\r": "r"
             };
             var padList = ["", "000", "00", "0", ""];
-            return object.replace(/(\t|\n|\f|\r)/g,
-                    function(str, m) {
-                        return "\\\\" + specChars[m];
-                    }).replace(/([а-яё])/gi, function(str, m) {
-                var letter = m.charCodeAt(0).toString(16);
-                return "\\u" + padList[letter.length] + letter;
-            });
+            return object.replace(/(\t|\n|\f|\r)/g,function(str, m){
+                return "\\\\" + specChars[m];
+            }).replace(/([а-яё])/gi, function(str, m){
+                    var letter = m.charCodeAt(0).toString(16);
+                    return "\\u" + padList[letter.length] + letter;
+                });
         }
 
         return result
     },
-    stringToJson: function(string) {
+    stringToJson: function(string){
         var result = {};
         try{
             result = eval('('.concat(string, ')'));
-        } catch (err){}
+        } catch(err){
+        }
         return result;
     },
-    xmlToJson: function(xml) {
+    xmlToJson: function(xml){
         //TODO It has to be realized
     },
-    jsonToXml: function(json) {
+    jsonToXml: function(json){
         //TODO It has to be realized
     }
 });

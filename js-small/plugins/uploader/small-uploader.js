@@ -13,25 +13,21 @@
 small.extendFunctions({
     uploader: function(options){
         if(small.typeIn(options, 'object')){
-            var name = options.name || 'file',
-            url = options.url || '',
-            extensions = options.extensions || [],
-            maxSize = options.maxSize || 0,
-            onError = options.onError || function(){},
-            onSubmit = options.onSubmit || function(){},
-            onComplete = options.onComplete || function(){},
-            onCancel = options.onCancel || function(){};
+            var name = options.name || 'file', url = options.url || '', extensions = options.extensions ||
+                [], maxSize = options.maxSize || 0, onError = options.onError || function(){
+            }, onSubmit = options.onSubmit || function(){
+            }, onComplete = options.onComplete || function(){
+            }, onCancel = options.onCancel || function(){
+            };
 
-            var fileName = '',
-            form = small.create('form').attr({
+            var fileName = '', form = small.create('form').attr({
                 'name': name,
                 'action': small.base().concat(url),
                 'method': 'post',
                 'enctype': 'multipart/form-data',
+                'encoding': 'multipart/form-data',
                 'target': name
-            }),
-            uploader = form.append('div.uploader').hide(),
-            iframe = small.create('iframe').attr({
+            }), uploader = form.append('div.uploader').hide(), iframe = small.create('iframe').attr({
                 'name': name,
                 'src': 'javascript:;'
             }).hide();
@@ -50,47 +46,47 @@ small.extendFunctions({
                 'type': 'file',
                 'name': name
             }).change(function(){
-                var current = small(this), error = false;
-                fileName = current.attr('value').replace(/^.*(\\|\/|\:)/, '');
-                if(extensions.length > 0){
-                    var regExp = new RegExp('\\.(' + small.trim(extensions).join('|') + ')$', 'i');
-                    error = !regExp.test(fileName);
-                }
+                    var current = small(this), error = false;
+                    fileName = current.attr('value').replace(/^.*(\\|\/|\:)/, '');
+                    if(extensions.length > 0){
+                        var regExp = new RegExp('\\.(' + small.trim(extensions).join('|') + ')$', 'i');
+                        error = !regExp.test(fileName);
+                    }
 
-                if(!error){
-                    var width = current.bound().width;
-                    onSubmit.call(form.node(), name, options);
-                    form.node().submit();
+                    if(!error){
+                        var width = current.bound().width;
+                        onSubmit.call(form.node(), name, options);
+                        form.node().submit();
 
-                    var progress = 0;
-                    file.hide();
-                    uploader.show().css('width', width + 'px')
-                    .append('div.cancel').click(function(){
-                        var newUploader = small.uploader(options);
-                        uploader.after(newUploader);
-                        uploader.remove();
-                        iframe.remove();
-                        onCancel.call(form.node(), name, options);
-                    });
-                    var value = uploader.append('div.border').append('div.value');
-                    value.append('div.animation').opacity(70);
-                    value.start({
-                        'time': 100,
-                        'callback': function(){
-                            value.css('width', ((width - 16) * progress++ / 100) + 'px')
-                        },
-                        'repeat': 90
-                    });
+                        var progress = 0;
+                        file.hide();
+                        uploader.show().css('width', width + 'px').append('div.cancel').click(function(){
+                            var newUploader = small.uploader(options);
+                            uploader.after(newUploader);
+                            uploader.remove();
+                            iframe.remove();
+                            onCancel.call(form.node(), name, options);
+                        });
+                        var value = uploader.append('div.border').append('div.value');
+                        value.append('div.animation').opacity(70);
+                        value.start({
+                            'time': 100,
+                            'callback': function(){
+                                value.css('width', ((width - 16) * progress++ / 100) + 'px')
+                            },
+                            'repeat': 90
+                        });
 
-                    iframe.load(function(){
-                        var idoc = iframe.node().contentDocument || iframe.node().contentWindow.document,
-                        content = idoc.body.innerHTML;
-                        iframe.remove();
-                        uploader.empty().append('div.done').text(fileName);
-                        onComplete.call(form.node(), name, options, content);
-                    });
-                } else onError.call(form.node(), name, options);
-            });
+                        iframe.load(function(){
+                            var idoc = iframe.node().contentDocument || iframe.node().contentWindow.document, content = idoc.body.innerHTML;
+                            iframe.remove();
+                            uploader.empty().append('div.done').text(fileName);
+                            onComplete.call(form.node(), name, options, content);
+                        });
+                    } else{
+                        onError.call(form.node(), name, options);
+                    }
+                });
             form.append(file);
         }
 

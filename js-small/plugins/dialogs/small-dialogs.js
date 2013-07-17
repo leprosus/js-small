@@ -44,49 +44,59 @@ small.extendFunctions({
             "closable": small.typeIn(options.closable, "boolean") ? options.closable : initDialogs.closable,
             "modal": small.typeIn(options.modal, "boolean") ? options.modal : initDialogs.modal,
             "autostart": small.typeIn(options.autostart, "boolean") ? options.autostart : initDialogs.autostart,
-            "foregroundColor": small.typeIn(options.foregroundColor, "string") ? options.foregroundColor : initDialogs.foregroundColor,
-            "foregroundImage": small.typeIn(options.foregroundImage, "string") ? options.foregroundImage : initDialogs.foregroundImage,
+            "foregroundColor": small.typeIn(options.foregroundColor, "string") ? options.foregroundColor
+                : initDialogs.foregroundColor,
+            "foregroundImage": small.typeIn(options.foregroundImage, "string") ? options.foregroundImage
+                : initDialogs.foregroundImage,
             "borderColor": small.typeIn(options.borderColor, "string") ? options.borderColor : initDialogs.borderColor,
-            "backgroundColor": small.typeIn(options.backgroundColor, "string") ? options.backgroundColor : initDialogs.backgroundColor,
-            "backgroundOpacity": small.typeIn(options.backgroundOpacity, "string") ? options.backgroundOpacity : initDialogs.backgroundOpacity,
+            "backgroundColor": small.typeIn(options.backgroundColor, "string") ? options.backgroundColor
+                : initDialogs.backgroundColor,
+            "backgroundOpacity": small.typeIn(options.backgroundOpacity, "string") ? options.backgroundOpacity
+                : initDialogs.backgroundOpacity,
             "color": small.typeIn(options.color, "string") ? options.color : initDialogs.color,
             "titled": small.typeIn(options.titled, "boolean") ? options.titled : initDialogs.titled,
-            "defaultTitle": small.typeIn(options.defaultTitle, "string,number") ? options.defaultTitle : initDialogs.defaultTitle,
-            "titleBackground": small.typeIn(options.titleBackground, "string") ? options.titleBackground : initDialogs.titleBackground,
+            "defaultTitle": small.typeIn(options.defaultTitle, "string,number") ? options.defaultTitle
+                : initDialogs.defaultTitle,
+            "titleBackground": small.typeIn(options.titleBackground, "string") ? options.titleBackground
+                : initDialogs.titleBackground,
             "titleColor": small.typeIn(options.titleColor, "string") ? options.titleColor : initDialogs.titleColor,
-            "layout": small.typeIn(options.layout, "string,number")
-                && (/^(north|northeast|east|southeast|south|southwest|west|northwest|center)$/i.test(options.layout)
-                || /^[1-9]$/.test(options.layout)) ? (/^[1-9]$/.test(options.layout) ? options.layout : layouts[options.layout]) : initDialogs.layout
+            "layout": small.typeIn(options.layout, "string,number") && (/^(north|northeast|east|southeast|south|southwest|west|northwest|center)$/i.test(options.layout) || /^[1-9]$/.test(options.layout))
+                ? (/^[1-9]$/.test(options.layout) ? options.layout : layouts[options.layout]) : initDialogs.layout
         };
     },
     showDialog: function(options){
-        var escapable = small.typeIn(options.escapable, "boolean") ? options.escapable : initDialogs.escapable,
-        closable = small.typeIn(options.closable, "boolean") ? options.closable : initDialogs.closable,
-        modal = small.typeIn(options.modal, "boolean") ? options.modal : initDialogs.modal,
-        autostart = small.typeIn(options.autostart, "boolean") ? options.autostart : initDialogs.autostart,
-        titled = small.typeIn(options.titled, "boolean") ? options.titled : initDialogs.titled,
-        foregroundColor = small.typeIn(options.foregroundColor, "string") ? options.foregroundColor : initDialogs.foregroundColor,
-        foregroundImage = small.typeIn(options.foregroundImage, "string") ? options.foregroundImage : initDialogs.foregroundImage,
-        borderColor = small.typeIn(options.borderColor, "string") ? options.borderColor : initDialogs.borderColor,
-        backgroundColor = small.typeIn(options.backgroundColor, "string") ? options.backgroundColor : initDialogs.backgroundColor,
-        backgroundOpacity = small.typeIn(options.backgroundOpacity, "string") ? options.backgroundOpacity : initDialogs.backgroundOpacity,
-        titleBackground = small.typeIn(options.titleBackground, "string") ? options.titleBackground : initDialogs.titleBackground,
-        titleColor = small.typeIn(options.titleColor, "string") ? options.titleColor : initDialogs.titleColor,
-        color = small.typeIn(options.color, "string") ? options.color : initDialogs.color,
-        layout = small.typeIn(options.layout, "string,number")
-            && (/^(north|northeast|east|southeast|south|southwest|west|northwest|center)$/i.test(options.layout)
-            || /^[1-9]$/.test(options.layout)) ? (/^[1-9]$/.test(options.layout) ? options.layout : layouts[options.layout]) : initDialogs.layout,
-        title = small.typeIn(options.title, "string,number") ? options.title : initDialogs.defaultTitle,
-        content = small.typeIn(options.content, "undefined") ? small.create("div") : options.content,
-        width = /^\d+$/.test(options.width) ? options.width : null,
-        height = /^\d+$/.test(options.height) ? options.height : null,
-        onOpen = small.typeIn(options.onOpen, "function") ? options.onOpen : function(){},
-        onClose = small.typeIn(options.onClose, "function") ? options.onClose : function(){};
+        var escapable = small.typeIn(options.escapable, "boolean") ? options.escapable
+            : initDialogs.escapable, closable = small.typeIn(options.closable, "boolean") ? options.closable
+            : initDialogs.closable, modal = small.typeIn(options.modal, "boolean") ? options.modal
+            : initDialogs.modal, autostart = small.typeIn(options.autostart, "boolean") ? options.autostart
+            : initDialogs.autostart, titled = small.typeIn(options.titled, "boolean") ? options.titled
+            : initDialogs.titled, foregroundColor = small.typeIn(options.foregroundColor, "string")
+            ? options.foregroundColor
+            : initDialogs.foregroundColor, foregroundImage = small.typeIn(options.foregroundImage, "string")
+            ? options.foregroundImage
+            : initDialogs.foregroundImage, borderColor = small.typeIn(options.borderColor, "string")
+            ? options.borderColor
+            : initDialogs.borderColor, backgroundColor = small.typeIn(options.backgroundColor, "string")
+            ? options.backgroundColor
+            : initDialogs.backgroundColor, backgroundOpacity = small.typeIn(options.backgroundOpacity, "string")
+            ? options.backgroundOpacity
+            : initDialogs.backgroundOpacity, titleBackground = small.typeIn(options.titleBackground, "string")
+            ? options.titleBackground
+            : initDialogs.titleBackground, titleColor = small.typeIn(options.titleColor, "string") ? options.titleColor
+            : initDialogs.titleColor, color = small.typeIn(options.color, "string") ? options.color
+            : initDialogs.color, layout = small.typeIn(options.layout, "string,number") && (/^(north|northeast|east|southeast|south|southwest|west|northwest|center)$/i.test(options.layout) || /^[1-9]$/.test(options.layout))
+            ? (/^[1-9]$/.test(options.layout) ? options.layout : layouts[options.layout])
+            : initDialogs.layout, title = small.typeIn(options.title, "string,number") ? options.title
+            : initDialogs.defaultTitle, content = small.typeIn(options.content, "undefined") ? small.create("div")
+            : options.content, width = /^\d+$/.test(options.width) ? options.width
+            : null, height = /^\d+$/.test(options.height) ? options.height
+            : null, onOpen = small.typeIn(options.onOpen, "function") ? options.onOpen : function(){
+        }, onClose = small.typeIn(options.onClose, "function") ? options.onClose : function(){
+        };
 
         var container = small.body().append("div.ui-dialog");
         if(width == null || height == null){
-            var wrap = container.append("div.content"),
-            temp = wrap.append("span").css("display", "table");
+            var wrap = container.append("div.content"), temp = wrap.append("span").css("display", "table");
             temp.html(content.serialize());
             var bound = temp.bound();
             width = bound.width + 30;
@@ -149,16 +159,14 @@ small.extendFunctions({
                 "top": "50%",
                 "left": "50%",
                 "topMargin": -height / 2,
-                "leftMargin": -width /2
+                "leftMargin": -width / 2
             }
         };
 
         function showDialog(){
             onOpen();
 
-            var opacity = 0,
-            object = container.child(),
-            backgroundFlag = false;
+            var opacity = 0, object = container.child(), backgroundFlag = false;
 
             object.opacity(opacity);
             container.show();
@@ -179,15 +187,16 @@ small.extendFunctions({
         }
 
         function hideDialog(){
-            var opacity = 100,
-            object = container.child();
+            var opacity = 100, object = container.child();
 
             small.start({
                 "time": 100,
                 "callback": function(){
                     opacity -= 20;
                     object.opacity(opacity);
-                    if(opacity == 0) container.remove();
+                    if(opacity == 0){
+                        container.remove();
+                    }
                 },
                 "repeat": 5
             });
@@ -200,8 +209,9 @@ small.extendFunctions({
             "hideDialog": hideDialog
         });
 
-        if(modal)
+        if(modal){
             container.append("div.modal").css("background-color", backgroundColor).opacity(backgroundOpacity);
+        }
 
         var dialog = container.append("div.dialog").css({
             "background-color": foregroundColor,
@@ -218,10 +228,12 @@ small.extendFunctions({
             dialog.append("div.title").css({
                 "background-color": titleBackground,
                 "color": titleColor
-            }).condition(closable, function(){
-                var close = small(this).append("div.close").text("✕");
-                if(closable) close.click(hideDialog);
-            }).concat(title);
+            }).condition(closable,function(){
+                    var close = small(this).append("div.close").text("✕");
+                    if(closable){
+                        close.click(hideDialog);
+                    }
+                }).concat(title);
         }
 
         dialog.append("div.content").css({
@@ -229,7 +241,9 @@ small.extendFunctions({
             "color": color
         }).append(content);
 
-        if(autostart) container.showDialog();
+        if(autostart){
+            container.showDialog();
+        }
 
         return container;
     },
