@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript" src="js-small/js-small.js"></script>
+    <script type="text/javascript" src="js-small/plugins/init.js"></script>
+    <style type="text/css">
+        body {
+            font: normal 300 12px Tahoma;
+            color: gray;
+        }
+
+        body > div {
+            display: block;
+            overflow: hidden;
+            width: 220px;
+        }
+
+        body > div > span {
+            display: block;
+            float: right;
+            width: 50px;
+            color: darkred;
+            font-weight: 800;
+        }
+
+        body > div > span.success {
+            color: darkgreen;
+        }
+    </style>
+</head>
+<body>
+<div id="ready">Ready on page load event: <span>ERR</span></div>
+<div id="ext-fun">Extending js-small function: <span>ERR</span></div>
+<div id="ext-met">Extending js-small method: <span>ERR</span></div>
+<div id="each">Each for DOM nodes: <span>ERR</span></div>
+<script type="text/javascript">
+    small.plugins();
+
+    small.ready(function() {
+        small.extendMethods({
+            "setOK": function() {
+                small('#ext-met').find('span').addClass('success').text('OK');
+                small(this).find('span').addClass('success').text('OK');
+            },
+            "setERR": function() {
+                small('#ext-met').find('span').addClass('success').text('OK');
+                small(this).find('span').removeClass('success').text('ERR');
+            }
+        });
+
+        small.extendFunctions({
+            'resetTDD': function() {
+                small('body').find('div').setERR();
+
+                small('#ext-fun').setOK();
+            }
+        });
+
+        small.resetTDD();
+
+        small('#ready').setOK();
+
+        small('div').each(function(object) {
+            object.id == 'each' ? small(object).setOK() : null;
+        });
+    });
+</script>
+</body>
+</html>
