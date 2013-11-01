@@ -14,7 +14,7 @@
         body > div {
             display: block;
             overflow: hidden;
-            width: 220px;
+            width: 240px;
         }
 
         body > div > span {
@@ -34,7 +34,16 @@
 <div id="ready">Ready on page load event: <span>ERR</span></div>
 <div id="ext-fun">Extending js-small function: <span>ERR</span></div>
 <div id="ext-met">Extending js-small method: <span>ERR</span></div>
-<div id="each">Each for DOM nodes: <span>ERR</span></div>
+<div id="each"><b>Each</b> method for DOM nodes: <span>ERR</span></div>
+<div id="grep"><b>Grep</b> method for DOM nodes: <span>ERR</span></div>
+<div id="concat"><b>Concat</b> method for DOM node: <span>ERR</span></div>
+<div id="text"><b>Text</b> method for DOM node: <span>ERR</span></div>
+<div id="html"><b>Html</b> method for DOM node: <span>ERR</span></div>
+<div id="empty"><b>Empty</b> method for DOM node: <span>ERR</span></div>
+<div id="node"><b>Node</b> method for DOM nodes: <span>ERR</span></div>
+<div id="tag"><b>TagName</b> method for DOM node: <span>ERR</span></div>
+<div id="focus"><b>DoFocus</b> method for DOM node: <span>ERR</span></div>
+<div id="blur"><b>DoBlur</b> method for DOM node: <span>ERR</span></div>
 <script type="text/javascript">
     small.plugins();
 
@@ -65,6 +74,54 @@
         small('div').each(function(object) {
             object.id == 'each' ? small(object).setOK() : null;
         });
+
+        small('div').grep(function(object) {
+            return object.id == 'grep';
+        }).setOK();
+
+        small('#concat').find('span').concat('test');
+        if(small('#concat').find('span').text() == 'ERRtest') {
+            small('#concat').setOK();
+        }
+
+        small('#text').find('span').text('test');
+        if(small('#text').find('span').text() == 'test') {
+            small('#text').setOK();
+        }
+
+        small('#html').find('span').html('<b>test</b>');
+        if(small('#html').find('span').html() == '<b>test</b>') {
+            small('#html').setOK();
+        }
+
+        small('#empty').find('span').empty();
+        small('#empty').find('span').empty(function() {
+            small('#empty').setOK();
+        }, function() {
+            small('#empty').setERR();
+        });
+
+        if(small('body').find('div').node(3).id == 'each'){
+            small('#node').setOK();
+        }
+
+        if(small('body').tagName() == 'body'){
+            small('#tag').setOK();
+        }
+
+        small('body').append('input[type=text][id=text]');
+        small('input#text').doFocus();
+        if(document.activeElement.id == 'text'){
+            small('#focus').setOK();
+        }
+
+        small('input#text').doBlur();
+        if(document.activeElement.id != 'text'){
+            small('#blur').setOK();
+        }
+        small('input#text').remove();
+
+        small('body').append('form#test');
     });
 </script>
 </body>

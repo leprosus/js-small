@@ -52,9 +52,11 @@
      *     }
      * });
      * small.newFunction();
+     * @return {object} JS-Small object
      */
     small.extendFunctions = function(functions) {
         small = small.extend(small, functions);
+        return this;
     };
 
     /**
@@ -67,9 +69,11 @@
      *     }
      * });
      * small('div#id').newMethod();
+     * @return {object} JS-Small object
      */
     small.extendMethods = function(methods) {
         small.extend(small.prototype, methods);
+        return this;
     };
 
     small.prototype = {
@@ -98,7 +102,7 @@
          *     return small(object).tagName == 'a';
          * });
          * // Returns all DOM nodes with tag name A
-         * @return {object} JS-Small object
+         * @return {object,null} JS-Small object with filtered DOM nodes
          */
         grep: function(callback) {
             var result = null;
@@ -128,28 +132,70 @@
             return this;
         },
 
-
-        text: function(text) {
-            var result = null;
-            if(typeof text == 'undefined') {
+        /**
+         * Sets text in DOM node (with argument)
+         * Gets text from DOM node (without argument)
+         * @param {number,string} text Setting text
+         * @example
+         * small('body').text('Hello World');
+         * Sets text to body tag
+         *
+         * small('body').text();
+         * Returns text from body tag
+         * @return {object,text,null} JS-Small object
+         */
+        text: function() {
+            var text, result = null;
+            if(arguments.length == 0) {
                 result = this.length() > 0 ? (this.nodes[0].textContent ? this.nodes[0].textContent : this.nodes[0].innerHTML) : null;
-            } else if(typeIn(text, 'string,number')) {
+            } else if(arguments.length == 1 && typeIn((text = arguments[0]), 'string,number')) {
                 result = this.empty().concat(text);
             }
             return result;
         },
-        html: function(text) {
-            var result = null;
-            if(!text) {
+
+        /**
+         * Sets HTML in DOM node (with argument)
+         * Gets HTML from DOM node (without argument)
+         * @param {number,string} HTML Setting HTML
+         * @example
+         * small('body').html('<b>Hello World</b>');
+         * Sets HTML to body tag
+         *
+         * small('body').html();
+         * Returns HTML from body tag
+         * @return {object,text,null} JS-Small object
+         */
+        html: function() {
+            var text, result = null;
+            if(arguments.length == 0) {
                 result = this.length() > 0 ? (this.nodes[0].innerHTML || this.nodes[0].textContent) : null;
-            } else if(typeIn(text, 'string')) {
-                this.each(function(value) {
-                    value.innerHTML = text;
+            } else if(arguments.length == 1 && typeIn((text = arguments[0]), 'string,number')) {
+                this.each(function(object) {
+                    object.innerHTML = text;
                 });
                 result = this;
             }
             return result;
         },
+
+        /**
+         * Checks whether DOM node is empty or not (with argument)
+         * Clears DOM node body (without argument)
+         * @param {function} Callback Function will be called if DOM node is empty
+         * @param {function} Callback Function will be called if DOM node isn't empty
+         * @example
+         * small('body').empty(function(){
+         *     alert('Empty');
+         * }, function(){
+         *     alert('Not empty');
+         * });
+         * // Checks whether DOM node is empty
+         *
+         * small('body').empty();
+         * Clears DOM node body
+         * @return {object} JS-Small object
+         */
         empty: function() {
             var callback = arguments, length = callback.length;
             if(length == 0) {
@@ -159,28 +205,69 @@
                         object.removeChild(object.firstChild);
                     }
                 });
-            } else if(length > 0) {
+            } else if(isBetween(length, 1, 2)) {
                 this.each(function(object) {
                     var result = (object.textContent ? object.textContent : object.innerHTML) == '';
-                    if(length > 0 && ((length < 3 && result) || (length == 2 && !result))) {
+                    if(result || (length == 2 && !result)) {
                         (result ? callback[0] : callback[1]).call(object);
                     }
                 });
             }
             return this;
         },
+
+        /**
+         * Returns N-th real DOM node without js-small wrap (with arguments)
+         * Returns first real DOM node without js-small wrap (without arguments)
+         * @param {number} Number of node in array
+         * @example
+         * small('body').node();
+         * // Returns DOM node
+         * @returns {object,null} DOM node
+         */
         node: function() {
-            return this.length() > 0 ? this.nodes[0] : null;
+            var number = arguments.length == 1 && small.typeIn(arguments[0], 'number') ? arguments[0] : 0;
+            return this.length() > 0 ? this.nodes[number] : null;
         },
+
+        /**
+         * Returns tag name of DOM node
+         * Returned names is in lower case
+         * @example
+         * small('body').tagNmae();
+         * // Return 'body'
+         * @returns {string,null} Tag name
+         */
         tagName: function() {
             return this.length() > 0 ? this.nodes[0].nodeName.toLowerCase() : null;
         },
+
+        /**
+         * Does focus on an element
+         * @example
+         * small('input').doFocus();
+         * @returns {object} JS-Small object
+         */
         doFocus: function() {
             return this.length() > 0 ? (this.node().focus(), this) : null;
         },
+
+        /**
+         * Does blur on an element
+         * @example
+         * small('input').doBlur();
+         * @returns {object} JS-Small object
+         */
         doBlur: function() {
             return this.length() > 0 ? (this.node().blur(), this) : null;
         },
+
+        /**
+         * Does submit on an element
+         * @example
+         * small('input').doSubmit();
+         * @returns {object} JS-Small object
+         */
         doSubmit: function() {
             return this.length() > 0 ? (this.node().submit(), this) : null;
         },
@@ -1637,7 +1724,7 @@
      * isBetween(3, 2, 4); // Returns true
      * @returns {boolean} If value in range then returns true
      */
-    var isBetween = function(value, min, max) {
+    function isBetween(value, min, max) {
         if(min > max) {
             var temp = min;
             min = max, max = temp;
