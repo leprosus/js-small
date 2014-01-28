@@ -17,7 +17,7 @@
         body > div {
             display: block;
             overflow: hidden;
-            width: 280px;
+            width: 300px;
         }
 
         body > div > span {
@@ -51,6 +51,8 @@
 <div id="evt-blur"><b>Blur Event</b> method for DOM node: <span>ERR</span></div>
 <div id="do-submit"><b>DoSubmit</b> method for DOM node: <span>ERR</span></div>
 <div id="evt-submit"><b>Submit Event</b> method for DOM node: <span>ERR</span></div>
+<div id="frame-document"><b>Document</b> method for Frame/iFrame node: <span>ERR</span></div>
+<div id="frame-body"><b>Body</b> method for Frame/iFrame node: <span>ERR</span></div>
 <script type="text/javascript">
     small.plugins();
 
@@ -142,6 +144,13 @@
 
                     return false;
                 }).doSubmit();
+
+        var iframeBody = small('body').append('iframe').hide().body();
+        iframeBody.text('inner');
+        if(iframeBody.serialize() == '<body>inner</body>'){
+            small('#frame-document').setOK();
+            small('#frame-body').setOK();
+        }
     });
 </script>
 </body>

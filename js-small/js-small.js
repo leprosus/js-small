@@ -230,11 +230,25 @@
             return this.length() > 0 ? this.nodes[number] : null;
         },
 
+        /**
+         * Returns Document of iframe or frame
+         * @example
+         * small('iframe').document();
+         * // Returns Document first found iframe node
+         * @returns {object,null} Document of iframe or frame
+         */
         document: function() {
             var node = this.node();
             return /^i?frame$/i.test(this.tagName()) ? small(node.contentWindow ? node.contentWindow.document : node.contentDocument) : null;
         },
 
+        /**
+         * Returns HTML Body of iframe or frame
+         * @example
+         * small('iframe').body();
+         * // Returns HTML Body first found iframe node
+         * @returns {object,null} HTML Body of iframe or frame
+         */
         body: function() {
             return this.document().find('body');
         },
