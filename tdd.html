@@ -3,6 +3,9 @@
 <head>
     <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <script type="text/javascript">
+        "use strict";
+    </script>
     <script type="text/javascript" src="js-small/js-small.js"></script>
     <script type="text/javascript" src="js-small/plugins/init.js"></script>
     <style type="text/css">
@@ -14,7 +17,7 @@
         body > div {
             display: block;
             overflow: hidden;
-            width: 240px;
+            width: 280px;
         }
 
         body > div > span {
@@ -42,8 +45,12 @@
 <div id="empty"><b>Empty</b> method for DOM node: <span>ERR</span></div>
 <div id="node"><b>Node</b> method for DOM nodes: <span>ERR</span></div>
 <div id="tag"><b>TagName</b> method for DOM node: <span>ERR</span></div>
-<div id="focus"><b>DoFocus</b> method for DOM node: <span>ERR</span></div>
-<div id="blur"><b>DoBlur</b> method for DOM node: <span>ERR</span></div>
+<div id="do-focus"><b>DoFocus</b> method for DOM node: <span>ERR</span></div>
+<div id="evt-focus"><b>Focus Event</b> method for DOM node: <span>ERR</span></div>
+<div id="do-blur"><b>DoBlur</b> method for DOM node: <span>ERR</span></div>
+<div id="evt-blur"><b>Blur Event</b> method for DOM node: <span>ERR</span></div>
+<div id="do-submit"><b>DoSubmit</b> method for DOM node: <span>ERR</span></div>
+<div id="evt-submit"><b>Submit Event</b> method for DOM node: <span>ERR</span></div>
 <script type="text/javascript">
     small.plugins();
 
@@ -101,27 +108,40 @@
             small('#empty').setERR();
         });
 
-        if(small('body').find('div').node(3).id == 'each'){
+        if(small('body').find('div').node(3).id == 'each') {
             small('#node').setOK();
         }
 
-        if(small('body').tagName() == 'body'){
+        if(small('body').tagName() == 'body') {
             small('#tag').setOK();
         }
 
-        small('body').append('input[type=text][id=text]');
-        small('input#text').doFocus();
-        if(document.activeElement.id == 'text'){
-            small('#focus').setOK();
-        }
+        small('body').append('input[type=text][id=text]')
+                .focus(function() {
+                    small('#do-focus').setOK();
+                    small('#evt-focus').setOK();
+                })
+                .doFocus();
 
-        small('input#text').doBlur();
-        if(document.activeElement.id != 'text'){
-            small('#blur').setOK();
-        }
+        small('input#text')
+                .blur(function() {
+                    small('#do-blur').setOK();
+                    small('#evt-blur').setOK();
+                }).doBlur();
+
         small('input#text').remove();
 
-        small('body').append('form#test');
+        var form = small('body')
+                .append('form')
+                .attr({
+                    'action': '',
+                    'method': 'post'
+                }).submit(function() {
+                    small('#do-submit').setOK();
+                    small('#evt-submit').setOK();
+
+                    return false;
+                }).doSubmit();
     });
 </script>
 </body>

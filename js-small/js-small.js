@@ -230,6 +230,15 @@
             return this.length() > 0 ? this.nodes[number] : null;
         },
 
+        document: function() {
+            var node = this.node();
+            return /^i?frame$/i.test(this.tagName()) ? small(node.contentWindow ? node.contentWindow.document : node.contentDocument) : null;
+        },
+
+        body: function() {
+            return this.document().find('body');
+        },
+
         /**
          * Returns tag name of DOM node
          * Returned names is in lower case
@@ -242,35 +251,6 @@
             return this.length() > 0 ? this.nodes[0].nodeName.toLowerCase() : null;
         },
 
-        /**
-         * Does focus on an element
-         * @example
-         * small('input').doFocus();
-         * @returns {object} JS-Small object
-         */
-        doFocus: function() {
-            return this.length() > 0 ? (this.node().focus(), this) : null;
-        },
-
-        /**
-         * Does blur on an element
-         * @example
-         * small('input').doBlur();
-         * @returns {object} JS-Small object
-         */
-        doBlur: function() {
-            return this.length() > 0 ? (this.node().blur(), this) : null;
-        },
-
-        /**
-         * Does submit on an element
-         * @example
-         * small('input').doSubmit();
-         * @returns {object} JS-Small object
-         */
-        doSubmit: function() {
-            return this.length() > 0 ? (this.node().submit(), this) : null;
-        },
         parent: function() {
             var array = [];
             this.each(function(object) {
@@ -435,7 +415,7 @@
                 }
                 if(typeIn(type, 'array')) {
                     type = small.lower(small.trim(type));
-                    if(small.contain(type, eventList)) {
+                    if(small.contain(type, eventsList)) {
                         this.each(function(object) {
                             small.each(type, function(value) {
                                 if(!object.events) {
@@ -473,7 +453,7 @@
                         }
                         if(typeIn(type, 'array')) {
                             type = small.lower(small.trim(type));
-                            if(small.contain(type, eventList)) {
+                            if(small.contain(type, eventsList)) {
                                 small.each(type, function(current) {
                                     if(object.events[current]) {
                                         if(callback) {
@@ -526,9 +506,9 @@
             return this.each(function(object) {
                 object.toggleEvent = first;
             }).click(function(event) {
-                    this.toggleEvent.call(this, event);
-                    this.toggleEvent = (this.toggleEvent == first) ? second : first;
-                });
+                this.toggleEvent.call(this, event);
+                this.toggleEvent = (this.toggleEvent == first) ? second : first;
+            });
         },
         first: function() {
             return selectDom.call(this, 'first');
@@ -783,12 +763,14 @@
             return isOwn(this);
         },
         toString: function() {
-            var result = '';
+            var result = [];
             this.each(function(object) {
-                result = result.concat('[', object.nodeName, object.id ? ', id='.concat(object.id) : '',
-                    object.className ? ', class='.concat(object.className) : '', "]\n");
+                if(typeIn(object, 'object')) {
+                    result.push('['.concat(object.nodeName, object.id ? ', id='.concat(object.id) : '',
+                        object.className ? ', class='.concat(object.className) : '', ']'));
+                }
             });
-            return result.length > 0 ? result : '[Null]';
+            return result.length > 0 ? result.join("\n") : '[Null]';
         }
     };
     small.context = function(callback, context) {
@@ -1456,15 +1438,17 @@
             form.node().submit();
         }
     };
-    var typeIn = small.typeIn = function(object, list) {
+    var type = small.type = function(object) {
+        var type = typeof(object);
+        if(type == 'object') {
+            type = object == null ? 'null' : (object instanceof Array ? 'array' : 'object');
+        }
+        return type;
+    }, typeIn = small.typeIn = function(object, list) {
         var result = false;
         if(typeof(list) == 'string') {
-            var type = typeof(object);
-            if(type == 'object') {
-                type = object == null ? 'null' : (object instanceof Array ? 'array' : 'object');
-            }
             list = list.toLocaleString().replace(/\s+/g, '').split(',');
-            var length = list.length;
+            var type = small.type(object), length = list.length;
             for(var index = 0; index < length; index++) {
                 if(type == list[index]) {
                     result = true;
@@ -1473,8 +1457,7 @@
             }
         }
         return result;
-    };
-    var proceed = small.proceed = function(object, callback) {
+    }, proceed = small.proceed = function(object, callback) {
         var result = null;
         if(typeIn(object, 'string,number,null')) {
             result = callback.call(object, object);
@@ -1484,11 +1467,9 @@
             }), result = object;
         }
         return result;
-    };
-    var isOwn = function(object) {
+    }, isOwn = function(object) {
         return typeIn(object, 'object') && typeIn(object.nodes, 'array');
-    };
-    var joinDom = function(tag, type) {
+    }, joinDom = function(tag, type) {
         var result = null, array = [];
         if(typeIn(tag, 'string,object')) {
             if(/^(append|prepend)$/.test(type)) {
@@ -1531,8 +1512,7 @@
             }
         }
         return result;
-    };
-    var childDom = function(type) {
+    }, childDom = function(type) {
         var array = [], getNext;
         if(/^(firstChild|lastChild|next|prev)$/.test(type)) {
             this.each(function(object) {
@@ -1581,8 +1561,7 @@
             });
         }
         return new small(array);
-    };
-    var selectDom = function(type, index) {
+    }, selectDom = function(type, index) {
         var result = null;
         if(/^(first|last)$/.test(type)) {
             result = new small(this.length() > 0 ? (type == 'first' ? [this.nodes[0]] : [this.nodes[this.length() - 1]]) : []);
@@ -1606,8 +1585,7 @@
             });
         }
         return result;
-    };
-    var xhr = function(object, options, type) {
+    }, xhr = function(object, options, type) {
         var result = null;
         if(/^(ajax|json)$/.test(type) && typeIn(options, 'object')) {
             result = object.each(function(value) {
@@ -1621,8 +1599,7 @@
             });
         }
         return result;
-    };
-    var fix = function(value, type) {
+    }, fix = function(value, type) {
         var fixes = {
             'attr': {
                 'for': 'htmlFor',
@@ -1651,14 +1628,12 @@
             value = value.replace(search, replace);
         });
         return value;
-    };
-    var splitArg = function(arg) {
+    }, splitArg = function(arg) {
         if(typeIn(arg, 'string')) {
             arg = arg.replace(/,/g, ' ').split(' ');
         }
         return typeIn(arg, 'array') ? small.unique(small.trim(arg)) : [];
-    };
-    var handler = function(event) {
+    }, handler = function(event) {
         var object = this, event = event || window.event;
         if(event.isFixed) {
             return event;
@@ -1697,8 +1672,8 @@
             }
         });
     };
-    var eventList = 'resize,scroll,blur,focus,error,abort,click,dblclick,contextmenu,mousedown,mouseup,mousemove,mouseover,mouseout,keydown,keypress,keyup,load,unload,change,select,submit,reset,readystatechange,dragover,dragleave,dragenter,drop'.split(',');
-    small.each(eventList, function(type) {
+    var eventsList = 'resize,scroll,blur,focus,error,abort,click,dblclick,contextmenu,mousedown,mouseup,mousemove,mouseover,mouseout,keydown,keypress,keyup,load,unload,change,select,submit,reset,readystatechange,dragover,dragleave,dragenter,drop'.split(',');
+    small.each(eventsList, function(type) {
         if(type != 'readystatechange') {
             small.prototype[type] = function(callback, attach) {
                 this.bind(type, callback, attach);
@@ -1714,6 +1689,32 @@
             };
         }
     });
+    var firesList = {
+        'HTMLEvents': 'blur,change,focus,reset,select,submit'.split(','),
+        'UIEvents': 'keydown,keypress,keyup'.split(','),
+        'MouseEvents': 'click,mousedown,mousemove,mouseout,mouseover,mouseup'.split(',')
+    };
+    small.each(firesList, function(fireType, eventsList) {
+        small.each(eventsList, function(eventType) {
+
+            var eventMethod = 'do' + eventType.charAt(0).toUpperCase() + eventType.slice(1),
+                initMethod = 'init' + fireType.replace(/^HTML/, '').replace(/s$/, '');
+
+            small.prototype[eventMethod] = function() {
+                var node = this.node();
+                if(document.createEvent) {
+                    var event = document.createEvent(fireType);
+                    eval('event.' + initMethod + '(eventType, true, false);');
+                    node.dispatchEvent(event);
+                } else if(document.createEventObject) {
+                    node.fireEvent('on' + eventType);
+                }
+
+                return this;
+            };
+        });
+    });
+
     /**
      * Checks value in range from min to max
      * @private
