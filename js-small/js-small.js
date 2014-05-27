@@ -281,7 +281,7 @@
         },
 
         /**
-         * Returns child nodes
+         * Returns first child nodes
          * @example
          * // <html>
          * //   <head></head>
@@ -326,8 +326,22 @@
             } while(childList.length() > 0);
             return new small(array);
         },
+
+        /**
+         * Returns all siblings
+         * @example
+         * // <html>
+         * //   <head></head>
+         * //   <body>
+         * //       <p>Text</p>
+         * //   </body>
+         * // </html>
+         * small('head').siblings();
+         * // Returns BODY tag
+         * @returns {object,null} Siblings DOM tags
+         */
         siblings: function() {
-            return this.parent().firstChild().nextAll();
+            return this.nextAll().merge(this.prevAll());
         },
         unique: function() {
             var array = this.nodes;
@@ -1637,7 +1651,7 @@
     });
 
     /**
-     * Returns first child nodes
+     * Returns first child node
      * @example
      * <html>
      *   <head></head>
@@ -1673,26 +1687,14 @@
         small.prototype[type] = function() {
             var array = [], getNext;
             this.each(function(object) {
-                if('childElementCount' in object) {
-                    if(type == 'nextAll') {
-                        getNext = function(object) {
-                            return object.nextElementSibling
-                        };
-                    } else {
-                        getNext = function(object) {
-                            return object.previousElementSibling
-                        };
-                    }
+                if(type == 'nextAll') {
+                    getNext = function(object) {
+                        return 'childElementCount' in object ? object.nextElementSibling : object.nextSibling;
+                    };
                 } else {
-                    if(type == 'nextAll') {
-                        getNext = function(object) {
-                            return object.nextSibling
-                        };
-                    } else {
-                        getNext = function(object) {
-                            return object.previousSibling
-                        };
-                    }
+                    getNext = function(object) {
+                        return 'childElementCount' in object ? object.previousElementSibling : object.previousSibling;
+                    };
                 }
                 while((object = getNext(object)) != null) {
                     try {
