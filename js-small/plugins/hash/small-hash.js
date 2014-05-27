@@ -1,7 +1,7 @@
 /*
  * JS-Small JavaScript Framework Plugin
  * Description: Plug-in for hashing
- * Copyright (c) 2008 - 2012 Denis Korolev
+ * Copyright (c) 2008 - 2014 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
@@ -12,13 +12,13 @@
  * @version 0.0.2
  */
 small.extendFunctions({
-    encodeBase64: function(text){
+    encodeBase64: function(text) {
         var result = "", index = 0, chr1, chr2, chr3, enc1, enc2, enc3, enc4, charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
         text = text.replace(/\r\n/g, "\n");
         text = small.encodeUtf8(text);
 
-        while(index < text.length){
+        while(index < text.length) {
             chr1 = text.charCodeAt(index++);
             chr2 = text.charCodeAt(index++);
             chr3 = text.charCodeAt(index++);
@@ -28,9 +28,9 @@ small.extendFunctions({
             enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
             enc4 = chr3 & 63;
 
-            if(isNaN(chr2)){
+            if(isNaN(chr2)) {
                 enc3 = enc4 = 64;
-            } else if(isNaN(chr3)){
+            } else if(isNaN(chr3)) {
                 enc4 = 64;
             }
 
@@ -39,12 +39,12 @@ small.extendFunctions({
 
         return result;
     },
-    decodeBase64: function(text){
+    decodeBase64: function(text) {
         var result = "", index = 0, chr1, chr2, chr3, enc1, enc2, enc3, enc4, charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
 
         text = text.replace(/[^A-Za-z0-9\+\/\=]/g, "");
 
-        while(index < text.length){
+        while(index < text.length) {
             enc1 = charset.indexOf(text.charAt(index++));
             enc2 = charset.indexOf(text.charAt(index++));
             enc3 = charset.indexOf(text.charAt(index++));
@@ -56,10 +56,10 @@ small.extendFunctions({
 
             result = result + String.fromCharCode(chr1);
 
-            if(enc3 != 64){
+            if(enc3 != 64) {
                 result = result + String.fromCharCode(chr2);
             }
-            if(enc4 != 64){
+            if(enc4 != 64) {
                 result = result + String.fromCharCode(chr3);
             }
         }
@@ -68,18 +68,18 @@ small.extendFunctions({
 
         return result;
     },
-    encodeUtf8: function(text){
+    encodeUtf8: function(text) {
         var result = "";
         text = text.replace(/\r\n/g, "\n");
 
-        for(var index = 0, length = text.length; index < length; index++){
+        for(var index = 0, length = text.length; index < length; index++) {
             var c = text.charCodeAt(index);
-            if(c < 128){
+            if(c < 128) {
                 result += String.fromCharCode(c);
-            } else if((c > 127) && (c < 2048)){
+            } else if((c > 127) && (c < 2048)) {
                 result += String.fromCharCode((c >> 6) | 192);
                 result += String.fromCharCode((c & 63) | 128);
-            } else{
+            } else {
                 result += String.fromCharCode((c >> 12) | 224);
                 result += String.fromCharCode(((c >> 6) & 63) | 128);
                 result += String.fromCharCode((c & 63) | 128);
@@ -88,20 +88,20 @@ small.extendFunctions({
 
         return result;
     },
-    decodeUtf8: function(text){
+    decodeUtf8: function(text) {
         var result = "", index = 0, length = text.length, c1 = 0, c2 = 0, c3 = 0;
 
-        while(index < length){
+        while(index < length) {
             c1 = text.charCodeAt(index);
 
-            if(c1 < 128){
+            if(c1 < 128) {
                 result += String.fromCharCode(c1);
                 index++;
-            } else if((c1 > 191) && (c1 < 224)){
+            } else if((c1 > 191) && (c1 < 224)) {
                 c2 = text.charCodeAt(index + 1);
                 result += String.fromCharCode(((c1 & 31) << 6) | (c2 & 63));
                 index += 2;
-            } else{
+            } else {
                 c2 = text.charCodeAt(index + 1);
                 c3 = text.charCodeAt(index + 2);
                 result += String.fromCharCode(((c1 & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
@@ -112,69 +112,69 @@ small.extendFunctions({
         return result;
     },
     //It has to be optimized
-    md5: function(text){
-        function rotateLeft(lValue, iShiftBits){
+    md5: function(text) {
+        function rotateLeft(lValue, iShiftBits) {
             return (lValue << iShiftBits) | (lValue >>> (32 - iShiftBits));
         }
 
-        function addUnsigned(lX, lY){
+        function addUnsigned(lX, lY) {
             var lX4, lY4, lX8, lY8, lResult;
             lX8 = (lX & 0x80000000);
             lY8 = (lY & 0x80000000);
             lX4 = (lX & 0x40000000);
             lY4 = (lY & 0x40000000);
             lResult = (lX & 0x3FFFFFFF) + (lY & 0x3FFFFFFF);
-            if(lX4 & lY4){
+            if(lX4 & lY4) {
                 return (lResult ^ 0x80000000 ^ lX8 ^ lY8);
             }
-            if(lX4 | lY4){
-                if(lResult & 0x40000000){
+            if(lX4 | lY4) {
+                if(lResult & 0x40000000) {
                     return (lResult ^ 0xC0000000 ^ lX8 ^ lY8);
-                } else{
+                } else {
                     return (lResult ^ 0x40000000 ^ lX8 ^ lY8);
                 }
-            } else{
+            } else {
                 return (lResult ^ lX8 ^ lY8);
             }
         }
 
-        function F(x, y, z){
+        function F(x, y, z) {
             return (x & y) | ((~x) & z);
         }
 
-        function G(x, y, z){
+        function G(x, y, z) {
             return (x & z) | (y & (~z));
         }
 
-        function H(x, y, z){
+        function H(x, y, z) {
             return (x ^ y ^ z);
         }
 
-        function I(x, y, z){
+        function I(x, y, z) {
             return (y ^ (x | (~z)));
         }
 
-        function FF(a, b, c, d, x, s, ac){
+        function FF(a, b, c, d, x, s, ac) {
             a = addUnsigned(a, addUnsigned(addUnsigned(F(b, c, d), x), ac));
             return addUnsigned(rotateLeft(a, s), b);
         }
 
-        function GG(a, b, c, d, x, s, ac){
+        function GG(a, b, c, d, x, s, ac) {
             a = addUnsigned(a, addUnsigned(addUnsigned(G(b, c, d), x), ac));
             return addUnsigned(rotateLeft(a, s), b);
         }
 
-        function HH(a, b, c, d, x, s, ac){
+        function HH(a, b, c, d, x, s, ac) {
             a = addUnsigned(a, addUnsigned(addUnsigned(H(b, c, d), x), ac));
             return addUnsigned(rotateLeft(a, s), b);
         }
 
-        function II(a, b, c, d, x, s, ac){
+        function II(a, b, c, d, x, s, ac) {
             a = addUnsigned(a, addUnsigned(addUnsigned(I(b, c, d), x), ac));
             return addUnsigned(rotateLeft(a, s), b);
         }
 
-        function convertToWordArray(string){
+        function convertToWordArray(string) {
             var lWordCount;
             var lMessageLength = string.length;
             var lNumberOfWordsTemp1 = lMessageLength + 8;
@@ -183,7 +183,7 @@ small.extendFunctions({
             var lWordArray = Array(lNumberOfWords - 1);
             var lBytePosition = 0;
             var lByteCount = 0;
-            while(lByteCount < lMessageLength){
+            while(lByteCount < lMessageLength) {
                 lWordCount = (lByteCount - (lByteCount % 4)) / 4;
                 lBytePosition = (lByteCount % 4) * 8;
                 lWordArray[lWordCount] = (lWordArray[lWordCount] | (string.charCodeAt(lByteCount) << lBytePosition));
@@ -197,9 +197,9 @@ small.extendFunctions({
             return lWordArray;
         }
 
-        function wordToHex(lValue){
+        function wordToHex(lValue) {
             var wordToHexValue = "", wordToHexValueTemp = "", lByte, lCount;
-            for(lCount = 0; lCount <= 3; lCount++){
+            for(lCount = 0; lCount <= 3; lCount++) {
                 lByte = (lValue >>> (lCount * 8)) & 255;
                 wordToHexValueTemp = "0" + lByte.toString(16);
                 wordToHexValue = wordToHexValue + wordToHexValueTemp.substr(wordToHexValueTemp.length - 2, 2);
@@ -219,7 +219,7 @@ small.extendFunctions({
         c = 0x98BADCFE;
         d = 0x10325476;
 
-        for(k = 0; k < x.length; k += 16){
+        for(k = 0; k < x.length; k += 16) {
             AA = a;
             BB = b;
             CC = c;

@@ -1,7 +1,7 @@
 /*
  * JS-Small JavaScript Framework Plugin
  * Description: Convert various data formats (JSON, XML)
- * Copyright (c) 2008 - 2012 Denis Korolev
+ * Copyright (c) 2008 - 2014 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
@@ -11,15 +11,15 @@
  * @version 0.0.2
  */
 small.extendFunctions({
-    jsonToString: function(json){
+    jsonToString: function(json) {
         var result = null, sub;
 
-        if(!small.typeIn(json, "undefined")){
-            switch(typeof(json)){
+        if(!small.typeIn(json, "undefined")) {
+            switch(typeof(json)) {
                 case "object":
                     result = [];
-                    small.each(json, function(key, value){
-                        if((sub = small.jsonToString(value))){
+                    small.each(json, function(key, value) {
+                        if((sub = small.jsonToString(value))) {
                             result[result.length] = '"' + key + '":' + sub;
                         }
                     });
@@ -41,7 +41,7 @@ small.extendFunctions({
             }
         }
 
-        function translater(object){
+        function translater(object) {
             var specChars = {
                 "\t": "t",
                 "\n": "n",
@@ -49,28 +49,28 @@ small.extendFunctions({
                 "\r": "r"
             };
             var padList = ["", "000", "00", "0", ""];
-            return object.replace(/(\t|\n|\f|\r)/g,function(str, m){
+            return object.replace(/(\t|\n|\f|\r)/g, function(str, m) {
                 return "\\\\" + specChars[m];
-            }).replace(/([а-яё])/gi, function(str, m){
-                    var letter = m.charCodeAt(0).toString(16);
-                    return "\\u" + padList[letter.length] + letter;
-                });
+            }).replace(/([а-яё])/gi, function(str, m) {
+                var letter = m.charCodeAt(0).toString(16);
+                return "\\u" + padList[letter.length] + letter;
+            });
         }
 
         return result
     },
-    stringToJson: function(string){
+    stringToJson: function(string) {
         var result = {};
-        try{
+        try {
             result = eval('('.concat(string, ')'));
-        } catch(err){
+        } catch(err) {
         }
         return result;
     },
-    xmlToJson: function(xml){
+    xmlToJson: function(xml) {
         //TODO It has to be realized
     },
-    jsonToXml: function(json){
+    jsonToXml: function(json) {
         //TODO It has to be realized
     }
 });

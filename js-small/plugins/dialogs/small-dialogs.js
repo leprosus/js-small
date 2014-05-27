@@ -1,7 +1,7 @@
 /*
  * JS-Small JavaScript Framework Plugin 0.0.3
  * Description: Work with dynamic dialogs
- * Copyright (c) 2008 - 2012 Denis Korolev
+ * Copyright (c) 2008 - 2014 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
@@ -38,7 +38,7 @@ var initDialogs = {
     "center": 9
 };
 small.extendFunctions({
-    initDialogs: function(options){
+    initDialogs: function(options) {
         initDialogs = {
             "escapable": small.typeIn(options.escapable, "boolean") ? options.escapable : initDialogs.escapable,
             "closable": small.typeIn(options.closable, "boolean") ? options.closable : initDialogs.closable,
@@ -60,11 +60,12 @@ small.extendFunctions({
             "titleBackground": small.typeIn(options.titleBackground, "string") ? options.titleBackground
                 : initDialogs.titleBackground,
             "titleColor": small.typeIn(options.titleColor, "string") ? options.titleColor : initDialogs.titleColor,
-            "layout": small.typeIn(options.layout, "string,number") && (/^(north|northeast|east|southeast|south|southwest|west|northwest|center)$/i.test(options.layout) || /^[1-9]$/.test(options.layout))
+            "layout": small.typeIn(options.layout, "string,number") &&
+                          (/^(north|northeast|east|southeast|south|southwest|west|northwest|center)$/i.test(options.layout) || /^[1-9]$/.test(options.layout))
                 ? (/^[1-9]$/.test(options.layout) ? options.layout : layouts[options.layout]) : initDialogs.layout
         };
     },
-    showDialog: function(options){
+    showDialog: function(options) {
         var escapable = small.typeIn(options.escapable, "boolean") ? options.escapable
             : initDialogs.escapable, closable = small.typeIn(options.closable, "boolean") ? options.closable
             : initDialogs.closable, modal = small.typeIn(options.modal, "boolean") ? options.modal
@@ -84,18 +85,19 @@ small.extendFunctions({
             ? options.titleBackground
             : initDialogs.titleBackground, titleColor = small.typeIn(options.titleColor, "string") ? options.titleColor
             : initDialogs.titleColor, color = small.typeIn(options.color, "string") ? options.color
-            : initDialogs.color, layout = small.typeIn(options.layout, "string,number") && (/^(north|northeast|east|southeast|south|southwest|west|northwest|center)$/i.test(options.layout) || /^[1-9]$/.test(options.layout))
+            : initDialogs.color, layout = small.typeIn(options.layout, "string,number") &&
+                                              (/^(north|northeast|east|southeast|south|southwest|west|northwest|center)$/i.test(options.layout) || /^[1-9]$/.test(options.layout))
             ? (/^[1-9]$/.test(options.layout) ? options.layout : layouts[options.layout])
             : initDialogs.layout, title = small.typeIn(options.title, "string,number") ? options.title
             : initDialogs.defaultTitle, content = small.typeIn(options.content, "undefined") ? small.create("div")
             : options.content, width = /^\d+$/.test(options.width) ? options.width
             : null, height = /^\d+$/.test(options.height) ? options.height
-            : null, onOpen = small.typeIn(options.onOpen, "function") ? options.onOpen : function(){
-        }, onClose = small.typeIn(options.onClose, "function") ? options.onClose : function(){
+            : null, onOpen = small.typeIn(options.onOpen, "function") ? options.onOpen : function() {
+        }, onClose = small.typeIn(options.onClose, "function") ? options.onClose : function() {
         };
 
         var container = small.body().append("div.ui-dialog");
-        if(width == null || height == null){
+        if(width == null || height == null) {
             var wrap = container.append("div.content"), temp = wrap.append("span").css("display", "table");
             temp.html(content.serialize());
             var bound = temp.bound();
@@ -163,7 +165,7 @@ small.extendFunctions({
             }
         };
 
-        function showDialog(){
+        function showDialog() {
             onOpen();
 
             var opacity = 0, object = container.child(), backgroundFlag = false;
@@ -173,10 +175,10 @@ small.extendFunctions({
 
             small.start({
                 "time": 100,
-                "callback": function(){
+                "callback": function() {
                     opacity += 20;
                     object.opacity(opacity);
-                    if(!backgroundFlag && opacity >= backgroundOpacity){
+                    if(!backgroundFlag && opacity >= backgroundOpacity) {
                         object = container.find("div.dialog");
                         container.find("div.modal").opacity(backgroundOpacity);
                         backgroundFlag = true;
@@ -186,15 +188,15 @@ small.extendFunctions({
             });
         }
 
-        function hideDialog(){
+        function hideDialog() {
             var opacity = 100, object = container.child();
 
             small.start({
                 "time": 100,
-                "callback": function(){
+                "callback": function() {
                     opacity -= 20;
                     object.opacity(opacity);
-                    if(opacity == 0){
+                    if(opacity == 0) {
                         container.remove();
                     }
                 },
@@ -209,7 +211,7 @@ small.extendFunctions({
             "hideDialog": hideDialog
         });
 
-        if(modal){
+        if(modal) {
             container.append("div.modal").css("background-color", backgroundColor).opacity(backgroundOpacity);
         }
 
@@ -224,16 +226,16 @@ small.extendFunctions({
             "height": height + "px"
         });
 
-        if(titled){
+        if(titled) {
             dialog.append("div.title").css({
                 "background-color": titleBackground,
                 "color": titleColor
-            }).condition(closable,function(){
-                    var close = small(this).append("div.close").text("✕");
-                    if(closable){
-                        close.click(hideDialog);
-                    }
-                }).concat(title);
+            }).condition(closable, function() {
+                var close = small(this).append("div.close").text("✕");
+                if(closable) {
+                    close.click(hideDialog);
+                }
+            }).concat(title);
         }
 
         dialog.append("div.content").css({
@@ -241,13 +243,13 @@ small.extendFunctions({
             "color": color
         }).append(content);
 
-        if(autostart){
+        if(autostart) {
             container.showDialog();
         }
 
         return container;
     },
-    showNotice: function(options){
+    showNotice: function(options) {
         small.initDialogs(options);
         var notice = small.showDialog({
             "autostart": true,
@@ -257,7 +259,7 @@ small.extendFunctions({
         });
         notice.start({
             "time": options.time || 5000,
-            "callback": function(){
+            "callback": function() {
                 notice.hideDialog();
             }
         });

@@ -1,7 +1,7 @@
 /*
  * JS-Small JavaScript Framework Plugin
  * Description: Plug-in checks version of user's browser and notices about out of date it
- * Copyright (c) 2008 - 2012 Denis Korolev
+ * Copyright (c) 2008 - 2014 Denis Korolev
  * Released under the MIT License.
  * More information: http://www.js-small.ru/
  *                   http://www.js-small.com/
@@ -10,7 +10,7 @@
  * @author Denis Korolev
  * @version 0.0.1
  */
-small.ready(function(){
+small.ready(function() {
     var l10n = {
         'en': 'Your browser is out of date. It has known security flaws and may not display all features of this and other websites.',
         'ru': 'Ваш браузер устарел. Он имеет уязвимости в безопасности и может не показывать все возможности на этом и других сайтах.',
@@ -56,14 +56,14 @@ small.ready(function(){
     }, browser = small.browser(), version = parseInt(small.version().replace(/(\d+(?:\.\d+)?).*/, '$1'), 10), url = 'http://api.evalab.ru/browsers.php';
     small.json({
         'url': url,
-        'callback': function(response){
+        'callback': function(response) {
             var lastVersion = response[browser] ? parseInt(response[browser]['version']) : Number.MAX_VALUE;
-            if(lastVersion > version){
+            if(lastVersion > version) {
                 var renewal = small.body().append('div.renewal');
                 renewal.append('div.message').text(message);
 
                 var browsers = renewal.append('div.browsers');
-                small.each(list, function(name, data){
+                small.each(list, function(name, data) {
                     browsers.append('a.' + name).attr({
                         'href': data.link,
                         'title': data.title,
@@ -73,10 +73,10 @@ small.ready(function(){
 
                 renewal.hover(open, close);
 
-                function open(){
+                function open() {
                     renewal.stop().start({
                         'time': 10,
-                        'callback': function(){
+                        'callback': function() {
                             var top = renewal.bound().top;
                             renewal.css('top', (top + 5) + 'px');
                             top >= 0 ? renewal.css('top', 0 + 'px') : open();
@@ -84,10 +84,10 @@ small.ready(function(){
                     });
                 }
 
-                function close(){
+                function close() {
                     renewal.stop().start({
                         'time': 10,
-                        'callback': function(){
+                        'callback': function() {
                             var top = renewal.bound().top;
                             renewal.css('top', (top - 5) + 'px');
                             top <= -60 ? renewal.css('top', -60 + 'px') : close();
