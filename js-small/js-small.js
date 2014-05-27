@@ -1,6 +1,6 @@
 /**
  * JS-Small JavaScript Framework
- * Copyright (c) 2008 - 2012 Denis Korolev
+ * Copyright (c) 2008 - 2014 Denis Korolev
  * Released under the MIT License.
  * More information:  http://www.js-small.ru/
  *                    http://www.js-small.com/
@@ -258,13 +258,20 @@
          * Returned names is in lower case
          * @example
          * small('body').tagNmae();
-         * // Return 'body'
+         * // Returns 'body'
          * @returns {string,null} Tag name
          */
         tagName: function() {
             return this.length() > 0 ? this.nodes[0].nodeName.toLowerCase() : null;
         },
 
+        /**
+         * Return parent DOM of node
+         * @example
+         * small('body').parent();
+         * // Returns HTML DOM
+         * @returns {object,null} Parent DOM tag
+         */
         parent: function() {
             var array = [];
             this.each(function(object) {
@@ -272,6 +279,20 @@
             });
             return new small(array);
         },
+
+        /**
+         * Returns child nodes
+         * @example
+         * // <html>
+         * //   <head></head>
+         * //   <body>
+         * //       <p>Text</p>
+         * //   </body>
+         * // </html>
+         * small('html').child();
+         * // Returns HEAD and BODY tags
+         * @returns {object,null} Child DOM tags
+         */
         child: function() {
             var array = [];
             this.each(function(object) {
@@ -283,6 +304,20 @@
             });
             return new small(array);
         },
+
+        /**
+         * Returns all child nodes
+         * @example
+         * // <html>
+         * //   <head></head>
+         * //   <body>
+         * //       <p>Text</p>
+         * //   </body>
+         * // </html>
+         * small('html').child();
+         * // Returns HEAD, BODY and P tags
+         * @returns {object,null} Child DOM tags
+         */
         children: function() {
             var array = [], childList = this;
             do {
@@ -290,24 +325,6 @@
                 array = small.merge(array, childList.nodes);
             } while(childList.length() > 0);
             return new small(array);
-        },
-        firstChild: function() {
-            return childDom.call(this, 'firstChild');
-        },
-        lastChild: function() {
-            return childDom.call(this, 'lastChild');
-        },
-        next: function() {
-            return childDom.call(this, 'next');
-        },
-        prev: function() {
-            return childDom.call(this, 'prev');
-        },
-        nextAll: function() {
-            return childDom.call(this, 'nextAll');
-        },
-        prevAll: function() {
-            return childDom.call(this, 'prevAll');
         },
         siblings: function() {
             return this.parent().firstChild().nextAll();
@@ -323,6 +340,9 @@
             }
             return new small(array);
         },
+        /**
+         * @todo Need multi-attributes support
+         */
         merge: function(object) {
             var array = this.nodes;
             if(isOwn(object)) {
@@ -524,57 +544,6 @@
                 this.toggleEvent = (this.toggleEvent == first) ? second : first;
             });
         },
-        first: function() {
-            return selectDom.call(this, 'first');
-        },
-        last: function() {
-            return selectDom.call(this, 'last');
-        },
-        index: function(index) {
-            return selectDom.call(this, 'index', index);
-        },
-        not: function(index) {
-            return selectDom.call(this, 'not', index);
-        },
-        above: function(index) {
-            return selectDom.call(this, 'above', index);
-        },
-        below: function(index) {
-            return selectDom.call(this, 'below', index);
-        },
-        even: function() {
-            return selectDom.call(this, 'even');
-        },
-        visible: function() {
-            return selectDom.call(this, 'visible');
-        },
-        hidden: function() {
-            return selectDom.call(this, 'hidden');
-        },
-        checked: function() {
-            return selectDom.call(this, 'checked');
-        },
-        unchecked: function() {
-            return selectDom.call(this, 'unchecked');
-        },
-        disabled: function() {
-            return selectDom.call(this, 'disabled');
-        },
-        enabled: function() {
-            return selectDom.call(this, 'enabled');
-        },
-        selected: function() {
-            return selectDom.call(this, 'selected');
-        },
-        unselected: function() {
-            return selectDom.call(this, 'unselected');
-        },
-        editable: function() {
-            return selectDom.call(this, 'editable');
-        },
-        uneditable: function() {
-            return selectDom.call(this, 'uneditable');
-        },
         length: function() {
             return this.nodes.length;
         },
@@ -696,7 +665,7 @@
                     if(result == null) {
                         attr = fix(data[0], 'attr'), result = attr in this.nodes[0] ? this.nodes[0][attr] : this.nodes[0].getAttribute(attr);
                     }
-                } else if(length == 1 && typeIn(data[0], 'object') || (length == 2 && typeIn(data[0], 'string'))) {
+                } else if(length == 1 && typeIn(data[0], 'object') || (length == 2 && typeIn(data[1], 'string,number'))) {
                     result = this.each(function(object) {
                         if(length == 2) {
                             try {
@@ -716,10 +685,11 @@
             return result;
         },
         hasAttr: function(attr) {
-            var value;
-            return (arguments.length == 1 && typeIn(arguments[0], 'string,number')) ? (typeIn(value = this.attr(attr), 'string,number') &&
-                value.length > 0) : null;
+            return (typeIn(attr, 'string,number')) ? !typeIn(this.attr(attr), 'null') : null;
         },
+        /**
+         * @todo Need multi-attributes support
+         */
         removeAttr: function(attr) {
             return this.length() > 0 ? this.each(function(object) {
                 attr = fix(attr, 'attr');
@@ -728,13 +698,38 @@
             }) : null;
         },
         id: function() {
-            var data = arguments, length = data.length, result = length == 1 ? null : (this.length() > 0 && ('id' in this.nodes[0]) ? this.nodes[0].id
-                : null);
+            var data = arguments, length = data.length, result = length == 1 ? null : (this.length() > 0 && ('id' in this.nodes[0]) ? this.nodes[0].id : null);
             if(typeIn(data[0], 'string')) {
                 result = this.each(function(object) {
                     object.setAttribute('id', data[0]);
                 });
             }
+            return result;
+        },
+        data: function() {
+            var result = null, args = arguments, length = args.length;
+
+            if(this.length() > 0) {
+                if(length == 1) {
+                    if(typeIn(args[0], 'string')) {
+                        result = this.attr('data-' + args[0]);
+                    } else if(typeIn(args[0], 'object')) {
+                        small.each(args[0], function(key, value) {
+                            small(object).data(key, value);
+                        });
+                        result = this;
+                    }
+                } else if(length == 2) {
+                    result = this.each(function(object) {
+                        try {
+                            object[args[0]] = 'data-' + args[1];
+                            object.setAttribute('data-' + args[0], args[1])
+                        } catch(err) {
+                        }
+                    });
+                }
+            }
+
             return result;
         },
         opacity: function(number) {
@@ -780,8 +775,7 @@
             var result = [];
             this.each(function(object) {
                 if(typeIn(object, 'object')) {
-                    result.push('['.concat(object.nodeName, object.id ? ', id='.concat(object.id) : '',
-                        object.className ? ', class='.concat(object.className) : '', ']'));
+                    result.push('['.concat(object.nodeName, object.id ? ', id='.concat(object.id) : '', object.className ? ', class='.concat(object.className) : '', ']'));
                 }
             });
             return result.length > 0 ? result.join("\n") : '[Null]';
@@ -843,12 +837,11 @@
         return small(window);
     };
     small.browser = function() {
-        return window.navigator ? window.navigator.userAgent.toLowerCase().replace(/^.*(msie|firefox|chrome).*$/,
-            '$1').replace(/^.*(opera|safari|mozilla).*$/, '$1') : null;
+        return window.navigator ? window.navigator.userAgent.toLowerCase().replace(/^.*(msie|firefox|chrome).*$/, '$1').replace(/^.*(opera|safari|mozilla).*$/, '$1') : null;
     };
     small.version = function() {
-        return window.navigator ? window.navigator.userAgent.replace(/^.*(?:msie|firefox|chrome)(?:\s|\/)([\d\.]+).*$/i,
-            '$1').replace(/^.*(?:version|mozilla)\/([\d\.]+).*$/i, '$1') : null;
+        return window.navigator ? window.navigator.userAgent.replace(/^.*(?:msie|firefox|chrome)(?:\s|\/)([\d\.]+).*$/i, '$1').replace(/^.*(?:version|mozilla)\/([\d\.]+).*$/i,
+            '$1') : null;
     };
     small.language = function() {
         return (window.navigator.userLanguage || window.navigator.language || 'en').replace(/-[a-z]+$/i, '').toLowerCase();
@@ -933,16 +926,15 @@
         if(typeIn(options, 'object')) {
             var method = (options.method || 'get').toUpperCase(), url = options.url || small.url(), callback = options.callback || function() {
             }, error = options.error || function() {
-            }, async = options.async || true, user = options.user || null, password = options.password || null, timeout = options.timeout ||
-                0, types = {
+            }, async = options.async || true, user = options.user || null, password = options.password || null, timeout = options.timeout || 0, types = {
                 'html': 'text/html',
                 'text': 'text/plain',
                 'xml': 'application/xml, text/xml',
                 'json': 'application/json, text/javascript',
                 'script': 'text/javascript, application/javascript',
                 'default': 'application/x-www-form-urlencoded'
-            }, contentType = types[options.contentType] || types['default'], charset = options.charset ||
-                'UTF-8', dataType = types[options.dataType] || '*\/*', requestHeaders = options.requestHeaders || null, params = null;
+            }, contentType = types[options.contentType] || types['default'], charset = options.charset || 'UTF-8', dataType = types[options.dataType] ||
+                '*\/*', requestHeaders = options.requestHeaders || null, params = null;
             if(options.params) {
                 params = [], small.each(options.params, function(key, value) {
                     params[params.length] = key.concat('=', encodeURIComponent(value));
@@ -1106,9 +1098,8 @@
                 date.setTime(date.getTime() + options.expires * 86400000);
                 options.expires = date.toGMTString();
             }
-            document.cookie = options.name.concat('=', escape(options.value), ((options.expires) ? '; expires='.concat(options.expires) : ''),
-                '; path=', ((options.path) ? options.path : '/'), ((options.domain) ? '; domain='.concat(options.domain) : ''),
-                ((options.secure) ? '; secure' : ''));
+            document.cookie = options.name.concat('=', escape(options.value), ((options.expires) ? '; expires='.concat(options.expires) : ''), '; path=',
+                ((options.path) ? options.path : '/'), ((options.domain) ? '; domain='.concat(options.domain) : ''), ((options.secure) ? '; secure' : ''));
         }
         return this;
     };
@@ -1129,8 +1120,8 @@
     small.removeCookie = function(options) {
         if(typeIn(options, 'object')) {
             if(small.cookie.get(options.name)) {
-                document.cookie = options.name.concat('=', ((options.path) ? '; path='.concat(options.path) : ''),
-                    ((options.domain) ? '; domain='.concat(options.domain) : ''), '; expires=Thu, 01-Jan-70 00:00:01 GMT');
+                document.cookie = options.name.concat('=', ((options.path) ? '; path='.concat(options.path) : ''), ((options.domain) ? '; domain='.concat(options.domain) : ''),
+                    '; expires=Thu, 01-Jan-70 00:00:01 GMT');
             }
         }
         return this;
@@ -1186,17 +1177,18 @@
                         item = array[index], objClass = item.className ? small.trim(item.className.replace(/\s+/g, ' ')) : '';
                         if((id && (!item.id || !check(id[1], id[2], item.id))) || (classes && small.grep([
                             objClass
-                        ],function(curClass) {
+                        ], function(curClass) {
                             for(var curClasses = classes.concat(), flag = true, total = curClasses.length, num = 0; flag && num < total; num++) {
                                 flag = flag && check(curClasses[num][1], curClasses[num][2], curClass);
                             }
                             return flag;
-                        }).length == 0) || (attrs && small.grep([item],function(curObject) {
+                        }).length == 0) || (attrs && small.grep([item], function(curObject) {
                             for(var curAttrs = attrs.concat(), flag = true, total = curAttrs.length, num = 0; flag && num < total; num++) {
-                                if(flag && ((typeof curAttrs[num][3] == 'undefined' &&
-                                    !small.typeIn(curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]], 'string')) ||
-                                    (typeof curAttrs[num][3] != 'undefined' && !check(curAttrs[num][2], curAttrs[num][3],
-                                        curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]] || '', 'condition')))) {
+                                if(flag &&
+                                    ((typeof curAttrs[num][3] == 'undefined' && !small.typeIn(curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]], 'string')) ||
+                                        (typeof curAttrs[num][3] != 'undefined' &&
+                                            !check(curAttrs[num][2], curAttrs[num][3], curObject.getAttribute(curAttrs[num][1]) || curObject[curAttrs[num][1]] || '',
+                                                'condition')))) {
                                     flag = false, curAttrs.splice(num, 1), num--, total--;
                                 }
                             }
@@ -1213,8 +1205,9 @@
         function check(type, line, value, method) {
             var result = false;
             if(!method || method == 'regexp') {
-                result = (new RegExp((/^\^?$/.test(type) ? "\\s" : '') + line + (/^\$?$/.test(type) ? "\\s" : ''))).test(' ' + value +
-                    ' '), result = type == '!' ? !result : result;
+                result = (new RegExp((/^\^?$/.test(type) ? "\\s" : '') + line + (/^\$?$/.test(type) ? "\\s" : ''))).test(' ' + value + ' '), result = type == '!'
+                    ? !result
+                    : result;
             } else if(method == 'condition') {
                 result = ((type == '' && line == value) || (type == '*' && value.indexOf(line) > 0) || (type == '^' && value.indexOf(line) == 0) ||
                     (type == '$' && value.indexOf(line) == value.length - line.length) || (type == '!' && line != value));
@@ -1305,20 +1298,16 @@
     };
     small.viewport = function() {
         return {
-            'width': window.innerWidth ? window.innerWidth : (document.documentElement.clientWidth ? document.documentElement.clientWidth
-                : document.body.offsetWidth),
-            'height': window.innerHeight ? window.innerHeight : (document.documentElement.clientHeight ? document.documentElement.clientHeight
-                : document.body.offsetHeight)
+            'width': window.innerWidth ? window.innerWidth : (document.documentElement.clientWidth ? document.documentElement.clientWidth : document.body.offsetWidth),
+            'height': window.innerHeight ? window.innerHeight : (document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.offsetHeight)
         };
     };
     small.page = function() {
         return {
             'width': (document.body.scrollWidth > document.body.offsetWidth) ? document.body.scrollWidth : document.body.offsetWidth,
             'height': (document.body.scrollHeight > document.body.offsetHeight) ? document.body.scrollHeight : document.body.offsetHeight,
-            'left': self.pageXOffset ? self.pageXOffset : (document.documentElement.scrollLeft ? document.documentElement.scrollLeft
-                : document.body.scrollLeft),
-            'top': self.pageYOffset ? self.pageYOffset : (document.documentElement.scrollTop ? document.documentElement.scrollTop
-                : document.body.scrollTop)
+            'left': self.pageXOffset ? self.pageXOffset : (document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft),
+            'top': self.pageYOffset ? self.pageYOffset : (document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop)
         };
     };
     small.center = function() {
@@ -1361,7 +1350,8 @@
         return (position = request.indexOf('#')) > 0 ? request.substring(position + 1) : '';
     };
     small.urlParams = function() {
-        var result = {}, request = small.url(), position, get = (position = request.indexOf('?')) > 0 ? get = request.substring(position + 1)
+        var result = {}, request = small.url(), position, get = (position = request.indexOf('?')) > 0
+            ? get = request.substring(position + 1)
             : '', list = get.replace('#'.concat(small.anchor()), '').split('&');
         small.each(list, function(value) {
             var param = value.split('=');
@@ -1489,23 +1479,19 @@
             if(/^(append|prepend)$/.test(type)) {
                 this.each(function(object) {
                     if(typeIn(tag, 'string')) {
-                        array[array.length] = type == 'append' ? object.appendChild(small.create(tag).node())
-                            : object.insertBefore(small.create(tag).node(), object.firstChild);
+                        array[array.length] = type == 'append' ? object.appendChild(small.create(tag).node()) : object.insertBefore(small.create(tag).node(), object.firstChild);
                     } else if(typeIn(tag, 'object')) {
                         if(typeIn(tag.nodes, 'array')) {
                             tag.each(function(current) {
-                                array[array.length] = type == 'append' ? object.appendChild(current) : object.insertBefore(current,
-                                    object.firstChild);
+                                array[array.length] = type == 'append' ? object.appendChild(current) : object.insertBefore(current, object.firstChild);
                             });
                         } else {
-                            array[array.length] = type == 'append' ? object.appendChild(tag) : array[array.length] = object.insertBefore(tag,
-                                object.firstChild);
+                            array[array.length] = type == 'append' ? object.appendChild(tag) : array[array.length] = object.insertBefore(tag, object.firstChild);
                         }
                     }
                 }), result = new small(array);
             } else if(/^(append|prepend)To$/.test(type)) {
-                result = typeIn(tag, 'string') ? small.find(tag) : (isOwn(tag) ? tag : new small(tag)), type == 'appendTo' ? result.append(this)
-                    : result.prepend(this);
+                result = typeIn(tag, 'string') ? small.find(tag) : (isOwn(tag) ? tag : new small(tag)), type == 'appendTo' ? result.append(this) : result.prepend(this);
             } else if(/^(after|before)$/.test(type)) {
                 this.each(function(object) {
                     if(typeIn(tag, 'string')) {
@@ -1521,82 +1507,8 @@
                     }
                 }), result = new small(array);
             } else if(/^insert(After|Before)$/.test(type)) {
-                result = typeIn(tag, 'string') ? small.find(tag) : (isOwn(tag) ? tag : new small(tag)), type == 'insertAfter' ? result.after(this)
-                    : result.before(this);
+                result = typeIn(tag, 'string') ? small.find(tag) : (isOwn(tag) ? tag : new small(tag)), type == 'insertAfter' ? result.after(this) : result.before(this);
             }
-        }
-        return result;
-    }, childDom = function(type) {
-        var array = [], getNext;
-        if(/^(firstChild|lastChild|next|prev)$/.test(type)) {
-            this.each(function(object) {
-                try {
-                    if(type == 'firstChild') {
-                        array[array.length] = 'childElementCount' in object ? object.firstElementChild : object.firstChild;
-                    } else if(type == 'lastChild') {
-                        array[array.length] = 'childElementCount' in object ? object.lastElementChild : object.lastChild;
-                    } else if(type == 'next') {
-                        array[array.length] = 'childElementCount' in object ? object.nextElementSibling : object.nextSibling;
-                    } else if(type == 'prev') {
-                        array[array.length] = 'childElementCount' in object ? object.previousElementSibling : object.previousSibling;
-                    }
-                } catch(err) {
-                }
-            });
-        } else if(/^(next|prev)All$/.test(type)) {
-            this.each(function(object) {
-                if('childElementCount' in object) {
-                    if(type == 'nextAll') {
-                        getNext = function(object) {
-                            return object.nextElementSibling
-                        };
-                    } else {
-                        getNext = function(object) {
-                            return object.previousElementSibling
-                        };
-                    }
-                } else {
-                    if(type == 'nextAll') {
-                        getNext = function(object) {
-                            return object.nextSibling
-                        };
-                    } else {
-                        getNext = function(object) {
-                            return object.previousSibling
-                        };
-                    }
-                }
-                while((object = getNext(object)) != null) {
-                    try {
-                        array[array.length] = object;
-                    } catch(err) {
-                    }
-                }
-            });
-        }
-        return new small(array);
-    }, selectDom = function(type, index) {
-        var result = null;
-        if(/^(first|last)$/.test(type)) {
-            result = new small(this.length() > 0 ? (type == 'first' ? [this.nodes[0]] : [this.nodes[this.length() - 1]]) : []);
-        } else if((/^(index|not|above|below)$/.test(type) && typeIn(index, 'number')) || type == 'even') {
-            result = this.grep(function(key, value) {
-                return type == 'index' ? key == index : (type == 'not' ? key != index : (type == 'above' ? key < index : (type == 'above' ? key >
-                    index : key % 2 == 0)));
-            });
-        } else if(/^(visible|hidden)$/.test(type)) {
-            result = this.grep(function(key, value) {
-                return type == 'visible' ? (value.offsetWidth > 0 && value.offsetHeight > 0 && value.style.visibility != 'hidden' &&
-                    value.style.display != 'none') : (value.offsetWidth == 0 || value.offsetHeight == 0 || value.style.visibility == 'hidden' ||
-                    value.style.display == 'none');
-            });
-        } else if(/^(checked|unchecked|disabled|enabled|selected|unselected|editable|uneditable)$/.test(type)) {
-            result = this.grep(function(key, value) {
-                return /^(input|select)$/i.test(value.nodeName) && type == 'checked' ? value.checked : (type == 'unchecked' ? !value.checked
-                    : (type == 'disabled' ? value.disabled : (type == 'enabled' ? !value.disabled : (type == 'selected' ? value.selected : (type ==
-                                                                                                                                                'unselected'
-                    ? !value.selected : (type == 'editable' ? !value.readonly : value.readonly))))));
-            });
         }
         return result;
     }, xhr = function(object, options, type) {
@@ -1664,11 +1576,9 @@
             event.relatedTarget = event.fromElement == event.target ? event.toElement : event.fromElement;
         }
         if(event.pageX == null && event.clientX != null) {
-            event.pageX = event.clientX +
-                (document.documentElement && document.documentElement.scrollLeft || document.body && document.body.scrollLeft || 0) -
+            event.pageX = event.clientX + (document.documentElement && document.documentElement.scrollLeft || document.body && document.body.scrollLeft || 0) -
                 (document.documentElement.clientLeft || 0);
-            event.pageY = event.clientY +
-                (document.documentElement && document.documentElement.scrollTop || document.body && document.body.scrollTop || 0) -
+            event.pageY = event.clientY + (document.documentElement && document.documentElement.scrollTop || document.body && document.body.scrollTop || 0) -
                 (document.documentElement.clientTop || 0);
         }
         if(!event.which && event.button) {
@@ -1695,8 +1605,7 @@
             };
         }
     });
-    var logList = 'log,debug,info,warn,error'.split(',');
-    small.each(logList, function(type) {
+    small.each('log,debug,info,warn,error'.split(','), function(type) {
         if(window.console) {
             small[type] = function(message) {
                 window.console.log(type + ': ' + message);
@@ -1710,9 +1619,7 @@
     };
     small.each(firesList, function(fireType, eventsList) {
         small.each(eventsList, function(eventType) {
-
-            var eventMethod = 'do' + eventType.charAt(0).toUpperCase() + eventType.slice(1),
-                initMethod = 'init' + fireType.replace(/^HTML/, '').replace(/s$/, '');
+            var eventMethod = 'do' + eventType.charAt(0).toUpperCase() + eventType.slice(1), initMethod = 'init' + fireType.replace(/^HTML/, '').replace(/s$/, '');
 
             small.prototype[eventMethod] = function() {
                 var node = this.node();
@@ -1727,6 +1634,110 @@
                 return this;
             };
         });
+    });
+
+    /**
+     * Returns first child nodes
+     * @example
+     * <html>
+     *   <head></head>
+     *   <body>
+     *       <p>Text</p>
+     *   </body>
+     * </html>
+     * small('html').lastChild();
+     * // Returns BODY tag
+     * @returns {object,null} Child DOM tags
+     */
+    small.each('firstChild,lastChild,next,prev'.split(','), function(type) {
+        small.prototype[type] = function() {
+            var array = [];
+            this.each(function(object) {
+                try {
+                    if(type == 'firstChild') {
+                        array[array.length] = 'childElementCount' in object ? object.firstElementChild : object.firstChild;
+                    } else if(type == 'lastChild') {
+                        array[array.length] = 'childElementCount' in object ? object.lastElementChild : object.lastChild;
+                    } else if(type == 'next') {
+                        array[array.length] = 'childElementCount' in object ? object.nextElementSibling : object.nextSibling;
+                    } else if(type == 'prev') {
+                        array[array.length] = 'childElementCount' in object ? object.previousElementSibling : object.previousSibling;
+                    }
+                } catch(err) {
+                }
+            });
+            return new small(array);
+        };
+    });
+    small.each(['nextAll', 'prevAll'], function(type) {
+        small.prototype[type] = function() {
+            var array = [], getNext;
+            this.each(function(object) {
+                if('childElementCount' in object) {
+                    if(type == 'nextAll') {
+                        getNext = function(object) {
+                            return object.nextElementSibling
+                        };
+                    } else {
+                        getNext = function(object) {
+                            return object.previousElementSibling
+                        };
+                    }
+                } else {
+                    if(type == 'nextAll') {
+                        getNext = function(object) {
+                            return object.nextSibling
+                        };
+                    } else {
+                        getNext = function(object) {
+                            return object.previousSibling
+                        };
+                    }
+                }
+                while((object = getNext(object)) != null) {
+                    try {
+                        array[array.length] = object;
+                    } catch(err) {
+                    }
+                }
+            });
+            return new small(array);
+        };
+    });
+    small.each(['first', 'last'], function(type) {
+        small.prototype[type] = function() {
+            return new small(this.length() > 0 ? (type == 'first' ? [this.nodes[0]] : [this.nodes[this.length() - 1]]) : []);
+        };
+    });
+    small.each('index,not,above,below,even'.split(','), function(type) {
+        small.prototype[type] = function(index) {
+            return (type == 'even' || typeIn(index, 'number')) ? this.grep(function(key, value) {
+                return type == 'index' ? key == index : (type == 'not' ? key != index : (type == 'above' ? key < index : (type == 'above' ? key > index : key % 2 == 0)));
+            }) : null;
+        };
+    });
+    small.each(['visible', 'hidden'], function(type) {
+        small.prototype[type] = function() {
+            return this.grep(function(value) {
+                return type == 'visible'
+                    ? (value.offsetWidth > 0 && value.offsetHeight > 0 && value.style.visibility != 'hidden' && value.style.display != 'none')
+                    : (value.offsetWidth == 0 || value.offsetHeight == 0 || value.style.visibility == 'hidden' || value.style.display == 'none');
+            });
+        };
+    });
+    small.each('checked,disabled,selected,uneditable'.split(','), function(type) {
+        small.prototype[type] = function() {
+            return this.grep(function(object) {
+                return object[type == 'uneditable' ? 'readonly' : type];
+            });
+        };
+    });
+    small.each('unchecked,enabled,unselected,editable'.split(','), function(type) {
+        small.prototype[type] = function() {
+            return this.grep(function(object) {
+                return !(type == 'uneditable' ? object['readonly'] : type == 'enabled' ? object['disabled'] : object[type.replace(/^un/, '')]);
+            });
+        };
     });
 
     /**
