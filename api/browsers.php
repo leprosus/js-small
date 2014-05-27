@@ -1,4 +1,5 @@
 <?php
+
 class Browsers {
     private $namesList
         = array(
@@ -40,7 +41,7 @@ class Browsers {
                 $content = $this->getUrlContent($url);
                 $token = sprintf($this->token, $this->tokensList[$name]);
 
-                if(preg_match('#<[a-z]{1,6}>((?:\d+\.?)+).*' . $token . '#u', $content, $matches)) {
+                if(preg_match('#<[a-z]{1,6}>((?:\d+\.?)+).*'.$token.'#u', $content, $matches)) {
                     $version = preg_replace($this->versionRegExp, '\\1', $matches[1]);
 
                     $data[$name] = array(
@@ -59,8 +60,8 @@ class Browsers {
 
         $callback = isset($_GET['callback']) && preg_match($this->hashRegExp, $_GET['callback']) ? $_GET['callback'] : null;
 
-        header('Content-type: text/javascript; charset=' . $this->encoding);
-        echo is_null($callback) ? $json : $callback . '(' . $json . ')';
+        header('Content-type: text/javascript; charset='.$this->encoding);
+        echo is_null($callback) ? $json : $callback.'('.$json.')';
     }
 
     private function getUrlContent($url, $timeout = 5, $post = array()) {
@@ -83,7 +84,7 @@ class Browsers {
             curl_setopt($curl, CURLOPT_POST, 1);
 
             foreach($post as $name => &$value) {
-                $value = $name . '=' . urlencode($value);
+                $value = $name.'='.urlencode($value);
             }
 
             curl_setopt($curl, CURLOPT_POST, count($post));
