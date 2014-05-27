@@ -53,10 +53,16 @@
 <div id="evt-submit"><b>Submit Event</b> method for DOM node: <span>ERR</span></div>
 <div id="frame-document"><b>Document</b> method for Frame/iFrame node: <span>ERR</span></div>
 <div id="frame-body"><b>Body</b> method for Frame/iFrame node: <span>ERR</span></div>
+<div id="parent"><b>Parent</b> method for DOM node: <span>ERR</span></div>
+<div id="child"><b>Child</b> method for DOM node: <span>ERR</span></div>
+<div id="children"><b>Children</b> method for DOM node: <span>ERR</span></div>
+<div id="siblings"><b>Siblings</b> method for DOM node: <span>ERR</span></div>
 <script type="text/javascript">
     small.plugins();
 
+    /* small.ready */
     small.ready(function() {
+        /* small.extendMethods */
         small.extendMethods({
             "setOK": function() {
                 small('#ext-met').find('span').addClass('success').text('OK');
@@ -68,6 +74,7 @@
             }
         });
 
+        /* small.extendFunctions */
         small.extendFunctions({
             'resetTDD': function() {
                 small('body').find('div').setERR();
@@ -75,34 +82,39 @@
                 small('#ext-fun').setOK();
             }
         });
-
         small.resetTDD();
 
         small('#ready').setOK();
 
+        /* small.each */
         small('div').each(function(object) {
             object.id == 'each' ? small(object).setOK() : null;
         });
 
+        /* small.grep */
         small('div').grep(function(object) {
             return object.id == 'grep';
         }).setOK();
 
+        /* small.concat */
         small('#concat').find('span').concat('test');
         if(small('#concat').find('span').text() == 'ERRtest') {
             small('#concat').setOK();
         }
 
+        /* small.text */
         small('#text').find('span').text('test');
         if(small('#text').find('span').text() == 'test') {
             small('#text').setOK();
         }
 
+        /* small.html */
         small('#html').find('span').html('<b>test</b>');
         if(small('#html').find('span').html() == '<b>test</b>') {
             small('#html').setOK();
         }
 
+        /* small.empty */
         small('#empty').find('span').empty();
         small('#empty').find('span').empty(function() {
             small('#empty').setOK();
@@ -110,14 +122,17 @@
             small('#empty').setERR();
         });
 
+        /* small.node */
         if(small('body').find('div').node(3).id == 'each') {
             small('#node').setOK();
         }
 
+        /* small.tagName */
         if(small('body').tagName() == 'body') {
             small('#tag').setOK();
         }
 
+        /* small.doFocus & small.focus*/
         small('body').append('input[type=text][id=text]')
                 .focus(function() {
                     small('#do-focus').setOK();
@@ -125,6 +140,7 @@
                 })
                 .doFocus();
 
+        /* small.doBlur & small.blur */
         small('input#text')
                 .blur(function() {
                     small('#do-blur').setOK();
@@ -133,6 +149,7 @@
 
         small('input#text').remove();
 
+        /* small.doSubmit & small.submit */
         var form = small('body')
                 .append('form')
                 .attr({
@@ -145,11 +162,33 @@
                     return false;
                 }).doSubmit();
 
+        /* small.body & small.document */
         var iframeBody = small('body').append('iframe').hide().body();
         iframeBody.text('inner');
-        if(iframeBody.serialize() == '<body>inner</body>'){
+        if(iframeBody.serialize() == '<body>inner</body>') {
             small('#frame-document').setOK();
             small('#frame-body').setOK();
+        }
+        small('iframe').remove();
+
+        /* small.parent */
+        if(small('#parent').parent().tagName() == 'body') {
+            small('#parent').setOK();
+        }
+
+        /* small.child */
+        if(small('#child').child().length() == 2) {
+            small('#child').setOK();
+        }
+
+        /* small.children */
+        if(small('#children').children().length() == 2) {
+            small('#children').setOK();
+        }
+
+        /* small.siblings */
+        if(small('#siblings').child().siblings().tagName() == 'span') {
+            small('#siblings').setOK();
         }
     });
 </script>
