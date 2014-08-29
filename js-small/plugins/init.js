@@ -15,7 +15,7 @@ small.extendFunctions({
     'plugins': function(list) {
         // Default initialization
         if(small.typeIn(list, 'undefined')) {
-            list = 'colors,converters,dialogs,password,uploader,hash,wrapper,onfly,renewal';
+            list = 'colors,converters,dialogs,password,uploader,hash,wrapper,onfly,renewal,validator';
         }
         if(small.typeIn(list, 'string')) {
             list = list.split(',');
@@ -48,6 +48,9 @@ small.extendFunctions({
                 'uploader': function() {
                     small.loadCss(path + 'plugins/uploader/small-uploader.css');
                     small.loadScript(path + 'plugins/uploader/small-uploader.js');
+                },
+                'validator': function() {
+                    small.loadScript(path + 'plugins/validator/small-validator.js');
                 },
                 'wrapper': function() {
                     small.loadScript(path + 'plugins/wrapper/small-wrapper.js');
