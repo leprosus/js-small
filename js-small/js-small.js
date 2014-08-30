@@ -354,6 +354,7 @@
             }
             return new small(array);
         },
+
         /**
          * @todo Need multi-attributes support
          */
@@ -1387,6 +1388,9 @@
     };
     small.reload = function(withRequest) {
         (typeIn(withRequest, 'boolean') ? withRequest : true) ? document.location.reload() : (document.location.href = document.location.href);
+    };
+    small.replaceUrl = function(url) {
+        window.history.pushState({}, '', url);
     };
     small.contain = function(what, where) {
         var result = false;
